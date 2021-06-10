@@ -1,0 +1,245 @@
+<div class="">
+  <div class="breadcrumb">
+    <h1>Utilisateurs</h1>
+    <ul>
+      <li><a routerLink="/gestion/utilisateur">Administration</a></li>
+      <li>Utilisateur</li>
+    </ul>
+  </div>
+
+  <div class="separator-breadcrumb border-top"></div>
+
+  <div class="card mb-4">
+    <div class="card-body">
+      <div class="card-title mb-3 border-bottom pb-2">Gestion des utilisateurs</div>
+
+      <ul #nav="ngbNav" [(activeId)]="activeTabsNav" class="nav-tabs" ngbNav>
+        <li [ngbNavItem]="1">
+          <a ngbNavLink>Liste des utilisateurs</a>
+          <ng-template ngbNavContent>
+            <div class="row">
+              <div class="col-md-4">
+                <div class="form-group">
+                  <input [formControl]="searchControl" class="form-control form-control-rounded" id="email"
+                         placeholder="Search Products" type="text">
+                </div>
+              </div>
+              <div class="col-md-12">
+                <div class="o-hidden">
+                  <ngx-datatable
+                    [columnMode]="'force'"
+                    [footerHeight]="50"
+                    [headerHeight]="50"
+                    [rowHeight]="60"
+                    [rows]="userFiltered"
+                    [scrollbarV]="true"
+                    class="material fullscreen"
+                    style="height: 500px; box-shadow: none">
+                    <ngx-datatable-column [width]="300" name="lastName">
+                      <ng-template ngx-datatable-header-template>
+                        Nom
+                      </ng-template>
+                    </ngx-datatable-column>
+                    <ngx-datatable-column name="firstName">
+                      <ng-template ngx-datatable-header-template>
+                        Prénoms
+                      </ng-template>
+                    </ngx-datatable-column>
+                    <ngx-datatable-column>
+                      <ng-template ngx-datatable-header-template>
+                        Actions
+                      </ng-template>
+                      <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                        <!--<strong>{{ row.code }}</strong>-->
+                        <button (click)="makeForm(row)" class="btn btn-primary m-1" type="button">
+                          <i class="i-Pen-5"> </i>
+                        </button>
+                        <button (click)="confirm(modalConfirm, row)" class="btn btn-outline-danger m-1"
+                                type="button">
+                          <i class="i-Folder-Trash"> </i>
+                        </button>
+                      </ng-template>
+                    </ngx-datatable-column>
+                  </ngx-datatable>
+                </div>
+              </div>
+            </div>
+          </ng-template>
+        </li>
+        <li [ngbNavItem]="2">
+          <a ngbNavLink>Nouvel utilisateur</a>
+          <ng-template ngbNavContent>
+
+            <div class="mb-2">
+              <form (ngSubmit)="submit()" [formGroup]="validateForm">
+                <div class="row">
+
+                  <div class="col-md-6 form-group mb-3">
+                    <label for="civiliteId">Corps de l'utilisateur</label>
+                    <select class="form-control" id="civiliteId" formControlName="civiliteId">
+                      <option [ngValue]="null">-- Civilité -- </option>
+                      <option *ngFor="let civilite of civiliteList" [value]="civilite.id">{{civilite.libelle}}</option>
+                    </select>
+                  </div>
+
+                  <div class="col-md-6 form-group mb-3">
+                    <label for="email">E-mail</label>
+                    <input type="text" class="form-control" id="email"
+                           placeholder="Entrer l'E-mail de l'utilisateur"  formControlName="email">
+                    <div class="error-field"
+                         *ngIf="validateForm.controls.email.errors &&
+                   (validateForm.controls.email.dirty || validateForm.controls.email.touched)">
+                      Ce champs est obligatoire !
+                    </div>
+                  </div>
+
+                </div>
+
+                <div class="row">
+
+                  <div class="col-md-6 form-group mb-3">
+                    <label for="lastName">Nom</label>
+                    <input type="text" class="form-control" id="lastName"
+                           placeholder="Entrer le nom de l'utilisateur"  formControlName="lastName">
+                    <div class="error-field"
+                         *ngIf="validateForm.controls.lastName.errors &&
+                   (validateForm.controls.lastName.dirty || validateForm.controls.lastName.touched)">
+                      Ce champs est obligatoire !
+                    </div>
+                  </div>
+
+                  <div class="col-md-6 form-group mb-3">
+                    <label for="firstName">Prénom</label>
+                    <input type="text" class="form-control" id="firstName"
+                           placeholder="Entrer le prénom de l'utilisateur"  formControlName="firstName">
+                    <div class="error-field"
+                         *ngIf="validateForm.controls.firstName.errors &&
+                   (validateForm.controls.firstName.dirty || validateForm.controls.firstName.touched)">
+                      Ce champs est obligatoire !
+                    </div>
+                  </div>
+
+                </div>
+
+                <div class="row">
+                  <div class="col-md-6 form-group mb-3">
+                    <label for="corpsId">Corps de l'utilisateur</label>
+                    <!--<select class="form-control" id="corpsId" formControlName="corpsId" [compareWith]="compareFn">
+                      <option [ngValue]="null">&#45;&#45; corps &#45;&#45; </option>
+                      <option *ngFor="let corps of corpsList" [value]="corps.id">{{corps.libelle}}</option>
+                    </select>-->
+                    <ng-select formControlName="corpsId" id="corpsId" placeholder="-- sélectionner --">
+                      <ng-option *ngFor="let corps of corpsList" [value]="corps.id">{{corps.libelle}}</ng-option>
+                    </ng-select>
+                  </div>
+
+                  <div class="col-md-6 form-group mb-3">
+                    <label for="fonctionId">Fonction de l'utilisateur</label>
+                    <!--<select class="form-control" id="fonctionId" formControlName="fonctionId">
+                      <option [ngValue]="null">&#45;&#45; fonction &#45;&#45; </option>
+                      <option *ngFor="let fonction of fonctionList" [value]="fonction.id">{{fonction.libelle}}</option>
+                    </select>-->
+                    <ng-select formControlName="fonctionId" id="fonctionId" placeholder="-- sélectionner --">
+                      <ng-option *ngFor="let fonction of fonctionList" [value]="fonction.id">{{fonction.libelle}}</ng-option>
+                    </ng-select>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-6 form-group mb-3">
+                    <label for="servicesId">Service de l'utilisateur</label>
+                    <!--<select class="form-control" id="servicesId" formControlName="servicesId" multiple="multiple">
+                      <option [ngValue]="null">&#45;&#45; Service &#45;&#45; </option>
+                      <option *ngFor="let serviceJuridique of serviceList" [value]="serviceJuridique.id">{{serviceJuridique.libelle}}</option>
+                    </select>-->
+                    <ng-select formControlName="servicesId" id="servicesId" placeholder="-- sélectionner --" multiple="multiple">
+                      <ng-option *ngFor="let serviceJuridique of serviceList" [value]="serviceJuridique.id">{{serviceJuridique.libelle}}</ng-option>
+                    </ng-select>
+                  </div>
+                  <div class="col-md-6 form-group mb-3">
+                    <label for="groupesId">Groupe utilisateur</label>
+                    <!--<select class="form-control" id="groupesId" formControlName="groupesId" multiple="multiple">
+                      <option [ngValue]="null">&#45;&#45; groupe &#45;&#45; </option>
+                      <option *ngFor="let userGroup of userGroupList" [value]="userGroup.id">{{userGroup.name}}</option>
+                    </select>-->
+                    <ng-select formControlName="groupesId" id="groupesId" placeholder="-- sélectionner --" multiple="multiple">
+                      <ng-option *ngFor="let userGroup of userGroupList" [value]="userGroup.id">{{userGroup.name}}</ng-option>
+                    </ng-select>
+                  </div>
+                </div>
+
+                <div class="row">
+
+                  <div class="col-md-4 form-group mb-3">
+                    <label for="login">Login</label>
+                    <input type="text" class="form-control" id="login"
+                           placeholder="Entrer le login de l'utilisateur"  formControlName="login">
+                    <div class="error-field"
+                         *ngIf="validateForm.controls.login.errors &&
+                   (validateForm.controls.login.dirty || validateForm.controls.login.touched)">
+                      Ce champs est obligatoire !
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 form-group mb-3">
+                    <label for="password">Mot de passe</label>
+                    <input type="password" class="form-control" id="password"
+                           placeholder="Entrer le mot de passe de l'utilisateur"  formControlName="password">
+                    <div class="error-field"
+                         *ngIf="validateForm.controls.password.errors &&
+                   (validateForm.controls.password.dirty || validateForm.controls.password.touched)">
+                      Ce champs est obligatoire !
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 form-group mb-3">
+                    <label for="password_confirmation">Mot de passe</label>
+                    <input type="password" class="form-control" id="password_confirmation"
+                           placeholder="Confirmer le mot de passe"  formControlName="password_confirmation">
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-12">
+                    <btn-loading [loading]="loading" btnClass="btn-save">Enregistrer</btn-loading>
+                    <button (click)="resetForm()" class="btn m-1 ml-2 btn-cancel" type="button"> Annuler</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+
+          </ng-template>
+        </li>
+
+      </ul>
+
+      <div [ngbNavOutlet]="nav" class="mt-2"></div>
+
+    </div>
+  </div>
+
+</div>
+
+
+<ng-template #modalConfirm let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-title">Suppression</h4>
+    <button (click)="modal.dismiss('Cross click')" aria-describedby="modal-title" aria-label="Close button"
+            class="close"
+            type="button">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <p>
+      <strong>Confirmez-vous la suppression de
+        <span class="text-primary"> {{ user?.lastName }}</span> ?</strong></p>
+  </div>
+  <div class="modal-footer">
+    <button (click)="modal.dismiss('cancel')" class="btn btn-outline-secondary btn-rounded" type="button">Cancel
+    </button>
+    <button (click)="modal.close('Ok')" class="btn btn-danger btn-rounded" ngbAutofocus
+            type="button">Ok
+    </button>
+  </div>
+</ng-template>

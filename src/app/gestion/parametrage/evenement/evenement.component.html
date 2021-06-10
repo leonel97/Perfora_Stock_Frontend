@@ -1,0 +1,148 @@
+<div class="">
+  <div class="breadcrumb">
+    <h1>Évènements</h1>
+    <ul>
+      <li><a routerLink="/gestion/parametrage">Paramétrage</a></li>
+      <li>Évènements</li>
+    </ul>
+  </div>
+  <div class="separator-breadcrumb border-top"></div>
+
+  <div class="card mb-4">
+  <div class="card-body">
+    <div class="card-title mb-3 border-bottom pb-2">Gestion des évènements</div>
+
+    <ul #nav="ngbNav" [(activeId)]="activeTabsNav" class="nav-tabs" ngbNav>
+        <li [ngbNavItem]="1">
+            <a ngbNavLink>Liste des évènements</a>
+            <ng-template ngbNavContent>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <input [formControl]="searchControl" class="form-control form-control-rounded" id="model" placeholder="Rechercher modèle" type="text">
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="card  o-hidden">
+                          <ngx-datatable
+                            style="height: 500px; box-shadow: none"
+                            class="material fullscreen"
+                            [columnMode]="'force'"
+                            [headerHeight]="50"
+                            [footerHeight]="50"
+                            [rowHeight]="60"
+                            [scrollbarV]="true"
+                            [rows]="evenementFiltered">
+                            <ngx-datatable-column name="code" [width]="300">
+                              <ng-template ngx-datatable-header-template>
+                                Code
+                              </ng-template>
+                            </ngx-datatable-column>
+                            <ngx-datatable-column name="libelle">
+                              <ng-template ngx-datatable-header-template>
+                                Libellé
+                              </ng-template>
+                            </ngx-datatable-column>
+                            <ngx-datatable-column name="typeevenementCode" [width]="300">
+                              <ng-template ngx-datatable-header-template>
+                                Type évènement
+                              </ng-template>
+                            </ngx-datatable-column>
+                            <ngx-datatable-column>
+                              <ng-template ngx-datatable-header-template>
+                                Actions
+                              </ng-template>
+                              <ng-template let-rowIndex="rowIndex" let-row="row" ngx-datatable-cell-template>
+                                <!--<strong>{{ row.code }}</strong>-->
+                                <button type="button" class="btn btn-primary btn-sm m-1" (click)="makeForm(row)">
+                                  <i class="i-Pen-5"> </i>
+                                </button>
+                                <button type="button" class="btn btn-outline-danger btn-sm m-1"
+                                        (click)="confirm(modalConfirm, row)">
+                                  <i class="i-Folder-Trash"> </i>
+                                </button>
+                              </ng-template>
+                            </ngx-datatable-column>
+                          </ngx-datatable>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
+        </li>
+        <li [ngbNavItem]="2">
+            <a ngbNavLink>Nouvel évènement</a>
+            <ng-template ngbNavContent>
+
+                <div class="mb-2">
+                    <form [formGroup]="validateForm" (ngSubmit)="submit()">
+                        <div class="row">
+                          <div class="col-md-12 form-group mb-3">
+                            <label for="code">Code</label>
+                            <input type="text" class="form-control" id="code"
+                                   placeholder="Entrer le code" formControlName="code">
+                            <div class="error-field"
+                                 *ngIf="validateForm.controls.code.errors &&
+                               (validateForm.controls.code.dirty || validateForm.controls.code.touched)">
+                              Ce champs est obligatoire !
+                            </div>
+                          </div>
+            
+                          <div class="col-md-12 form-group mb-3">
+                            <label for="typeevenementId">Type Évènement</label>
+                            <select class="form-control" id="typeevenementId" formControlName="typeevenementId">
+                              <option *ngFor="let typeEvenement of typeEvenementList" [value]="typeEvenement.id">{{typeEvenement.libelle}}</option>
+                            </select>
+                          </div>
+            
+                          <div class="col-md-12 form-group mb-3">
+                            <label for="libelle">Libellé</label>
+                            <input type="text" class="form-control" id="libelle"
+                                   placeholder="Entrer le libellé"  formControlName="libelle">
+                            <div class="error-field"
+                                 *ngIf="validateForm.controls.libelle.errors &&
+                               (validateForm.controls.libelle.dirty || validateForm.controls.libelle.touched)">
+                              Ce champs est obligatoire !
+                            </div>
+                          </div>
+            
+                          <div class="col-md-12">
+                            <button type="button" class="btn btn-secondary m-1 btn-rounded" (click)="resetForm()"> Annuler </button>
+                            <btn-loading btnClass="btn-primary btn-rounded" [loading]="loading">Enrégistrer</btn-loading>
+                          </div>
+                        </div>
+                    </form>
+                </div>
+
+            </ng-template>
+        </li>
+
+    </ul>
+
+    <div [ngbNavOutlet]="nav" class="mt-2"></div>
+
+</div>
+</div>
+
+
+<ng-template #modalConfirm let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-title">Suppression</h4>
+    <button (click)="modal.dismiss('Cross click')" aria-describedby="modal-title" aria-label="Close button"
+            class="close"
+            type="button">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <p>
+      <strong>Confirmez-vous la suppression de
+        <span class="text-primary"> {{ evenement?.libelle }}</span> ?</strong></p>
+  </div>
+  <div class="modal-footer">
+    <button (click)="modal.dismiss('cancel')" class="btn btn-outline-secondary btn-rounded" type="button">Cancel
+    </button>
+    <button (click)="modal.close('Ok')" class="btn btn-danger btn-rounded" ngbAutofocus
+            type="button">Ok
+    </button>
+  </div>
+</ng-template>

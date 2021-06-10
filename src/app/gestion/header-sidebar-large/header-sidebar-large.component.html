@@ -1,0 +1,186 @@
+<div class="main-header">
+  <div class="logo">
+    <img src="./assets/images/pal.png" alt="">
+  </div>
+
+  <!--div id="menutog" class="menu-toggle" (click)="toggelSidebar()">
+    <div></div>
+    <div></div>
+    <div></div>
+  </div-->
+
+  <!--div class="d-flex align-items-center">
+    <div id="armoirie">
+      <img src="./assets/images/Armoirie.png" id="armoirie" alt="LOGO">
+    </div>
+  </div-->
+  <div class="btn-group dropright dropdown-submenu">
+    <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      Fichier
+    </button>
+    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+        <button class="dropdown-item" routerLink="/gestion/fichier/importation" >Importation</button>
+        <button class="dropdown-item" routerLink="/gestion/fichier/exo" >Exercice</button>
+        
+        <!--button class="dropdown-item">Something else here</button-->
+    </div>
+</div>
+
+
+  <div class="btn-group dropright dropdown-submenu">
+      <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Définition
+      </button>
+      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+          <button class="dropdown-item" routerLink="/gestion/definition/direction" >Direction</button>
+          <button class="dropdown-item" routerLink="/gestion/definition/type-centre-consommation" >Type Centre de Consommation</button>
+          <button class="dropdown-item" routerLink="/gestion/definition/centre-consommation" >Centre de Consommation</button>
+          <button class="dropdown-item" routerLink="/gestion/definition/magasin" >Magasin</button>
+          <button class="dropdown-item" routerLink="/gestion/definition/famille-article" >Famille Article</button>
+          <button class="dropdown-item" routerLink="/gestion/definition/type-article" >Type Article</button>
+          <button class="dropdown-item" routerLink="/gestion/definition/article" >Article</button>
+          <button class="dropdown-item" routerLink="/gestion/definition/cause-annomalie" >Cause & Anomalie</button>
+          <button class="dropdown-item" routerLink="/gestion/definition/type-fournisseur" >Type Fournisseur</button>
+          <button class="dropdown-item" routerLink="/gestion/definition/fournisseur" >Fournisseur</button>
+      </div>
+  </div>
+
+  <!--Menu Saisie-->
+
+  <div class="btn-group dropright dropdown-submenu">
+      <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Saisie
+      </button>
+      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+          <div class="dropright dropdown-submenu">
+              <button class="dropdown-item dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#">Approvisionnement</button>
+              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                  <button class="dropdown-item" routerLink="/gestion/saisie/appro-demande-prix" >Demande de prix</button>
+                  <button class="dropdown-item" routerLink="/gestion/saisie/appro-depot-offre-facture-proformat" >Dépôts des Offres ou factures proformats</button>
+              </div>
+          </div>
+          
+          <button class="dropdown-item" routerLink="/gestion/saisie/lettre-commande">Lettre de Commande</button>
+          <button class="dropdown-item" routerLink="/gestion/saisie/bon-travail">Bon de Travail</button>
+          <button class="dropdown-item" routerLink="/gestion/saisie/appel-offre">Apels d'Offres</button>
+
+          <div class="dropright dropdown-submenu">
+              <button class="dropdown-item dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#">Stocks</button>
+              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                      <button class="dropdown-item" routerLink="/gestion/saisie/stock-stock-initial" >Stock Initial</button>
+                      <button class="dropdown-item" routerLink="/gestion/saisie/stock-entree-article" >Entrée d'Article</button>
+                      <button class="dropdown-item" routerLink="/gestion/saisie/stock-etat-stock" >Etat de Stock</button>
+                      <button class="dropdown-item" routerLink="/gestion/saisie/stock-inventaire" >Inventaire</button>
+              </div>
+          </div>
+
+          <div class="dropright dropdown-submenu">
+              <button class="dropdown-item dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#">Consommations Internes</button>
+              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                      <button class="dropdown-item" routerLink="/gestion/saisie/conso-interne-demande-besoin" >Demande de Bésoin ( Expression de Bésoin )</button>
+                      <button class="dropdown-item" routerLink="/gestion/saisie/conso-interne-servir-besoin" >Servir</button>
+              </div>
+          </div>
+
+          <button class="dropdown-item" routerLink="/gestion/saisie/cloture-periodique">Clôture périodique</button>
+      </div>
+
+     
+  </div>
+
+  <!--Menu Comptabilisation-->
+
+  <div class="btn-group dropright dropdown-submenu">
+      <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Comptabilisation
+      </button>
+      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+          <button class="dropdown-item" >Imputation des articles et Configuration des journaux</button>
+          <button class="dropdown-item">Génération des écritures comptables</button>
+      </div>
+  </div>
+
+  
+
+  <div class="btn-group dropright dropdown-submenu">
+      <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Rapports
+      </button>
+      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+          <button class="dropdown-item" >Articles Par familles</button>
+          <div class="dropright dropdown-submenu">
+              <button class="dropdown-item dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#">Commandes ou engagements</button>
+              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                  <button class="dropdown-item" >Par fournisseur</button>
+                  <button class="dropdown-item" >Par article</button>
+              </div>
+          </div>
+      </div>
+  </div>
+
+  <div style="margin: auto"></div>
+
+
+  <div class="header-part-right">
+    <!--i class="i-Magnifi-Glass1 header-icon" role="button" (click)="searchService.searchOpen = true"></i>
+    <i fullScreenWindow class="i-Full-Screen header-icon d-none d-sm-inline-block" role="button"></i-->
+    <!--div ngbDropdown [placement]="'bottom-right'" class="d-none d-sm-inline-block">
+        <i ngbDropdownToggle class="i-Gear text-muted header-icon" role="button"></i>
+        <div ngbDropdownMenu class="menu-icon-grid-dropdown">
+            <div class="menu-icon-grid">
+                <a href="#"><i class="i-Shop-4"></i> Home</a>
+                <a href="#"><i class="i-Library"></i> UI Kits</a>
+                <a href="#"><i class="i-Drop"></i> Apps</a>
+                <a href="#"><i class="i-File-Clipboard-File--Text"></i> Forms</a>
+                <a href="#"><i class="i-Checked-User"></i> Sessions</a>
+                <a href="#"><i class="i-Ambulance"></i> Support</a>
+            </div>
+        </div>
+    </div-->
+
+    <div ngbDropdown [placement]="'bottom-right'">
+        <div class="badge-top-container">
+            <span class="badge badge-primary">{{notifications.length}}</span>
+            <i ngbDropdownToggle class="i-Bell text-muted header-icon" role="button"></i>
+        </div>
+        <div ngbDropdownMenu class="notification-dropdown rtl-ps-none" perfectScrollbar>
+            <div class="dropdown-item d-flex" *ngFor="let item of notifications" [routerLink]="[item.link]">
+                <div class="notification-icon">
+                    <i class="{{item.icon}} text-{{item.status}} mr-1"></i>
+                </div>
+                <div class="notification-details flex-grow-1">
+                    <p class="m-0 d-flex align-items-center">
+                        <span>{{item.title}}</span>
+                        <span *ngIf="item.badge" class="badge badge-pill badge-{{item.status}} ml-1 mr-1">{{item.badge}}</span>
+                        <span class="flex-grow-1"></span>
+                        <span class="text-small text-muted ml-auto">{{item.time | relativeTime}}</span>
+                    </p>
+                    <p class="text-small text-muted m-0">{{item.text | excerpt:30}}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div ngbDropdown [placement]="'bottom-right'" class="user col align-self-end">
+        <img src="./assets/images/faces/1.jpg" id="userDropdown" ngbDropdownToggle alt="">
+
+        <div ngbDropdownMenu aria-labelledby="userDropdown" class="header-account-dropdown">
+            <!--div class="dropdown-header">
+                <i class="i-Lock-User mr-1"></i> Timothy Carlson
+            </div-->
+            <button class="dropdown-item">Information du compte</button>
+            <button class="dropdown-item" >Changer mon mot de passe</button>
+            <button class="dropdown-item" (click)="signout()">Déconnexion</button>
+        </div>
+    </div>
+
+</div>
+
+</div>
+<!--<div style="z-index:50; position: fixed;top:78px; right:10%;" *ngIf="currentUser.exercicefonctions">
+  <select id="userExerciceFonctionId" style="border: none; max-width: 200px;" (change)="onChange($event.target.value)">
+    <option [ngValue]="null">Service - Fonction</option>
+    <option *ngFor="let exerciceFonction of currentUser.exercicefonctions" [value]="exerciceFonction.id">{{exerciceFonction.serviceLibelle+' - '+exerciceFonction.fonctionLibelle}}</option>
+  </select>
+</div>-->
+

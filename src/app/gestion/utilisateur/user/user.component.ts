@@ -1,0 +1,293 @@
+import { Component, OnInit } from '@angular/core';
+import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
+import {User} from "../../../models/gestion/utilisateur/user";
+import {UserGroup} from "../../../models/gestion/utilisateur/user-group";
+import {UserGroupService} from "../../../services/gestion/utilisateur/user-group.service";
+import {UserService} from "../../../services/gestion/utilisateur/user.service";
+import {Router} from "@angular/router";
+import {ToastrService} from "ngx-toastr";
+import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
+import {HttpErrorResponse} from "@angular/common/http";
+import {debounceTime} from "rxjs/operators";
+import {CorpsJuridique} from "../../../models/gestion/parametrage/corps-juridique";
+import {CorpsJuridiqueService} from "../../../services/gestion/parametrage/corps-juridique.service";
+import {Fonction} from "../../../models/gestion/parametrage/fonction";
+import {FonctionService} from "../../../services/gestion/parametrage/fonction.service";
+import {Civilite} from "../../../models/gestion/parametrage/civilite";
+import {CiviliteService} from "../../../services/gestion/parametrage/civilite.service";
+
+@Component({
+  selector: 'app-user',
+  templateUrl: './user.component.html',
+  styleUrls: ['./user.component.css']
+})
+export class UserComponent implements OnInit {
+  searchControl: FormControl = new FormControl();
+  userFiltered;
+  validateForm: FormGroup;
+  userList: User[] = [];
+  userGroupList: UserGroup[] = [];
+  corpsList: CorpsJuridique[] = [];
+  civiliteList: Civilite[] = [];
+  fonctionList: Fonction[] = [];
+  //serviceList: ServiceJuridique[] = [];
+  loading: boolean;
+  user: User = null;
+
+  //pour les tabs navs
+  activeTabsNav;
+  //end
+  constructor(
+    private userGroupService: UserGroupService,
+    private corpsJuridiqueService: CorpsJuridiqueService,
+    private civiliteService: CiviliteService,
+    private fonctionService: FonctionService,
+    //private serviceJuridiqueService: ServiceJuridiqueService,
+    private userService: UserService,
+    private fb: FormBuilder,
+    private router: Router,
+    private toastr: ToastrService,
+    private modalService: NgbModal
+  ) { }
+
+  compareFn = (o1: any, o2: any) => (o1 && o2 ? o1.id === o2.id : o1 === o2);
+
+  ngOnInit(): void {
+    this.userService.list().subscribe(
+      (data: any) => {
+        this.userList = [...data];
+        this.userFiltered = this.userList;
+        //console.log(this.userList);
+      },
+      (error: HttpErrorResponse) => {
+        console.log('Echec atatus ==> '+error.status);
+      });
+
+    this.userGroupService.list().subscribe(
+      (data: any) => {
+        this.userGroupList = data;
+      },
+      (error: HttpErrorResponse) => {
+        console.log('Echec chargement des types - atatus ==> ' + error.status);
+      });
+
+    this.corpsJuridiqueService.list().subscribe(
+      (data: any) => {
+        this.corpsList = data;
+      },
+      (error: HttpErrorResponse) => {
+        console.log('Echec chargement des corps juridiques -  status ==> ' + error.status);
+      });
+
+    this.civiliteService.list().subscribe(
+      (data: any) => {
+        this.civiliteList = data;
+      },
+      (error: HttpErrorResponse) => {
+        console.log('Echec chargement des civilités -  status ==> ' + error.status);
+      });
+
+    this.fonctionService.list().subscribe(
+      (data: any) => {
+        this.fonctionList = data;
+      },
+      (error: HttpErrorResponse) => {
+        console.log('Echec chargement des fonctions  -  status ==> ' + error.status);
+      });
+
+   /* this.serviceJuridiqueService.list().subscribe(
+      (data: any) => {
+        this.serviceList = data;
+      },
+      (error: HttpErrorResponse) => {
+        console.log('Echec chargement des services juridiques  -  status ==> ' + error.status);
+      });*/
+
+    this.makeForm(null);
+
+    this.searchControl.valueChanges
+      .pipe(debounceTime(200))
+      .subscribe(value => {
+        this.filerData(value);
+      });
+  }
+
+  filerData(val) {
+    if (val) {
+      val = val.toLowerCase();
+    } else {
+      return this.userFiltered = [...this.userList];
+    }
+
+    const columns = Object.keys(this.userList[0]);
+    if (!columns.length) {
+      return;
+    }
+
+    const rows = this.userList.filter(function(d) {
+      for (let i = 0; i <= columns.length; i++) {
+        const column = columns[i];
+        // console.log(d[column]);
+        if (d[column] && d[column].toString().toLowerCase().indexOf(val) > -1) {
+          return true;
+        }
+      }
+    });
+    this.userFiltered = rows;
+  }
+
+  makeForm(user: User): void {
+    this.validateForm = this.fb.group({
+      id: [user != null ? user.id: null],
+      firstName: [user != null ? user.firstName: null,
+        [Validators.required]],
+      lastName: [user != null ? user.lastName: null,
+        [Validators.required]],
+      civiliteId: [user != null ? user.civiliteId: null,
+        [Validators.required]],
+      email: [user != null ? user.email: null,
+        [Validators.required]],
+      corpsId: [user != null ? user.corpsId: null],
+      fonctionId: [user != null ? user.fonctionId: null],
+      servicesId: [user != null ? user.servicesId: null],
+      groupesId: [user != null ? user.groupesId: null],
+      authorities: [user != null ? user.authorities: null],
+      login: [user != null ? user.login: null,
+        [Validators.required]],
+      password: [user != null ? user.password: null,
+        [Validators.required]],
+      password_confirmation: [user != null ? user.password: null,
+        [Validators.required]],
+    });
+
+    //cette condition permet de basculer vers la tab contenant le formulaire lors d'une modification
+    if (user?.id !=null){
+      this.activeTabsNav = 2;
+    }
+
+  }
+
+  resetForm(): void {
+    this.validateForm.reset();
+    for (const key in this.validateForm.controls) {
+      this.validateForm.controls[key].markAsPristine();
+      this.validateForm.controls[key].updateValueAndValidity();
+    }
+    this.makeForm(null);
+  }
+
+  submit(): void {
+    for (const i in this.validateForm.controls) {
+      this.validateForm.controls[i].markAsDirty();
+      this.validateForm.controls[i].updateValueAndValidity();
+    }
+
+    if(this.validateForm.valid == false) {
+      this.loading = true;
+      setTimeout(() => {
+        this.loading = false;
+        this.toastr.error('Veuillez remplir les champs convenablement.', ' Erreur !', {progressBar: true});
+      }, 3000);
+    } else  {
+      const formData1 = this.validateForm.value;
+      // setting the userGroup code
+      /*const i = this.userGroupList.findIndex(d => d.id == formData1.userGroupId);
+      if (i > -1) {
+        let userGroup = this.userGroupList[i];
+        this.validateForm.get('userGroupCode').setValue(userGroup.code);
+      }*/
+      const authorities = ['ROLE_USER'];
+      this.validateForm.get('authorities').setValue(authorities);
+
+      const formData = this.validateForm.value;
+      console.log('Objet avant enregistrement');
+      console.log(formData);
+      if(formData.id == null) {
+        this.enregistrerUser(formData);
+      } else {
+        this.modifierUser(formData);
+      }
+    }
+  }
+
+  enregistrerUser(user: User): void {
+    this.userService.createUser(user).subscribe(
+      (data: any) => {
+        console.log(data);
+        this.userList.unshift(data);
+        this.userFiltered = [...this.userList];
+        this.resetForm();
+        this.loading = true;
+        setTimeout(() => {
+          this.loading = false;
+          this.toastr.success('Enregistrement effectué avec succès.', 'Success!', {progressBar: true});
+        }, 3000);
+        //basculer vers la tab contenant la liste apres enregistrement
+        this.activeTabsNav = 1;
+      },
+      (error: HttpErrorResponse) => {
+        console.log('Echec atatus ==> '+error.status);
+        this.loading = true;
+        setTimeout(() => {
+          this.loading = false;
+          this.toastr.error('Erreur avec le status '+error.status, ' Erreur !', {progressBar: true});
+        }, 3000);
+      });
+  }
+
+  modifierUser(user: User): void {
+    this.userService.updateUser(user).subscribe(
+      (data: any) => {
+        console.log(data);
+        const i = this.userList.findIndex(l => l.id == data.id);
+        if(i > -1) {
+          this.userList[i]= data;
+          this.userFiltered = [...this.userList];
+        }
+        this.loading = true;
+        setTimeout(() => {
+          this.loading = false;
+          this.toastr.success('Enregistrement effectué avec succès.', 'Success!', {progressBar: true});
+        }, 3000);
+        this.resetForm();
+      },
+      (error: HttpErrorResponse) => {
+        console.log('Echec atatus ==> '+error.status);
+        this.loading = true;
+        setTimeout(() => {
+          this.loading = false;
+          this.toastr.error('Erreur avec le status '+error.status, ' Erreur !', {progressBar: true});
+        }, 3000);
+      });
+  }
+
+  confirm(content, user) {
+    this.user = user;
+    this.modalService.open(content, { ariaLabelledBy: 'modal-basic-title', centered: true })
+      .result.then((result) => {
+      //this.confirmResut = `Closed with: ${result}`;
+      this.userService.deleteUser(user?.id).subscribe(
+        (data: any) => {
+          console.log(data);
+          const i = this.userList.findIndex(l => l.id == user.id);
+          if(i > -1) {
+            this.userList.splice(i, 1);
+            this.userFiltered = [...this.userList];
+          }
+          setTimeout(() => {
+            this.toastr.success('Suppression effectuée avec succès.', 'Success!', {progressBar: true});
+          }, 3000);
+          this.resetForm();
+        },
+        (error: HttpErrorResponse) => {
+          console.log('Echec atatus ==> '+error.status);
+          setTimeout(() => {
+            this.toastr.error('Erreur avec le status '+error.status, ' Erreur !', {progressBar: true});
+          }, 3000);
+        });
+    }, (reason) => {
+      console.log(`Dismissed with: ${reason}`);
+    });
+  }
+
+}

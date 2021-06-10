@@ -1,0 +1,26 @@
+#gestion{
+  display: flex;
+  justify-content: center;
+  color:#287FB8;
+  font-size: 1.6em;
+  font-weight: 800;
+}
+
+@media (max-width: 810px) {
+  #gestion {
+    font-size: 1em;
+  }
+}
+
+
+@media (max-width: 680px) {
+  #gestion {
+    font-size: 0.8em;
+  }
+}
+
+@media (max-width: 410px) {
+  #gestion {
+    font-size: 0.5em;
+  }
+}

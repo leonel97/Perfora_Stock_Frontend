@@ -1,0 +1,29 @@
+<div class="app-admin-wrap layout-sidebar-large">
+  <div>
+    <app-header-sidebar-large></app-header-sidebar-large>
+  </div>
+  <!--div class="side-content-wrap">
+    <app-sidebar-large></app-sidebar-large>
+  </div-->
+  <div [ngClass]="{'sidenav-close': navService.sidebarState.sidenavOpen}"
+       [perfectScrollbar]="{suppressScrollX: true}"
+       class="main-content-wrap d-flex flex-column">
+
+    <br>
+    <div id="gestion" class="row col-md-12">
+     <marquee behavior="" direction=""> <strong class="content font-weight-bold"> SYSTEME DE GESTION DES STOCKS, APPROVISIONNEMENTS ET FACTURATIONS : Perfora-Stock</strong> </marquee>
+    </div>
+
+    <br>
+
+    <div class="container" style="border-radius: unset; padding: 3%;" class="card">
+      <router-outlet></router-outlet>
+    </div>
+
+    <div class="flex-grow-1"></div>
+    <app-footer></app-footer>
+    <div *ngIf="moduleLoading" class="module-loader">
+      <div class="spinner spinner-bubble spinner-bubble-primary mr-3"></div>
+    </div>
+  </div>
+</div>

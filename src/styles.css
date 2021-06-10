@@ -1,0 +1,87 @@
+/* You can add global styles to this file, and also import other style files */
+@import "~@ng-select/ng-select/themes/default.theme.css";
+
+@font-face {
+  font-family: 'Montserrat';
+  src: url('assets/fonts/Montserrat/Montserrat-Regular.ttf') format('truetype'),
+  url('assets/fonts/Montserrat/Montserrat-Bold.ttf') format('truetype');
+}
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Montserrat, Roboto, "Helvetica Neue", sans-serif; }
+
+.error-field {
+  font-size: 11px;
+  color: red;
+}
+
+.btn-save {
+  background-color:  #287fb8;
+  color: white;
+}
+
+.btn-cancel {
+  background-color:  #f39c12;
+  color: white;
+}
+
+.required-field {
+  color: red;
+}
+
+.main-content-wrap {
+  background: #f8f9fa! important;
+}
+
+.main-content-wrap {
+  padding: unset!important;
+}
+
+.app-footer {
+   margin-top: unset!important;
+  padding-top: unset!important;
+}
+
+.dossier-juridique > .card {
+  box-shadow: unset!important;
+}
+
+.dossier-juridique > .card .card-block {
+  padding: unset!important;
+  overflow-y: unset!important;
+}
+
+/*.layout-sidebar-large .sidebar-left .navigation-left .nav-item .nav-item-hold .nav-text {
+  color: #F39C12!important;
+}*/
+
+.form-group label {
+  font-size: 13px!important;
+}
+
+.datatable-row-wrapper {
+  border-top: 1px solid #D1D5DB;
+}
+
+.bold-font {
+  font-weight: bold!important;
+}
+
+.other-card {
+  border-radius: 10px;
+  box-shadow: 0 4px 20px 1px rgb(0 0 0 / 6%), 0 1px 4px rgb(0 0 0 / 8%);
+  border: 1px solid rgba(0, 0, 0, 0.125);
+  padding: 10px;
+}
+
+.cal-month-view .cal-day-cell:not(:last-child) {
+  border-right-color: #a9a9a9;
+}
+
+.cal-today {
+  background: unset!important;
+}
+
+.cal-month-view .cal-day-cell.cal-today .cal-day-number {
+  font-size:  unset!important;
+}
