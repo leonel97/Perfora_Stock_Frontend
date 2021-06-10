@@ -1,0 +1,149 @@
+<div class="">
+    <div class="breadcrumb">
+        <h1> Tableau de Bord</h1>
+        <ul>
+            <li><a href="">Acceuil</a></li>
+            <li>Tableau de bord</li>
+        </ul>
+    </div>
+
+    <div class="separator-breadcrumb border-top"></div>
+
+    <div class="row">
+        <!-- ICON BG -->
+        <div class="col-lg-3 col-md-6 col-sm-6">
+            <div class="card card-icon-bg card-icon-bg-primary o-hidden mb-4">
+                <div class="card-body text-center">
+                    <i class="i-Folder"></i>
+                    <div class="content">
+                        <div class="text-muted text-18 mt-2 mb-0 font-weight-bold ">
+                            Aujourd'hui
+                        </div>
+                        <span class="text-14 text-justify">dossier(s) enrôlé(s)</span>
+                        <p class="text-primary text-24 line-height-1 mb-2">00</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 col-sm-6">
+            <div class="card card-icon-bg card-icon-bg-primary o-hidden mb-4">
+                <div class="card-body text-center">
+                    <i class="i-Folder"></i>
+                    <div class="content">
+                        <div class="text-muted text-18 text-justify mt-2 mb-0 font-weight-bold" style="width: 10rem;">
+                            Cette semaine
+                        </div>
+                        <span class="text-14 text-justify">dossier(s) enrôlé(s)</span>
+                        <p class="text-primary text-24 line-height-1 mb-2">00</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 col-sm-6">
+            <div class="card card-icon-bg card-icon-bg-primary o-hidden mb-4">
+                <div class="card-body text-center">
+                    <i class="i-Folder"></i>
+                    <div class="content">
+                        <div class="text-muted text-justify text-18 mt-2 mb-0 font-weight-bold" style="width: 10rem;">
+                            Ce mois
+                        </div>
+                        <span class="text-14 text-justify">dossier(s) enrôlé(s)</span>
+                        <p class="text-primary text-24 line-height-1 mb-2">00</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-6 col-sm-6">
+            <div class="card card-icon-bg card-icon-bg-primary o-hidden mb-4">
+                <div class="card-body text-center">
+                    <i class="i-Folder"></i>
+                    <div class="content">
+                        <div class="text-muted text-18 text-justify mt-2 mb-0 font-weight-bold" style="width: 10rem;">
+                            Cette année
+                        </div>
+                        <span class="text-14 text-justify">dossier(s) enrôlé(s)</span>
+                        <p class="text-primary text-24 line-height-1 mb-2">00</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row">
+
+        <div class="col-md-12">
+            <div class="card mb-4">
+                <div class="card-body p-0">
+                    <h6 class="card-title m-0 p-3 font-weight-bold">Statisques des dossiers enroulés au cours de la période
+                    </h6>
+
+
+                    <div class="o-hidden">
+                        <ngx-datatable [columnMode]="'force'" [footerHeight]="50" [headerHeight]="50" [rowHeight]="60" [scrollbarV]="true" class="material fullscreen" style="height: 500px; box-shadow: none">
+                            <ngx-datatable-column>
+                                <ng-template ngx-datatable-header-template>
+                                    <button type="button" class="btn btn-outline-light btn-rounded btn-checkbox">
+                                                <label class="checkbox checkbox-outline-light">
+                                                    <input type="checkbox">
+                                                    <span></span>
+                                                    <span class="checkmark"></span>
+                                                </label>
+                                            </button>
+                                </ng-template>
+                                <ng-template let-row="row" ngx-datatable-cell-template>
+                                    <label class="checkbox checkbox-outline-light">
+                                                <input type="checkbox">
+                                                <span></span>
+                                                <span class="checkmark"></span>
+                                            </label>
+                                </ng-template>
+                            </ngx-datatable-column>
+                            <ngx-datatable-column [width]="200">
+                                <ng-template ngx-datatable-header-template>
+                                    <span class="font-weight-bold text-14">Chambres </span>
+                                </ng-template>
+                            </ngx-datatable-column>
+                            <ngx-datatable-column>
+                                <ng-template ngx-datatable-header-template>
+                                    <span class="font-weight-bold text-14">Dossiers reçus </span>
+                                </ng-template>
+                            </ngx-datatable-column>
+                            <ngx-datatable-column>
+                                <ng-template ngx-datatable-header-template>
+                                    <span class="font-weight-bold text-14">Dossiers courants </span>
+                                </ng-template>
+                            </ngx-datatable-column>
+                            <ngx-datatable-column>
+                                <ng-template ngx-datatable-header-template>
+                                    <span class="font-weight-bold text-14">Dossiers radiés </span>
+                                </ng-template>
+                            </ngx-datatable-column>
+                            <ngx-datatable-column>
+                                <ng-template ngx-datatable-header-template>
+                                    <span class="font-weight-bold text-14">Dossiers vidés </span>
+                                </ng-template>
+                            </ngx-datatable-column>
+                            <ngx-datatable-column>
+                                <ng-template ngx-datatable-header-template>
+                                    <span class="font-weight-bold text-14">Actions </span>
+                                </ng-template>
+                                <ng-template ngx-datatable-cell-template>
+
+                                    <button class="btn btn-primary m-1" type="button">
+                                                <i class="i-Pen-5"> </i>
+                                            </button>
+                                </ng-template>
+                            </ngx-datatable-column>
+                        </ngx-datatable>
+                    </div>
+                </div>
+
+
+            </div>
+
+        </div>
+    </div>

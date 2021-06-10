@@ -1,0 +1,139 @@
+<div class="">
+  <div class="breadcrumb">
+    <h1>Année</h1>
+    <ul>
+      <li><a routerLink="/gestion/parametrage">Administration</a></li>
+      <li>Année</li>
+    </ul>
+  </div>
+  <div class="separator-breadcrumb border-top"></div>
+
+  <div class="card mb-4">
+    <div class="card-body">
+      <div class="card-title mb-3 border-bottom pb-2">Gestion des années</div>
+
+      <ul #nav="ngbNav" [(activeId)]="activeTabsNav" class="nav-tabs" ngbNav>
+        <li [ngbNavItem]="1">
+          <a ngbNavLink>Liste des années</a>
+          <ng-template ngbNavContent>
+            <div class="row">
+              <div class="col-md-4">
+                <div class="form-group">
+                  <input [formControl]="searchControl" class="form-control form-control-rounded" id="email"
+                         placeholder="Rechercher année" type="email">
+                </div>
+              </div>
+              <div class="col-md-12">
+                <div class="o-hidden">
+                  <ngx-datatable
+                    [columnMode]="'force'"
+                    [footerHeight]="50"
+                    [headerHeight]="50"
+                    [rowHeight]="60"
+                    [rows]="anneeFiltered"
+                    [scrollbarV]="true"
+                    class="material fullscreen"
+                    style="height: 500px; box-shadow: none">
+                    <ngx-datatable-column [width]="300" name="code">
+                      <ng-template ngx-datatable-header-template>
+                        Code
+                      </ng-template>
+                    </ngx-datatable-column>
+                    <ngx-datatable-column name="valeur">
+                      <ng-template ngx-datatable-header-template>
+                        Valeur
+                      </ng-template>
+                    </ngx-datatable-column>
+                    <ngx-datatable-column>
+                      <ng-template ngx-datatable-header-template>
+                        Actions
+                      </ng-template>
+                      <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                        <!--<strong>{{ row.code }}</strong>-->
+                        <button (click)="makeForm(row)" class="btn btn-primary m-1 btn-sm" type="button">
+                          <i class="i-Pen-5"> </i>
+                        </button>
+                        <button (click)="confirm(modalConfirm, row)" class="btn btn-outline-danger m-1 btn-sm"
+                                type="button">
+                          <i class="i-Folder-Trash"> </i>
+                        </button>
+                      </ng-template>
+                    </ngx-datatable-column>
+                  </ngx-datatable>
+                </div>
+              </div>
+            </div>
+          </ng-template>
+        </li>
+        <li [ngbNavItem]="2">
+          <a ngbNavLink>Nouvelle année</a>
+          <ng-template ngbNavContent>
+
+            <div class="mb-2">
+              <form (ngSubmit)="submit()" [formGroup]="validateForm">
+                <div class="row">
+                  <div class="col-md-5 form-group mb-3">
+                    <label for="code">Code <span class="required-field">*</span> </label>
+                    <input class="form-control" formControlName="code" id="code"
+                           placeholder="Entrer le code" type="text">
+                    <div *ngIf="validateForm.controls.code.errors &&
+                   (validateForm.controls.code.dirty || validateForm.controls.code.touched)"
+                         class="error-field">
+                      Ce champs est obligatoire !
+                    </div>
+                  </div>
+
+                  <div class="col-md-7 form-group mb-3">
+                    <label for="valeur">Libellé <span class="required-field">*</span> </label>
+                    <input class="form-control" formControlName="valeur" id="valeur"
+                           placeholder="Entrer le libellé" type="text">
+                    <div *ngIf="validateForm.controls.valeur.errors &&
+                   (validateForm.controls.valeur.dirty || validateForm.controls.valeur.touched)"
+                         class="error-field">
+                      Ce champs est obligatoire !
+                    </div>
+                  </div>
+
+                  <div class="col-md-12">
+                    <btn-loading [loading]="loading" btnClass="btn-save">Enrégistrer</btn-loading>
+                    <button (click)="resetForm()" class="btn m-1 ml-2 btn-cancel" type="button"> Annuler</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+
+          </ng-template>
+        </li>
+
+      </ul>
+
+      <div [ngbNavOutlet]="nav" class="mt-2"></div>
+
+    </div>
+  </div>
+
+</div>
+
+
+<ng-template #modalConfirm let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-title">Suppression</h4>
+    <button (click)="modal.dismiss('Cross click')" aria-describedby="modal-title" aria-label="Close button"
+            class="close"
+            type="button">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <p>
+      <strong>Confirmez-vous la suppression de
+        <span class="text-primary"> {{ annee?.valeur }}</span> ?</strong></p>
+  </div>
+  <div class="modal-footer">
+    <button (click)="modal.dismiss('cancel')" class="btn btn-outline-secondary btn-rounded" type="button">Cancel
+    </button>
+    <button (click)="modal.close('Ok')" class="btn btn-danger btn-rounded" ngbAutofocus
+            type="button">Ok
+    </button>
+  </div>
+</ng-template>
