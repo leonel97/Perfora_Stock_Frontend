@@ -30,9 +30,10 @@
                     [footerHeight]="50"
                     [headerHeight]="50"
                     [rowHeight]="'auto'"
+                    [messages]="{emptyMessage: 'Aucune donnée à afficher !!!'}"
                     [rows]="directionFiltered"
                     [limit]="4"
-                    class="material fullscreen"
+                    class="material striped"
                     style="height: 500px; box-shadow: none; overflow-y:visible">
                     <ngx-datatable-column name="codeDirection">
                       <ng-template ngx-datatable-header-template>
