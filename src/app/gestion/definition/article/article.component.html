@@ -9,4 +9,233 @@
 
     <div class="separator-breadcrumb border-top"></div>
     <!--Contenu component article-->
+
+    <div class="card mb-4">
+      <div class="card-body">
+        <div class="card-title mb-3 border-bottom pb-2">Gestion des Articles</div>
+
+        <ul #nav="ngbNav" [(activeId)]="activeTabsNav" class="nav-tabs" ngbNav>
+          <li [ngbNavItem]="1">
+            <a ngbNavLink>Liste des Articles</a>
+            <ng-template ngbNavContent>
+              <div class="row">
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <input [formControl]="searchControl" class="form-control form-control-rounded" id="email"
+                           placeholder="Rechercher Article" type="email">
+                  </div>
+                </div>
+                <div class="col-md-12">
+                  <div class="o-hidden">
+                    <ngx-datatable
+                      [columnMode]="'force'"
+                      [footerHeight]="50"
+                      [headerHeight]="50"
+                      [rowHeight]="'auto'"
+                      [rows]="articleFiltered"
+                      [limit]="4"
+                      class="material fullscreen"
+                      style="height: 500px; box-shadow: none; overflow-y:visible">
+                      <ngx-datatable-column name="codeArticle">
+                        <ng-template ngx-datatable-header-template>
+                          Code
+                        </ng-template>
+                      </ngx-datatable-column>
+                      <ngx-datatable-column name="libArticle">
+                        <ng-template ngx-datatable-header-template>
+                          Libellé
+                        </ng-template>
+                      </ngx-datatable-column>
+                      <ngx-datatable-column name="tvaArticle">
+                        <ng-template ngx-datatable-header-template>
+                          TVA (en %)
+                        </ng-template>
+                      </ngx-datatable-column>
+                      <ngx-datatable-column name="taxeSpecifiqArticle">
+                        <ng-template ngx-datatable-header-template>
+                          Taxe Spécifiq. (en %)
+                        </ng-template>
+                      </ngx-datatable-column>
+
+                      <ngx-datatable-column>
+                        <ng-template ngx-datatable-header-template>
+                          Famille
+                        </ng-template>
+                        <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                          <div *ngIf="row.famille">
+                            {{ row.famille.codeFamille }} - {{ row.famille.libFamille }}
+                          </div>
+                          <div *ngIf="!row.famille">
+                            Aucun
+                          </div>
+
+                        </ng-template>
+                      </ngx-datatable-column>
+
+                      <ngx-datatable-column>
+                        <ng-template ngx-datatable-header-template>
+                          Type
+                        </ng-template>
+                        <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                          <div *ngIf="row.typeArticle">
+                            {{ row.typeArticle.codeTypeArt }} - {{ row.typeArticle.libTypeArt }}
+                          </div>
+                          <div *ngIf="!row.typeArticle">
+                            Aucun
+                          </div>
+
+                        </ng-template>
+                      </ngx-datatable-column>
+
+                      <ngx-datatable-column>
+                        <ng-template ngx-datatable-header-template>
+                          Unités de Comptage
+                        </ng-template>
+                        <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                          <!--<strong>{{ row.code }}</strong>-->
+                          <span *ngFor="let fa of getUniterOfAArticle(row)" > {{ fa.codeUniter }} - {{ fa.libUniter }} ; </span>
+                        </ng-template>
+                      </ngx-datatable-column>
+
+                      <ngx-datatable-column>
+                        <ng-template ngx-datatable-header-template>
+                          Actions
+                        </ng-template>
+                        <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                          <!--<strong>{{ row.code }}</strong>-->
+                          <button (click)="makeForm(row)" class="btn btn-primary m-1 btn-sm" type="button">
+                            <i class="i-Pen-5"> </i>
+                          </button>
+                          <button (click)="confirm(modalConfirm, row)" class="btn btn-outline-danger m-1 btn-sm"
+                                  type="button">
+                            <i class="i-Folder-Trash"> </i>
+                          </button>
+                        </ng-template>
+                      </ngx-datatable-column>
+                    </ngx-datatable>
+                  </div>
+                </div>
+              </div>
+            </ng-template>
+          </li>
+          <li [ngbNavItem]="2">
+            <a ngbNavLink>Nouveau Article</a>
+            <ng-template ngbNavContent>
+
+              <div class="mb-2">
+                <form (ngSubmit)="submit()" [formGroup]="validateForm">
+                  <div class="row">
+                    <div class="col-md-2 form-group mb-3">
+                      <label for="code">Code <span class="required-field">*</span> </label>
+                      <input class="form-control" formControlName="codeArticle" id="codeArticle"
+                             placeholder="Entrer le code" type="text" autocomplete="off">
+                      <div *ngIf="validateForm.controls.codeArticle.errors &&
+                     (validateForm.controls.codeArticle.dirty || validateForm.controls.codeArticle.touched)"
+                           class="error-field">
+                        Ce champs est obligatoire !
+                      </div>
+                    </div>
+
+                    <div class="col-md-5 form-group mb-3">
+                      <label for="valeur">Libellé <span class="required-field">*</span> </label>
+                      <input class="form-control" formControlName="libArticle" id="libArticle"
+                             placeholder="Entrer le libellé" type="text" autocomplete="off">
+                      <div *ngIf="validateForm.controls.libArticle.errors &&
+                     (validateForm.controls.libArticle.dirty || validateForm.controls.libArticle.touched)"
+                           class="error-field">
+                        Ce champs est obligatoire !
+                      </div>
+                    </div>
+
+                    <div class="col-md-5 form-group mb-3">
+                      <label for="picker1">Famille</label>
+                      <select class="form-control" id="picker1" formControlName="famille">
+                          <option [value]="null">Aucun</option>
+                          <option *ngFor="let supFa of familleList2" [value]="supFa.numFamille"
+                          >{{ supFa.codeFamille }} - {{ supFa.libFamille }}</option>
+
+                      </select>
+                    </div>
+
+                  </div>
+
+                  <div class="row">
+                    <div class="col-md-4 form-group mb-3">
+                      <label for="credit">TVA (en %)</label>
+                      <input class="form-control" id="credit" placeholder="Card" type="number"
+                      formControlName="tvaArticle" >
+                    </div>
+                    <div class="col-md-4 form-group mb-3">
+                      <label for="credit2">Taxe Spécifique (en %)</label>
+                      <input class="form-control" id="credit2" placeholder="Card" type="number"
+                      formControlName="taxeSpecifiqArticle" >
+                    </div>
+                    <div class="col-md-4 form-group mb-3">
+                      <label for="picker2">Type d'Article</label>
+                      <select class="form-control" id="picker2" formControlName="typeArticle">
+                          <option [value]="null">Aucun</option>
+                          <option *ngFor="let typArt of typeArticleList" [value]="typArt.numTypeArt"
+                          >{{ typArt.codeTypeArt }} - {{ typArt.libTypeArt }}</option>
+
+                      </select>
+                    </div>
+
+
+                  </div>
+
+                  <div class="row">
+                    <div class="col-md-12 form-group mb-3">
+                      <label >Unités Associées</label>
+                      <ng-select formControlName="uniters" [multiple]="true">
+                        <ng-option *ngFor="let unit of uniterList" [value]="unit.numUniter">{{unit.codeUniter}} - {{unit.libUniter}}</ng-option>
+                      </ng-select>
+                    </div>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-md-12">
+                      <btn-loading [loading]="loading" btnClass="btn-save">Enrégistrer</btn-loading>
+                      <button (click)="resetForm()" class="btn m-1 ml-2 btn-cancel" type="button"> Annuler</button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+
+            </ng-template>
+          </li>
+
+        </ul>
+
+        <div [ngbNavOutlet]="nav" class="mt-2"></div>
+
+      </div>
+    </div>
+
+
 </div>
+
+
+
+
+<ng-template #modalConfirm let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-title">Suppression</h4>
+    <button (click)="modal.dismiss('Cross click')" aria-describedby="modal-title" aria-label="Close button"
+            class="close"
+            type="button">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <p>
+      <strong>Confirmez-vous la suppression de
+        <span class="text-primary">{{ article?.codeArticle }} - {{ article?.libArticle }}</span> ?</strong></p>
+  </div>
+  <div class="modal-footer">
+    <button (click)="modal.dismiss('cancel')" class="btn btn-outline-secondary btn-rounded" type="button">Cancel
+    </button>
+    <button (click)="modal.close('Ok')" class="btn btn-danger btn-rounded" ngbAutofocus
+            type="button">Ok
+    </button>
+  </div>
+</ng-template>

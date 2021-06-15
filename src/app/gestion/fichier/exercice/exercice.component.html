@@ -1,12 +1,233 @@
 <div class="">
     <div class="breadcrumb">
-        <h1> Gestion des exercices</h1>
-        <ul>
-            <li><a href="">Fichier</a></li>
-            <li>Exercice</li>
-        </ul>
+      <h1>Gestion des exercices</h1>
+      <ul>
+        <li><a routerLink="">Définition</a></li>
+        <li>Exercice</li>
+      </ul>
     </div>
-
     <div class="separator-breadcrumb border-top"></div>
-    <!--Contenu component importation-->
-</div>
+  
+    <div class="card mb-4">
+      <div class="card-body">
+        <div class="card-title mb-3 border-bottom pb-2">Gestion des exercices</div>
+  
+        <ul #nav="ngbNav" [(activeId)]="activeTabsNav" class="nav-tabs" ngbNav>
+          <li [ngbNavItem]="1">
+            <a ngbNavLink>Liste des exercices</a>
+            <ng-template ngbNavContent>
+              <div class="row">
+                <div class="col-md-5">
+                  <div class="form-group">
+                    <input [formControl]="searchControl" class="form-control form-control-rounded" id="email"
+                           placeholder="Rechercher exercice" type="email">
+                  </div>
+                  
+                </div>
+                <div class="col-md-5"></div>
+                  <div class="col-md-1.5">
+                    <button type="button" (click)="gererClotureExercice(modalCloture)" [disabled]="disabledBtnCloturer"  class="btn btn-primary btn-block m-1">
+                      Clôturer</button>
+                  </div>
+
+                <div class="col-md-12">
+                  <div class="o-hidden">
+                    <ngx-datatable
+                      [columnMode]="'force'"
+                      [footerHeight]="50"
+                      [headerHeight]="50"
+                      [rowHeight]="'auto'"
+                      [messages]="{emptyMessage: 'Aucune donnée à afficher !!!'}"
+                      [rows]="exerciceFiltered"
+                      [limit]="4"
+                      class="material striped"
+                      style="height: 500px; box-shadow: none; overflow-y:visible">
+
+                      <ngx-datatable-column>
+                        <ng-template ngx-datatable-header-template>
+        
+                        </ng-template>
+                        <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                        <span *ngIf="row.cloturerExo == false">
+                          <label class="checkbox checkbox-outline-light">
+                            <input (change)="selectOne($event, row)" [(ngModel)]="row.isSelected" type="checkbox">
+                            <span></span>
+                            <span class="checkmark"></span>
+                          </label>
+                        </span>
+                        </ng-template>
+                      </ngx-datatable-column>
+
+                      <ngx-datatable-column>
+                        <ng-template ngx-datatable-header-template>
+                          Code
+                        </ng-template>
+                        <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                            {{ row.codeExercice }}
+                        </ng-template>
+                      </ngx-datatable-column>
+                      <ngx-datatable-column>
+                        <ng-template ngx-datatable-header-template>
+                          Libellé
+                        </ng-template>
+                        <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                            {{ row.libExercice }}
+                        </ng-template>
+                      </ngx-datatable-column>
+                      <ngx-datatable-column>
+                        <ng-template ngx-datatable-header-template>
+                          Date Début
+                        </ng-template>
+                        <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                            {{ row.dateDebut | date : 'dd MMMM yyyy' }}
+                        </ng-template>
+                      </ngx-datatable-column>
+                      <ngx-datatable-column>
+                        <ng-template ngx-datatable-header-template>
+                          Date Fin
+                        </ng-template>
+                        <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                            {{ row.dateFin | date : 'dd MMMM yyyy' }}
+                        </ng-template>
+                      </ngx-datatable-column>
+                      <ngx-datatable-column>
+                        <ng-template ngx-datatable-header-template>
+                          Actions
+                        </ng-template>
+                        <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                          <!--<strong>{{ row.code }}</strong>-->
+                          <button (click)="makeForm(row)" class="btn btn-primary m-1 btn-sm" type="button">
+                            <i class="i-Pen-5"> </i>
+                          </button>
+                          <button (click)="confirm(modalConfirm, row)" class="btn btn-outline-danger m-1 btn-sm"
+                                  type="button">
+                            <i class="i-Folder-Trash"> </i>
+                          </button>
+                        </ng-template>
+                      </ngx-datatable-column>
+                    </ngx-datatable>
+                  </div>
+                </div>
+              </div>
+            </ng-template>
+          </li>
+          <li [ngbNavItem]="2">
+            <a ngbNavLink>Nouveau exercice</a>
+            <ng-template ngbNavContent>
+  
+              <div class="mb-2">
+                <form (ngSubmit)="submit()" [formGroup]="validateForm">
+                  <div class="row">
+                    <div class="col-md-3 form-group mb-3">
+                      <label for="code">Code <span class="required-field">*</span> </label>
+                      <input class="form-control" formControlName="codeExercice" id="codeExercice"
+                             placeholder="Entrer le code" type="text" autocomplete="off">
+                      <div *ngIf="validateForm.controls.codeExercice.errors &&
+                     (validateForm.controls.codeExercice.dirty || validateForm.controls.codeExercice.touched)"
+                           class="error-field">
+                        Ce champs est obligatoire !
+                      </div>
+                    </div>
+  
+                    <div class="col-md-3 form-group mb-3">
+                      <label for="valeur">Libellé <span class="required-field">*</span> </label>
+                      <input class="form-control" formControlName="libExercice" id="libExercice"
+                             placeholder="Entrer le libellé" type="text" autocomplete="off">
+                      <div *ngIf="validateForm.controls.libExercice.errors &&
+                     (validateForm.controls.libExercice.dirty || validateForm.controls.libExercice.touched)"
+                           class="error-field">
+                        Ce champs est obligatoire !
+                      </div>
+                    </div>
+
+                    <div class="col-md-3 form-group mb-3">
+                      <label for="valeur">Date Début <span class="required-field">*</span> </label>
+                      <input class="form-control" formControlName="dateDebut" id="dateDebut"
+                             placeholder="Entrer le libellé" type="date" autocomplete="off">
+                      <div *ngIf="validateForm.controls.dateDebut.errors &&
+                     (validateForm.controls.dateDebut.dirty || validateForm.controls.dateDebut.touched)"
+                           class="error-field">
+                        Ce champs est obligatoire !
+                      </div>
+                    </div>
+
+                    <div class="col-md-3 form-group mb-3">
+                      <label for="valeur">Date Fin <span class="required-field">*</span> </label>
+                      <input class="form-control" formControlName="dateFin" id="dateFin"
+                             placeholder="Entrer le libellé" type="date" autocomplete="off">
+                      <div *ngIf="validateForm.controls.dateFin.errors &&
+                     (validateForm.controls.dateFin.dirty || validateForm.controls.dateFin.touched)"
+                           class="error-field">
+                        Ce champs est obligatoire !
+                      </div>
+                    </div>
+  
+                    <div class="col-md-12">
+                      <btn-loading [loading]="loading" btnClass="btn-save">Enrégistrer</btn-loading>
+                      <button (click)="resetForm()" class="btn m-1 ml-2 btn-cancel" type="button"> Annuler</button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+  
+            </ng-template>
+          </li>
+  
+        </ul>
+  
+        <div [ngbNavOutlet]="nav" class="mt-2"></div>
+  
+      </div>
+    </div>
+  
+  </div>
+  
+  
+  <ng-template #modalConfirm let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title" id="modal-title">Suppression</h4>
+      <button (click)="modal.dismiss('Cross click')" aria-describedby="modal-title" aria-label="Close button"
+              class="close"
+              type="button">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p>
+        <strong>Confirmez-vous la suppression de
+          <span class="text-primary"> {{ exercice?.libExercice }}</span> ?</strong></p>
+    </div>
+    <div class="modal-footer">
+      <button (click)="modal.dismiss('cancel')" class="btn btn-outline-secondary btn-rounded" type="button">Annuler
+      </button>
+      <button (click)="modal.close('Ok')" class="btn btn-danger btn-rounded" ngbAutofocus
+              type="button">Ok
+      </button>
+    </div>
+  </ng-template>
+
+  <!--Modal template-->
+<ng-template #modalCloture let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title" id="modal-title">Clôturer un exercice</h4>
+      <button (click)="modal.dismiss('Cross click')" aria-describedby="modal-title" aria-label="Close button"
+              class="close"
+              type="button">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <form (ngSubmit)="submitCloturerExercice()">
+        <div class="modal-body">
+            <p>
+              <strong>Confirmez-vous la clôture de l'
+                <span class="text-primary"> {{ activeExercice?.libExercice }}</span> ?</strong></p>
+            <p><strong>Cette action est irréversible ...</strong></p>
+          </div>
+    <div class="modal-footer">
+      <button (click)="modal.dismiss('cancel')" class="btn btn-outline-secondary" type="button">Annuler
+      </button>
+      <btn-loading [loading]="loading" btnClass="btn-save" (click)="modal.close('Ok')" ngbAutofocus>Clôturer</btn-loading>
+    </div>
+    </form>
+  </ng-template>
+  

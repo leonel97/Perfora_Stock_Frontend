@@ -15,10 +15,11 @@ import { InventaireComponent } from './inventaire/inventaire.component';
 import { DemandeBesoinComponent } from './demande-besoin/demande-besoin.component';
 import { ServirBesoinComponent } from './servir-besoin/servir-besoin.component';
 import { CloturePeriodiqueComponent } from './cloture-periodique/cloture-periodique.component';
+import { CommandeAchatComponent } from './commande-achat/commande-achat.component';
 
 
 @NgModule({
-  declarations: [SaisieComponent, DemandePrixComponent, DepotOffreFactureProformatComponent, LettreCommandeComponent, BonTravailComponent, AppelOffreComponent, StockInitialComponent, EntreeArticleComponent, EtatStockComponent, InventaireComponent, DemandeBesoinComponent, ServirBesoinComponent, CloturePeriodiqueComponent],
+  declarations: [SaisieComponent, DemandePrixComponent, DepotOffreFactureProformatComponent, LettreCommandeComponent, BonTravailComponent, AppelOffreComponent, StockInitialComponent, EntreeArticleComponent, EtatStockComponent, InventaireComponent, DemandeBesoinComponent, ServirBesoinComponent, CloturePeriodiqueComponent, CommandeAchatComponent],
   imports: [
     CommonModule,
     SaisieRoutingModule

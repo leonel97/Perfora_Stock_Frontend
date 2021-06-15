@@ -1,12 +1,227 @@
 <div class="">
     <div class="breadcrumb">
-        <h1> Gestion des fournisseurs</h1>
-        <ul>
-            <li><a href="">Definition</a></li>
-            <li>Fournisseur</li>
-        </ul>
+      <h1>Gestion des fournisseurs</h1>
+      <ul>
+        <li><a routerLink="">Définition</a></li>
+        <li>Fournisseur</li>
+      </ul>
     </div>
-
     <div class="separator-breadcrumb border-top"></div>
-    <!--Contenu component fournisseur-->
-</div>
+  
+    <div class="card mb-4">
+      <div class="card-body">
+        <div class="card-title mb-3 border-bottom pb-2">Gestion des fournisseurs</div>
+  
+        <ul #nav="ngbNav" [(activeId)]="activeTabsNav" class="nav-tabs" ngbNav>
+          <li [ngbNavItem]="1">
+            <a ngbNavLink>Liste desfournisseurs</a>
+            <ng-template ngbNavContent>
+              <div class="row">
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <input [formControl]="searchControl" class="form-control form-control-rounded" id="email"
+                           placeholder="Rechercher fournisseur" type="email">
+                  </div>
+                </div>
+                <div class="col-md-12">
+                  <div class="o-hidden">
+                    <ngx-datatable
+                      [columnMode]="'force'"
+                      [footerHeight]="50"
+                      [headerHeight]="50"
+                      [rowHeight]="'auto'"
+                      [messages]="{emptyMessage: 'Aucune donnée à afficher !!!'}"
+                      [rows]="fournisseurFiltered"
+                      [limit]="4"
+                      class="material striped"
+                      style="height: 500px; box-shadow: none; overflow-y:visible">
+                      <ngx-datatable-column>
+                        <ng-template ngx-datatable-header-template>
+                          Code
+                        </ng-template>
+                        <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                            {{ row.codeFrs }} 
+                        </ng-template>
+                      </ngx-datatable-column>
+                      <ngx-datatable-column>
+                        <ng-template ngx-datatable-header-template>
+                          Identité
+                        </ng-template>
+                        <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                            {{ row.identiteFrs }} 
+                        </ng-template>
+                      </ngx-datatable-column>
+                      <ngx-datatable-column>
+                        <ng-template ngx-datatable-header-template>
+                          Catégorie Fournisseur
+                        </ng-template>
+                        <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                            {{ row.categorieFrs.libCatFrs }} 
+                        </ng-template>
+                      </ngx-datatable-column>
+                      <ngx-datatable-column>
+                        <ng-template ngx-datatable-header-template>
+                          Actions
+                        </ng-template>
+                        <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                          <!--<strong>{{ row.code }}</strong>-->
+                          <button (click)="makeForm(row)" class="btn btn-primary m-1 btn-sm" type="button">
+                            <i class="i-Pen-5"> </i>
+                          </button>
+                          <button (click)="confirm(modalConfirm, row)" class="btn btn-outline-danger m-1 btn-sm"
+                                  type="button">
+                            <i class="i-Folder-Trash"> </i>
+                          </button>
+                        </ng-template>
+                      </ngx-datatable-column>
+                    </ngx-datatable>
+                  </div>
+                </div>
+              </div>
+            </ng-template>
+          </li>
+          <li [ngbNavItem]="2">
+            <a ngbNavLink>Nouveau fournisseur</a>
+            <ng-template ngbNavContent>
+  
+              <div class="mb-2">
+                <form (ngSubmit)="submit()" [formGroup]="validateForm">
+                  <div class="row">
+                    <div class="col-md-4 form-group mb-3">
+                      <label for="code">Code <span class="required-field">*</span> </label>
+                      <input class="form-control" formControlName="codeFrs" id="codeFrs"
+                             placeholder="Entrer le code" type="text" autocomplete="off">
+                      <div *ngIf="validateForm.controls.codeFrs.errors &&
+                     (validateForm.controls.codeFrs.dirty || validateForm.controls.codeFrs.touched)"
+                           class="error-field">
+                        Ce champs est obligatoire !
+                      </div>
+                    </div>
+  
+                    <div class="col-md-5 form-group mb-3">
+                      <label for="valeur">Identité <span class="required-field">*</span> </label>
+                      <input class="form-control" formControlName="identiteFrs" id="identiteFrs"
+                             placeholder="Entrer l'identité du fournisseur" type="text" autocomplete="off">
+                      <div *ngIf="validateForm.controls.identiteFrs.errors &&
+                     (validateForm.controls.identiteFrs.dirty || validateForm.controls.identiteFrs.touched)"
+                           class="error-field">
+                        Ce champs est obligatoire !
+                      </div>
+                    </div>
+
+                    <div class="col-md-3 form-group mb-3">
+                        <label for="tel">Catégorie <span class="required-field">*</span> </label>
+                        <ng-select bindLabel="libCatFrs" id="categorieFrs" formControlName="categorieFrs" placeholder=" Entrer Catégorie du fournisseur">
+                            <!--option [ngValue]="null">-- Centre de consommation parent -- </option-->
+                            <ng-option *ngFor="let categorieFrs of typeFournisseurFiltered" [value]="categorieFrs">{{categorieFrs.libCatFrs}}</ng-option>
+                          </ng-select>
+                          <div *ngIf="validateForm.controls.categorieFrs.errors &&
+                          (validateForm.controls.categorieFrs.dirty || validateForm.controls.categorieFrs.touched)"
+                                class="error-field">
+                             Ce champs est obligatoire !
+                           </div>
+                    </div>
+                 </div>
+
+                <div class="row">
+                    <div class="col-md-4 form-group mb-3">
+                      <label for="code">N° IFU <span class="required-field">*</span> </label>
+                      <input class="form-control" formControlName="numIfuFrs" id="numIfuFrs"
+                             placeholder="Entrer le numéro IFU" type="text" autocomplete="off">
+                      <div *ngIf="validateForm.controls.numIfuFrs.errors &&
+                     (validateForm.controls.numIfuFrs.dirty || validateForm.controls.numIfuFrs.touched)"
+                           class="error-field">
+                        Ce champs est obligatoire !
+                      </div>
+                    </div>
+  
+                    <div class="col-md-5 form-group mb-3">
+                      <label for="valeur">Régistre de commerce <span class="required-field">*</span> </label>
+                      <input class="form-control" formControlName="regComFrs" id="regComFrs"
+                             placeholder="Entrer le régistre de commerce" type="text" autocomplete="off">
+                      <div *ngIf="validateForm.controls.regComFrs.errors &&
+                     (validateForm.controls.regComFrs.dirty || validateForm.controls.regComFrs.touched)"
+                           class="error-field">
+                        Ce champs est obligatoire !
+                      </div>
+                    </div>
+
+                    <div class="col-md-3 form-group mb-3">
+                        <label for="tel">Téléphone </label>
+                        <input class="form-control" formControlName="telFRS" id="telFRS"
+                               placeholder="Entrer le téléphone" type="text" autocomplete="off">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-7 form-group mb-3">
+                      <label for="code">Domaine d'intervention  <span class="required-field">*</span> </label>
+                      <input class="form-control" formControlName="domaineInterven" id="domaineInterven"
+                             placeholder="Entrer le domaine d'intervention" type="text" autocomplete="off">
+                      <div *ngIf="validateForm.controls.domaineInterven.errors &&
+                     (validateForm.controls.domaineInterven.dirty || validateForm.controls.domaineInterven.touched)"
+                           class="error-field">
+                        Ce champs est obligatoire !
+                      </div>
+                    </div>
+  
+                    <div class="col-md-1 form-group mb-1">
+                      <label for="agreerFrs">Agrée </label>
+                      <label class="checkbox checkbox-outline-light">
+                        <input type="checkbox" formControlName="agreerFrs" id="agreerFrs"
+                        [ngModel]="checked" #confirmed >
+                        <span></span>
+                        <span class="checkmark"></span>
+                      </label>
+                    </div>
+
+                    <div class="col-md-4 form-group mb-5">
+                        <label for="numAgrementFrs">Numéro d'agrément </label>
+                        <input class="form-control" formControlName="numAgrementFrs" id="numAgrementFrs"
+                               placeholder="Entrer le numéro d'agrément" type="text" autocomplete="off" [readOnly]="!confirmed.checked">
+                    </div>
+  
+                    <div class="col-md-12">
+                      <btn-loading [loading]="loading" btnClass="btn-save">Enrégistrer</btn-loading>
+                      <button (click)="resetForm()" class="btn m-1 ml-2 btn-cancel" type="button"> Annuler</button>
+                    </div>
+                  </div>
+                </form>
+              </div>
+  
+            </ng-template>
+          </li>
+  
+        </ul>
+  
+        <div [ngbNavOutlet]="nav" class="mt-2"></div>
+  
+      </div>
+    </div>
+  
+  </div>
+  
+  
+  <ng-template #modalConfirm let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title" id="modal-title">Suppression</h4>
+      <button (click)="modal.dismiss('Cross click')" aria-describedby="modal-title" aria-label="Close button"
+              class="close"
+              type="button">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p>
+        <strong>Confirmez-vous la suppression de
+          <span class="text-primary"> {{ fournisseur?.identiteFrs }}</span> ?</strong></p>
+    </div>
+    <div class="modal-footer">
+      <button (click)="modal.dismiss('cancel')" class="btn btn-outline-secondary btn-rounded" type="button">Annuler
+      </button>
+      <button (click)="modal.close('Ok')" class="btn btn-danger btn-rounded" ngbAutofocus
+              type="button">Ok
+      </button>
+    </div>
+  </ng-template>
+  
