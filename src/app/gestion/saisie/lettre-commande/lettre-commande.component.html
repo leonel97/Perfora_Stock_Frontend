@@ -9,4 +9,291 @@
 
     <div class="separator-breadcrumb border-top"></div>
     <!--Contenu component importation-->
+
+    <div class="card mb-4">
+      <div class="card-body">
+        <div class="card-title mb-3 border-bottom pb-2">Gestion des Lettres de Commande</div>
+
+        <ul #nav="ngbNav" [(activeId)]="activeTabsNav" class="nav-tabs" ngbNav>
+          <li [ngbNavItem]="1">
+            <a ngbNavLink>Liste des Lettres de Commande</a>
+            <ng-template ngbNavContent>
+              <div class="row">
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <input [formControl]="searchControl" class="form-control form-control-rounded" id="email"
+                           placeholder="Rechercher Commande Achat">
+                  </div>
+                </div>
+                <div class="col-md-12">
+                  <div class="o-hidden">
+                    <ngx-datatable
+                      [columnMode]="'force'"
+                      [footerHeight]="50"
+                      [headerHeight]="50"
+                      [rowHeight]="'auto'"
+                      [rows]="lettreCommandeFiltered"
+                      [limit]="4"
+                      class="material fullscreen"
+                      style="height: 500px; box-shadow: none; overflow-y:visible">
+
+                      <ngx-datatable-column [maxWidth]="50">
+                        <ng-template ngx-datatable-header-template>
+                          Validité
+                        </ng-template>
+                        <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                          <strong *ngIf="row.commande.valide == true">V</strong>
+                          <!--<strong *ngIf="row.commande.valide == false">A</strong>-->
+                        </ng-template>
+                      </ngx-datatable-column>
+
+                      <ngx-datatable-column name="numLettreComm">
+                        <ng-template ngx-datatable-header-template>
+                          Code
+                        </ng-template>
+                      </ngx-datatable-column>
+
+                      <ngx-datatable-column>
+                        <ng-template ngx-datatable-header-template>
+                          Date
+                        </ng-template>
+                        <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                          {{ row.commande.dateCommande }}
+                        </ng-template>
+                      </ngx-datatable-column>
+
+                      <ngx-datatable-column>
+                        <ng-template ngx-datatable-header-template>
+                          Référence
+                        </ng-template>
+                        <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                          {{ row.commande.description }}
+                        </ng-template>
+                      </ngx-datatable-column>
+
+                      <ngx-datatable-column>
+                        <ng-template ngx-datatable-header-template>
+                          Fournisseur
+                        </ng-template>
+                        <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                          {{ row.commande.frs.numFournisseur }} - {{ row.commande.frs.identiteFrs }}
+                        </ng-template>
+                      </ngx-datatable-column>
+
+                      <ngx-datatable-column>
+                        <ng-template ngx-datatable-header-template>
+                          Total TTC
+                        </ng-template>
+                        <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                          {{ getTotalTtcOfACom(row) }}
+                        </ng-template>
+                      </ngx-datatable-column>
+
+                      <ngx-datatable-column>
+                        <ng-template ngx-datatable-header-template>
+                          Actions
+                        </ng-template>
+                        <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                          <!--<strong>{{ row.code }}</strong>-->
+                          <button (click)="makeForm(row)" class="btn btn-primary m-1 btn-sm"
+                          type="button" *ngIf="row.commande.valide == false">
+                            <i class="i-Pen-5"> </i>
+                          </button>
+                          <button (click)="confirm(modalConfirm, row)" class="btn btn-outline-danger m-1 btn-sm"
+                                  type="button" *ngIf="row.commande.valide == false">
+                            <i class="i-Folder-Trash"> </i>
+                          </button>
+                          <button (click)="valider(row, true)" class="btn btn-outline-success m-1 btn-sm"
+                                  type="button" *ngIf="row.commande.valide == false">
+                            <i class="i-Yes"> </i>
+                          </button>
+                          <button (click)="valider(row, false)" class="btn btn-outline-warning m-1 btn-sm"
+                                  type="button" *ngIf="row.commande.valide == true">
+                            <i class="i-Reload"> </i>
+                          </button>
+                        </ng-template>
+                      </ngx-datatable-column>
+                    </ngx-datatable>
+                  </div>
+                </div>
+              </div>
+            </ng-template>
+          </li>
+
+
+
+          <li [ngbNavItem]="2">
+            <a ngbNavLink><span *ngIf="! validateForm.value.numLettreComm">Nouvelle</span><span *ngIf="validateForm.value.numLettreComm" span>Modifier</span> Lettre de Commande</a>
+            <ng-template ngbNavContent>
+
+              <div class="mb-2">
+                <div class="d-flex mb-5" style="margin-bottom: 0;">
+                  <span class="m-auto"></span>
+                  <button class="btn btn-outline-secondary mr-3" (click)="resetForm()">Annuler</button>
+                  <btn-loading btnClass="btn-primary" [loading]="loading" (click)="submit()">Enrégistrer</btn-loading>
+                </div>
+                <form [formGroup]="validateForm">
+                  <h4 class="font-weight-bold">Informations sur la Lettre de Commande</h4>
+                  <div class="row">
+                      <div class="col-md" *ngIf="validateForm.value.numLettreComm">
+                          <div class="col-md form-group">
+                              <label for="orderNo">Numéro</label>
+                              <input formControlName="numLettreComm" type="text" class="form-control" id="orderNo"
+                                  placeholder="Numéro" readonly>
+                          </div>
+                      </div>
+                      <div class="col-md form-group mb-3">
+                        <label for="picker1">Date</label>
+                        <div class="input-group">
+                            <input formControlName="dateCommande" id="picker1" class="form-control text-right" type="date"
+                                >
+
+                        </div>
+                      </div>
+                      <div class="col-md">
+                        <div class="col-md form-group" >
+                            <label for="orderNo">Délais de Livraison (en jours)</label>
+                            <input formControlName="delaiLivraison" type="number" class="form-control" id="orderNo"
+                                placeholder="Numéro">
+                        </div>
+                      </div>
+                      <div class="col-md form-group mb-3">
+                        <label for="picker1">Date de Remise</label>
+                        <div class="input-group">
+                            <input formControlName="dateRemise" id="picker2" class="form-control text-right"
+                                type="date">
+
+                        </div>
+                      </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md form-group">
+                      <label for="orderNo">Références</label>
+                      <input formControlName="description" type="text" class="form-control" id="orderNo"
+                          placeholder="Numéro">
+
+                    </div>
+                    <div class="col-md form-group mb-3">
+                      <label >Fournisseur</label>
+                      <ng-select formControlName="frs">
+                        <ng-option *ngFor="let frs of fournisseurList" [value]="frs.numFournisseur">{{frs.codeFrs}} - {{frs.identiteFrs}}</ng-option>
+                      </ng-select>
+                    </div>
+
+                  </div>
+                </form>
+                  <div class="mt-3 mb-4 border-top"></div>
+                  <h4 class="font-weight-bold">Détails sur la Lettre de Commande</h4>
+
+                  <div class="row">
+                      <div class="col-md-12 table-responsive">
+                          <table class="table table-hover mb-3">
+                              <thead class="bg-gray-300">
+                                  <tr>
+                                      <th scope="col">#</th>
+                                      <th scope="col">Article</th>
+                                      <th scope="col">PU HT</th>
+                                      <th scope="col">Quantité</th>
+                                      <th scope="col">Unité</th>
+                                      <th scope="col">Montant HT</th>
+                                      <th scope="col">TVA</th>
+                                      <th scope="col">Montant TTC</th>
+                                      <th scope="col"></th>
+                                  </tr>
+                              </thead>
+                              <tbody>
+                                  <tr *ngFor="let lig of ligneShow; let i = index;"
+                                      >
+                                      <th scope="row">{{i + 1}}</th>
+                                      <td>
+                                        <ng-select [(ngModel)]="lig.selectedArticl" (ngModelChange)="getUniterOfSelectArt(i)"
+                                        (click)="onArticleSelectClicked(i)" style="min-width: 180px;">
+                                          <ng-option *ngFor="let art of lig.listArticle" [value]="art.numArticle"
+                                           >{{art.codeArticle}} - {{art.libArticle}}</ng-option>
+                                        </ng-select>
+                                      </td>
+                                      <td>
+                                          <input type="number" class="form-control" [(ngModel)] = "lig.lignesCommande.puLigneCommande"
+                                              placeholder="Prix Unitaire HT" (ngModelChange)="calculTotaux()">
+                                      </td>
+                                      <td>
+                                        <input type="number" class="form-control" [(ngModel)] = "lig.lignesCommande.qteLigneCommande"
+                                            placeholder="Quantité" (ngModelChange)="calculTotaux()">
+                                      </td>
+                                      <td>
+                                        <ng-select [(ngModel)]="lig.selectedUniter" style="min-width: 180px;">
+                                          <ng-option *ngFor="let unit of lig.listUniter" [value]="unit.numUniter"
+                                           >{{unit.codeUniter}} - {{unit.libUniter}}</ng-option>
+                                        </ng-select>
+                                      </td>
+                                      <td>
+                                        {{ lig.lignesCommande.puLigneCommande * lig.lignesCommande.qteLigneCommande }}
+                                      </td>
+                                      <td>
+                                          <input type="number" class="form-control" [(ngModel)] = "lig.lignesCommande.tva"
+                                              placeholder="Tva" (ngModelChange)="calculTotaux()">
+                                      </td>
+                                      <td>
+                                        {{ lig.lignesCommande.puLigneCommande * lig.lignesCommande.qteLigneCommande*(1+(lig.lignesCommande.tva/100)) }}
+                                      </td>
+                                      <td>
+                                          <button class="btn btn-outline-secondary float-right" (click)="popALigneComAcha(i)">Retirer</button>
+                                      </td>
+                                  </tr>
+                              </tbody>
+                          </table>
+                          <button class="btn btn-primary float-right mb-4" (click)="pushALigneComAcha()">Ajouter une ligne</button>
+                      </div>
+
+                      <div class="col-md-12">
+
+                          <div class="float-right">
+                              <p>Total Montant HT : <span> {{ totaux[0] }} </span>  F CFA</p>
+                              <p class="d-flex align-items-center">Total Montant TVA : <span> {{ totaux[1] }} </span>  F CFA</p>
+                              <h5 class="font-weight-bold d-flex align-items-center">Total Montant TTC : <span> {{ totaux[2] }} </span>  F CFA</h5>
+                          </div>
+                      </div>
+
+                  </div>
+
+              </div>
+
+            </ng-template>
+          </li>
+
+        </ul>
+
+        <div [ngbNavOutlet]="nav" class="mt-2"></div>
+
+      </div>
+    </div>
+
+
 </div>
+
+
+
+
+
+<ng-template #modalConfirm let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-title">Suppression</h4>
+    <button (click)="modal.dismiss('Cross click')" aria-describedby="modal-title" aria-label="Close button"
+            class="close"
+            type="button">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <p>
+      <strong>Confirmez-vous la suppression de
+        <span class="text-primary">{{ lettreCommande?.numLettreComm }}</span> ?</strong></p>
+  </div>
+  <div class="modal-footer">
+    <button (click)="modal.dismiss('cancel')" class="btn btn-outline-secondary btn-rounded" type="button">Cancel
+    </button>
+    <button (click)="modal.close('Ok')" class="btn btn-danger btn-rounded" ngbAutofocus
+            type="button">Ok
+    </button>
+  </div>
+</ng-template>

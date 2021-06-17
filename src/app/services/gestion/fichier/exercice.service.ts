@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {environment} from "../../../../environments/environment";
-import {HttpClient} from "@angular/common/http";
+import {HttpClient, HttpErrorResponse} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {Exercice} from "../../../models/gestion/fichier/exercice";
 
@@ -12,7 +12,22 @@ export class ExerciceService {
 
   url: string = environment.backend2 + '/commune/exercice';
 
-  constructor(private http: HttpClient) { }
+  selectedExo: Exercice = null;
+
+  constructor(private http: HttpClient) {
+    this.list().subscribe(
+      (data: any) => {
+        if(data.length){
+          this.selectedExo = data[data.length-1];
+          console.log('selected exo', this.selectedExo);
+        }
+      },
+      (error: HttpErrorResponse) => {
+        console.log('Echec atatus ==> ' + error.status);
+
+      }
+    );
+  }
 
   createExercice(exercice: Exercice): Observable<Object> {
     return this.http.post(`${this.url}/list`, exercice);
