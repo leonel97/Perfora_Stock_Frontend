@@ -43,10 +43,10 @@ export class LoginComponent implements OnInit {
     const username = this.signinForm.value.email;
     const password = this.signinForm.value.password;
     const rememberMe = true;
-    this.router.navigateByUrl('/gestion/parametrage');
+    this.router.navigateByUrl('/gestion/accueil');
     this.auth.signin(username, password, rememberMe)
       .subscribe(res => {
-        this.router.navigateByUrl('/gestion/parametrage');
+        this.router.navigateByUrl('/gestion/accueil');
         this.loading = false;
       });
   }

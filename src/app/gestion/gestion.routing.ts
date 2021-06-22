@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
+import { AccueilComponent } from './accueil/accueil.component';
 
 import {GestionComponent} from "./gestion.component";
 
@@ -28,6 +29,10 @@ let routes: Routes = [
       {
         path: 'saisie',
         loadChildren: () => import('./saisie/saisie.module').then(dj => dj.SaisieModule)
+      },
+      {
+        path: 'accueil',
+        component: AccueilComponent
       }
     ]
   }

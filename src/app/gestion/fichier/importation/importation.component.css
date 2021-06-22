@@ -1,0 +1,15 @@
+.myCustomModalClass .modal-dialog {
+  min-width: 1000px;
+  background-color: black;
+}
+
+.dark-modal .modal-content {
+  background-color: #292b2c;
+  color: white;
+}
+.dark-modal .close {
+  color: rgb(59, 54, 54);
+}
+.light-blue-backdrop {
+  background-color: #5cb3fd;
+}

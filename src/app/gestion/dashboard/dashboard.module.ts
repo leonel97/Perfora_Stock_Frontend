@@ -12,6 +12,7 @@ import {NgxDatatableModule} from "@swimlane/ngx-datatable";
     CommonModule,
     DashboardRoutingModule,
     NgxDatatableModule,
+    
   ]
 })
 export class DashboardModule { }
