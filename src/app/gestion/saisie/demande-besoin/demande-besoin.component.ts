@@ -326,6 +326,11 @@ export class DemandeBesoinComponent  implements OnInit {
             //basculer vers la tab contenant la liste apres modification
             this.activeTabsNav = 1;
 
+            this.getAllArticle();
+            this.getAllUniter();
+            this.getAllAffecterUniterToArticle();
+            this.getAllService();
+
       },
       (error: HttpErrorResponse) => {
         console.log('Echec atatus ==> ' + error.status);
@@ -357,6 +362,12 @@ export class DemandeBesoinComponent  implements OnInit {
             //basculer vers la tab contenant la liste apres modification
             this.loading = false;
             this.activeTabsNav = 1;
+
+            this.getAllArticle();
+            this.getAllUniter();
+            this.getAllLigneDemandeAppro();
+            this.getAllAffecterUniterToArticle();
+            this.getAllService();
 
       },
       (error: HttpErrorResponse) => {
@@ -472,6 +483,12 @@ export class DemandeBesoinComponent  implements OnInit {
               this.demandeApproList[i] = demandeAppro;
               this.demandeApproFiltered = [...this.demandeApproList.sort((a, b) => a.numDA.localeCompare(b.numDA.valueOf()))];
             }
+
+            this.getAllArticle();
+            this.getAllUniter();
+            this.getAllLigneDemandeAppro();
+            this.getAllAffecterUniterToArticle();
+            this.getAllService();
 
             let msg: String = 'Validation'
             if(eta == false) msg = 'Annulation';

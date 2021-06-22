@@ -9,4 +9,89 @@
 
     <div class="separator-breadcrumb border-top"></div>
     <!--Contenu component importation-->
+    <div style="display: flex; align-items: center; justify-content: center;">
+      <div class="card mb-4" style="margin: auto; ">
+        <div class="card-body">
+          <form [formGroup]="validateForm" (ngSubmit)="submit(modalConfirm)">
+            <div class="card-title mb-3 border-bottom pb-2">Dernière Clôture</div>
+            <div class="row">
+              <div class="col-md-5 form-group mb-3">
+                <label for="code">Date de début </label>
+                <input class="form-control" readonly formControlName="dateDebut0"
+                       placeholder="Entrer le code" type="date" autocomplete="off">
+                
+              </div>
+  
+              <div class="col-md-7 form-group mb-3">
+                <label for="valeur">Date de Fin </label>
+                <input class="form-control" readonly formControlName="dateFin0"
+                       placeholder="Entrer le libellé" type="date" autocomplete="off">
+                
+              </div>
+  
+            </div>
+            <div class="card-title mb-3 border-bottom pb-2">Clôture Actuelle</div>
+            <div class="row">
+              <div class="col-md-5 form-group mb-3">
+                <label for="dateDebut">Date de début <span class="required-field">*</span> </label>
+                <input class="form-control" formControlName="dateDebut" id="dateDebut"
+                       placeholder="Entrer le code" type="date" autocomplete="off">
+                <div *ngIf="validateForm.controls.dateDebut.errors &&
+               (validateForm.controls.dateDebut.dirty || validateForm.controls.dateDebut.touched)"
+                     class="error-field">
+                  Ce champs est obligatoire !
+                </div>
+              </div>
+  
+              <div class="col-md-7 form-group mb-3">
+                <label for="dateFin">Date de fin <span class="required-field">*</span> </label>
+                <input class="form-control" formControlName="dateFin" id="dateFin"
+                       placeholder="Entrer le libellé" type="date" autocomplete="off">
+                <div *ngIf="validateForm.controls.dateFin.errors &&
+               (validateForm.controls.dateFin.dirty || validateForm.controls.dateFin.touched)"
+                     class="error-field">
+                  Ce champs est obligatoire !
+                </div>
+              </div>
+  
+              <div class="col-md-12">
+                <btn-loading [loading]="loading" btnClass="btn-save">Enrégistrer</btn-loading>
+                <button (click)="resetForm()" class="btn m-1 ml-2 btn-cancel" type="button"> Annuler</button>
+              </div>
+            </div>
+          </form>
+
+      
+
+        </div>
+      </div>
+    </div>
+    
+
 </div>
+
+<ng-template #modalConfirm let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-title">Clôture</h4>
+    <button (click)="modal.dismiss('Cross click')" aria-describedby="modal-title" aria-label="Close button"
+            class="close"
+            type="button">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <p>
+      <strong>Confirmez-vous la Clôture de la période du <span class="text-primary">{{ this.validateForm.value.dateDebut | date:"dd-MM-yyyy" }}</span> au
+        <span class="text-primary">{{ this.validateForm.value.dateFin | date:"dd-MM-yyyy" }}</span> ?</strong></p>
+    <p>
+      C'est une action  <span class="text-danger">Irréverssible</span> !
+    </p>
+  </div>
+  <div class="modal-footer">
+    <button (click)="modal.dismiss('cancel')" class="btn btn-outline-secondary btn-rounded" type="button">Cancel
+    </button>
+    <button (click)="modal.close('Ok')" class="btn btn-danger btn-rounded" ngbAutofocus
+            type="button">Ok
+    </button>
+  </div>
+</ng-template>

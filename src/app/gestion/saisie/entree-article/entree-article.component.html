@@ -9,4 +9,347 @@
 
     <div class="separator-breadcrumb border-top"></div>
     <!--Contenu component importation-->
+
+    <div class="card mb-4">
+      <div class="card-body">
+        <div class="card-title mb-3 border-bottom pb-2">Gestion des Entrées d'Article</div>
+
+        <ul #nav="ngbNav" [(activeId)]="activeTabsNav" class="nav-tabs" ngbNav>
+          <li [ngbNavItem]="1">
+            <a ngbNavLink>Liste des Entrées d'Article</a>
+            <ng-template ngbNavContent>
+              <div class="row">
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <input [formControl]="searchControl" class="form-control form-control-rounded" id="email"
+                           placeholder="Rechercher Entrée Article">
+                  </div>
+                </div>
+                <div class="col-md-12">
+                  <div class="o-hidden">
+                    <ngx-datatable
+                      [columnMode]="'force'"
+                      [footerHeight]="50"
+                      [headerHeight]="50"
+                      [rowHeight]="'auto'"
+                      [rows]="receptionFiltered"
+                      [limit]="4"
+                      class="material fullscreen"
+                      style="height: 500px; box-shadow: none; overflow-y:visible">
+
+                      <ngx-datatable-column [maxWidth]="50">
+                        <ng-template ngx-datatable-header-template>
+                          Validité
+                        </ng-template>
+                        <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                          <strong *ngIf="row.valideRecep == true">V</strong>
+                          <!--<strong *ngIf="row.commande.valide == false">A</strong>-->
+                        </ng-template>
+                      </ngx-datatable-column>
+
+                      <ngx-datatable-column>
+                        <ng-template ngx-datatable-header-template>
+                          Code
+                        </ng-template>
+                        <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                          {{ row.numReception }}
+                        </ng-template>
+                      </ngx-datatable-column>
+
+                      <ngx-datatable-column>
+                        <ng-template ngx-datatable-header-template>
+                          Date
+                        </ng-template>
+                        <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                          {{ row.dateReception | date: "dd-MM-yyyy"}}
+                        </ng-template>
+                      </ngx-datatable-column>
+
+                      <ngx-datatable-column>
+                        <ng-template ngx-datatable-header-template>
+                          N° Générique
+                        </ng-template>
+                        <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                          {{ row.observation }}
+                        </ng-template>
+                      </ngx-datatable-column>
+
+                      <ngx-datatable-column>
+                        <ng-template ngx-datatable-header-template>
+                          Magasin
+                        </ng-template>
+                        <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                          {{ row.magasin.codeMagasin }} - {{ row.magasin.libMagasin }}
+                        </ng-template>
+                      </ngx-datatable-column>
+
+                      <ngx-datatable-column>
+                        <ng-template ngx-datatable-header-template>
+                          Fournisseur
+                        </ng-template>
+                        <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                          {{ getCommandeOfAReception(row)?.frs?.codeFrs }} - {{ getCommandeOfAReception(row)?.frs?.identiteFrs }}
+                        </ng-template>
+                      </ngx-datatable-column>
+
+                      <ngx-datatable-column>
+                        <ng-template ngx-datatable-header-template>
+                          Référence N°
+                        </ng-template>
+                        <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                          {{ getNumFilleCommandeOfARecept(row) }}
+                        </ng-template>
+                      </ngx-datatable-column>
+
+                      <ngx-datatable-column>
+                        <ng-template ngx-datatable-header-template>
+                          Montant Total
+                        </ng-template>
+                        <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                          {{ getTotalOfARecept(row) }}
+                        </ng-template>
+                      </ngx-datatable-column>
+
+                      <ngx-datatable-column>
+                        <ng-template ngx-datatable-header-template>
+                          Actions
+                        </ng-template>
+                        <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                          <!--<strong>{{ row.code }}</strong>-->
+                          <button (click)="makeForm(row)" class="btn btn-primary m-1 btn-sm"
+                          type="button" *ngIf="row.valideRecep == false">
+                            <i class="i-Pen-5"> </i>
+                          </button>
+                          <button (click)="confirm(modalConfirm, row)" class="btn btn-outline-danger m-1 btn-sm"
+                                  type="button" *ngIf="row.valideRecep == false">
+                            <i class="i-Folder-Trash"> </i>
+                          </button>
+                          <button (click)="valider(row, true)" class="btn btn-outline-success m-1 btn-sm"
+                                  type="button" *ngIf="row.valideRecep == false">
+                            <i class="i-Yes"> </i>
+                          </button>
+                          <button (click)="valider(row, false)" class="btn btn-outline-warning m-1 btn-sm"
+                                  type="button" *ngIf="row.valideRecep == true">
+                            <i class="i-Reload"> </i>
+                          </button>
+                          <button (click)="openDetail(row)" class="btn btn-outline-warning m-1 btn-sm"
+                                  type="button" >
+                            <i class="i-Information"> </i>
+                          </button>
+                          <button  class="btn btn-outline-warning m-1 btn-sm"
+                                  type="button" >
+                            <i class="i-File-Download"> </i>
+                          </button>
+                        </ng-template>
+                      </ngx-datatable-column>
+                    </ngx-datatable>
+                  </div>
+                </div>
+              </div>
+            </ng-template>
+          </li>
+
+
+
+          <li [ngbNavItem]="2">
+            <a ngbNavLink><span *ngIf="! validateForm.value.numReception">Nouvelle</span><span *ngIf="validateForm.value.numReception && detailView == false" span>Modifier</span> <span *ngIf="validateForm.value.numReception && detailView == true" span>Détail sur</span> Entrée d'Article</a>
+            <ng-template ngbNavContent>
+
+              <div class="mb-2">
+                <div class="d-flex mb-5" style="margin-bottom: 0;">
+                  <span class="m-auto"></span>
+                  <button class="btn btn-outline-secondary mr-3" (click)="resetForm()"><span *ngIf="!detailView">Annuler</span> <span *ngIf="detailView">Fermer</span></button>
+                  <btn-loading btnClass="btn-primary" [loading]="loading" (click)="submit()" *ngIf="!detailView" >Enrégistrer</btn-loading>
+                </div>
+                <form [formGroup]="validateForm">
+                  <h4 class="font-weight-bold">Informations sur l'Entrée d'Article</h4>
+                  <div class="row">
+                      <div class="col-md" *ngIf="validateForm.value.numReception">
+                          <div class="col-md form-group">
+                              <label for="orderNo">Numéro</label>
+                              <input formControlName="numReception" type="text" class="form-control"
+                                  placeholder="Numéro" readonly>
+                          </div>
+                      </div>
+                      <div class="col-md form-group mb-3">
+                        <label >Type de Commande</label>
+                        <ng-select formControlName="numType" [readonly]="validateForm.value.numReception"
+                        >
+                          <ng-option [value]="0">Commande Achat</ng-option>
+                          <ng-option [value]="1">Appel d'Offre</ng-option>
+                          <ng-option [value]="2">Bond Travail</ng-option>
+                          <ng-option [value]="3">Lettre de Commande</ng-option>
+                        </ng-select>
+                      </div>
+                      <div class="col-md form-group mb-3">
+                        <label >
+                          <span *ngIf="validateForm.value.numType == null"> AO ou CA ou BT ou LC</span>
+                          <span *ngIf="validateForm.value.numType == 0">Commande Achat</span>
+                          <span *ngIf="validateForm.value.numType == 1">Appel d'Offre</span>
+                          <span *ngIf="validateForm.value.numType == 2">Bond Travail</span>
+                          <span *ngIf="validateForm.value.numType == 3">Lettre de Commande</span>
+                        </label>
+                        <ng-select formControlName="numFilleComm" [readonly]="validateForm.value.numReception"
+                        (ngModelChange)="getInfosOnAFilleCommandeSelected()" >
+                          <div *ngIf="validateForm.value.numType == 0">
+                            <ng-option *ngFor="let elem of commandeAchaList" [value]="elem.numComAchat">{{elem.numComAchat}} du {{elem.commande.dateCommande}} ( {{ elem.commande.frs.codeFrs }} - {{ elem.commande.frs.identiteFrs }} ) {{ elem.exercice.codeExercice }}</ng-option>
+                          </div>
+                          <div *ngIf="validateForm.value.numType == 1">
+                            <ng-option *ngFor="let elem of appelOffreList" [value]="elem.numAppelOffre">{{elem.numAppelOffre}} du {{elem.commande.dateCommande}} ( {{ elem.commande.frs.codeFrs }} - {{ elem.commande.frs.identiteFrs }} ) {{ elem.exercice.codeExercice }}</ng-option>
+                          </div>
+                          <div *ngIf="validateForm.value.numType == 2">
+                            <ng-option *ngFor="let elem of bondTravailList" [value]="elem.numBondTravail">{{elem.numBondTravail}} du {{elem.commande.dateCommande}} ( {{ elem.commande.frs.codeFrs }} - {{ elem.commande.frs.identiteFrs }} ) {{ elem.exercice.codeExercice }}</ng-option>
+                          </div>
+                          <div *ngIf="validateForm.value.numType == 3">
+                            <ng-option *ngFor="let elem of lettreCommandeList" [value]="elem.numLettreComm">{{elem.numLettreComm}} du {{elem.commande.dateCommande}} ( {{ elem.commande.frs.codeFrs }} - {{ elem.commande.frs.identiteFrs }} ) {{ elem.exercice.codeExercice }}</ng-option>
+                          </div>
+                          
+                          
+                        </ng-select>
+                      </div>
+                      
+                  </div>
+                  <div class="row">
+                    <div class="col-md-3 form-group mb-3">
+                      <label for="picker1">Date</label>
+                      <div class="input-group">
+                          <input formControlName="dateReception" id="picker1" class="form-control text-right" type="date"
+                          [readOnly]="detailView"  >
+
+                      </div>
+                    </div>
+                    <div class="col-md form-group">
+                      <label for="orderNo">N° Générique</label>
+                      <input formControlName="description" type="text" class="form-control" id="orderNo"
+                          placeholder="Numéro" [readOnly]="detailView">
+
+                    </div>
+                    <div class="col-md form-group">
+                      <label for="orderNo">Référence BL</label>
+                      <input formControlName="refBordLivraiRecept" type="text" class="form-control" id="orderNo"
+                          placeholder="Numéro" [readOnly]="detailView">
+
+                    </div>
+
+                    <div class="col-md form-group mb-3">
+                      <label >Magasin</label>
+                      <ng-select formControlName="magasin" (ngModelChange)="getInfosOnMagasinSelected()" [readonly]="detailView">
+                        <ng-option *ngFor="let mag of magasinList" [value]="mag.numMagasin">{{mag.codeMagasin}} - {{mag.libMagasin}}</ng-option>
+                      </ng-select>
+                    </div>
+
+                  </div>
+                  <div class="row">
+                    <div class="col-md form-group">
+                      <label for="orderNo">Observation</label>
+                      <input formControlName="observation" type="text" class="form-control" id="orderNo"
+                          placeholder="Numéro" [readOnly]="detailView">
+
+                    </div>
+                  </div>
+                </form>
+                  <div class="mt-3 mb-4 border-top"></div>
+                  <h4 class="font-weight-bold">Détails sur l'Entrée d'Article</h4>
+
+                  <div class="row">
+                      <div class="col-md-12 table-responsive">
+                          <table class="table table-hover mb-3">
+                              <thead class="bg-gray-300">
+                                  <tr>
+                                      <th scope="col">#</th>
+                                      <th scope="col">Article</th>
+                                      <th scope="col">Quantité</th>
+                                      <th scope="col">Unité</th>
+                                      <th scope="col">Quantité Restante</th>
+                                      <th scope="col">Prix Unitaire</th>
+                                      <th scope="col">Montant TTC</th>
+                                      <th scope="col"></th>
+                                  </tr>
+                              </thead>
+                              <tbody>
+                                  <tr *ngFor="let lig of ligneShow; let i = index;"
+                                      >
+                                      <th scope="row">{{i + 1}}</th>
+                                      <td>
+                                        <ng-select [(ngModel)]="lig.selectedArticl" (ngModelChange)="getInfosOfSelectArt(i)"
+                                        (click)="onArticleSelectClicked(i)" style="min-width: 180px;" [readonly]="detailView">
+                                          <ng-option *ngFor="let art of lig.listArticle" [value]="art.numArticle"
+                                           >{{art.codeArticle}} - {{art.libArticle}}</ng-option>
+                                        </ng-select>
+                                      </td>
+                                      <td>
+                                        <input type="number" class="form-control" [(ngModel)] = "lig.ligneReception.quantiteLigneReception"
+                                            placeholder="Quantité" (ngModelChange)="calculTotaux()" [readOnly]="detailView">
+                                      </td>
+                                      <td>
+                                        {{lig.concernedLigneCom?.uniter?.codeUniter}} - {{lig.concernedLigneCom?.uniter?.libUniter}}
+                                      </td>
+                                      <td>
+                                        {{getQteRestanOfALigCom(lig.concernedLigneCom)}}
+                                      </td>
+                                      <td>
+                                        {{lig.ligneReception.puLigneReception }}
+                                      </td>
+                                      <td>
+                                        {{lig.ligneReception.puLigneReception * lig.ligneReception.quantiteLigneReception * (1+(lig.ligneReception?.ligneCommande?.tva/100))}}
+                                      </td>
+                                      <td>
+                                          <button class="btn btn-outline-secondary float-right" (click)="popALigneAppro(i)" *ngIf="!detailView">Retirer</button>
+                                      </td>
+                                  </tr>
+                              </tbody>
+                          </table>
+                          <button class="btn btn-primary float-right mb-4" (click)="pushALigneAppro()"
+                          [disabled]="!(validateForm.value.magasin && validateForm.value.numComm)" *ngIf="!detailView" >Ajouter une ligne</button>
+                      </div>
+
+                      <div class="col-md-12">
+                        <div class="float-right">
+                            <p>Total Montant HT &nbsp; : &nbsp; <span> {{ totaux[0] }} </span> &nbsp; F CFA</p>
+                            <p class="d-flex align-items-center">Total Montant TVA &nbsp; : &nbsp; <span> {{ totaux[1] }} </span> &nbsp; F CFA</p>
+                            <h5 class="font-weight-bold d-flex align-items-center">Total Montant TTC &nbsp; : &nbsp; <span> {{ totaux[2] }} </span> &nbsp; F CFA</h5>
+                        </div>
+                      </div>
+
+                  </div>
+
+              </div>
+
+            </ng-template>
+          </li>
+
+        </ul>
+
+        <div [ngbNavOutlet]="nav" class="mt-2"></div>
+
+      </div>
+    </div>
+
+
+
 </div>
+
+
+
+<ng-template #modalConfirm let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-title">Suppression</h4>
+    <button (click)="modal.dismiss('Cross click')" aria-describedby="modal-title" aria-label="Close button"
+            class="close"
+            type="button">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <p>
+      <strong>Confirmez-vous la suppression de
+        <span class="text-primary">{{ reception?.numReception }}</span> ?</strong></p>
+  </div>
+  <div class="modal-footer">
+    <button (click)="modal.dismiss('cancel')" class="btn btn-outline-secondary btn-rounded" type="button">Cancel
+    </button>
+    <button (click)="modal.close('Ok')" class="btn btn-danger btn-rounded" ngbAutofocus
+            type="button">Ok
+    </button>
+  </div>
+</ng-template>

@@ -1,9 +1,10 @@
 import { LigneCommande } from '../ligneCommande.model';
+import { LigneReception } from '../ligneReception.model';
 import { Reception } from '../reception.model';
 
 export class EncapReception{
 
-  constructor(public reception: Reception, public ligneReceptions: LigneCommande[]){
+  constructor(public reception: Reception, public ligneReceptions: LigneReception[]){
 
   }
 

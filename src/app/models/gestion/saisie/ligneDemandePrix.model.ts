@@ -6,7 +6,7 @@ export class LigneDemandePrix {
 
     public idLigneDemandePrix:  number = null;
 
-  constructor(public qteLigneDemandePrix: DoubleRange, public designationDemandePrix: String, public designationLigneDemandePrix: String, 
+  constructor(public qteLigneDemandePrix: number, public designationDemandePrix: String, public designationLigneDemandePrix: String, 
     public demandePrix: DemandePrix, public article: Article, public uniter: Uniter){
 
   }

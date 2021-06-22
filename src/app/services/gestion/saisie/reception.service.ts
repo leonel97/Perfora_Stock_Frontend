@@ -39,6 +39,10 @@ export class ReceptionService {
       return this.httpCli.put<EncapReception>(this.host+'/stock/reception/byCodRec2/'+code, corps);
     }
 
+    editAReception3(code:String, corps:Reception){
+      return this.httpCli.put<Reception>(this.host+'/stock/reception/byCodRec3/'+code, corps);
+    }
+
     deleteAReception(code:String){
       return this.httpCli.delete<boolean>(this.host+'/stock/reception/byCodRec/'+code);
     }

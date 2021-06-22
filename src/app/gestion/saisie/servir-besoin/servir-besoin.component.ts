@@ -434,6 +434,14 @@ export class ServirBesoinComponent  implements OnInit {
         //basculer vers la tab contenant la liste apres modification
         this.activeTabsNav = 1;
 
+        this.getAllArticle();
+        this.getAllUniter();
+        this.getAllLigneAppro();
+        this.getAllDemandeAppro();
+        this.getAllLigneDemandeAppro();
+        this.getAllMagasin();
+        this.getAllStocker();
+
       },
       (error: HttpErrorResponse) => {
         console.log('Echec atatus ==> ' + error.status);
@@ -462,6 +470,14 @@ export class ServirBesoinComponent  implements OnInit {
           //basculer vers la tab contenant la liste apres modification
           this.loading = false;
           this.activeTabsNav = 1;
+
+          this.getAllArticle();
+          this.getAllUniter();
+          this.getAllLigneAppro();
+          this.getAllDemandeAppro();
+          this.getAllLigneDemandeAppro();
+          this.getAllMagasin();
+          this.getAllStocker();
 
 
       },
@@ -609,6 +625,14 @@ export class ServirBesoinComponent  implements OnInit {
               if(eta == false) msg = 'Erreur lors du Retour de l\'Article dans le Magasin Annulation';
               this.toastr.error(msg.valueOf(), 'Erreur !', { timeOut: 5000 });
             }
+
+            this.getAllArticle();
+            this.getAllUniter();
+            this.getAllLigneAppro();
+            this.getAllDemandeAppro();
+            this.getAllLigneDemandeAppro();
+            this.getAllMagasin();
+            this.getAllStocker();
 
 
       },
