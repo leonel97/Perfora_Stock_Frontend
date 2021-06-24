@@ -28,6 +28,10 @@ let routes: Routes = [
       {
         path: 'saisie',
         loadChildren: () => import('./saisie/saisie.module').then(dj => dj.SaisieModule)
+      },
+      {
+        path: 'rapport',
+        loadChildren: () => import('./rapport/rapport.module').then(ra => ra.RapportModule)
       }
     ]
   }

@@ -9,4 +9,393 @@
 
     <div class="separator-breadcrumb border-top"></div>
     <!--Contenu component importation-->
+    <ngb-accordion #acc="ngbAccordion" [closeOthers]="false" activeIds="ngb-panel-0">
+      <ngb-panel title="Importations">
+        <ng-template ngbPanelContent >
+          <div [@animate]="{value:'*',params:{y:'20px',opacity:'0',delay:'0ms', duration: '400ms'}}">
+            <form [formGroup] = "repport1FormsGroup" (ngSubmit)="onRep1GenerateClicked()">
+              <div class="row" style="min-height: 300px;">
+                <div class="col-md-5 form-group mb-3">
+                  <label >Eléments</label>
+                  <ng-select tabindex="0" formControlName="rep1Element">
+                    <ng-option [value]="0">Directions</ng-option>
+                    <ng-option [value]="1">Types de Centre de Consommation</ng-option>
+                    <ng-option [value]="2">Centres de Consommation</ng-option>
+                    <ng-option [value]="3">Magasins</ng-option>
+                    <ng-option [value]="4">Familles d'Article</ng-option>
+                    <ng-option [value]="5">Types d'Article</ng-option>
+                    <ng-option [value]="6">Articles</ng-option>
+                    <ng-option [value]="7">Types de Fournisseur</ng-option>
+                    <ng-option [value]="8">Fournisseurs</ng-option>
+                  </ng-select>
+                </div>
+                <div class="col-md-5 form-group mb-3">
+                  <label for="code">Fichier <span class="required-field">*</span> </label>
+                  <input class="form-control" accept=".xlsx" id="rep1File"
+                  formControlName="rep1File" (change)="getFile($event)"
+                         placeholder="Entrer le code" type="file">
+
+                </div>
+
+
+                <div class="col-md-12">
+
+                  <button class="btn m-1 ml-2 btn-save" type="submit" [disabled]="!this.file"> Importer</button>
+                  <button class="btn m-1 ml-2 btn-cancel" type="button" [disabled]="!this.file"
+                  (click)="showFileContent(modalLong)"> Afficher</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </ng-template>
+      </ngb-panel>
+      <ngb-panel>
+        <ng-template ngbPanelTitle>
+          <span>&#9733; <b>Fancy</b> title &#9733;</span>
+        </ng-template>
+        <ng-template ngbPanelContent>
+          <div [@animate]="{value:'*',params:{y:'20px',opacity:'0',delay:'0ms', duration: '400ms'}}">
+            Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf
+            moon
+            officia
+            aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf
+            moon
+            tempor,
+            sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim
+            keffiyeh
+            helvetica,
+            craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo.
+            Leggings
+            occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them
+            accusamus
+            labore sustainable VHS.
+          </div>
+        </ng-template>
+      </ngb-panel>
+      <ngb-panel title="Simple">
+        <ng-template ngbPanelContent>
+          <div [@animate]="{value:'*',params:{y:'20px',opacity:'0',delay:'0ms', duration: '400ms'}}">
+            Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf
+            moon
+            officia
+            aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf
+            moon
+            tempor,
+            sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim
+            keffiyeh
+            helvetica,
+            craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo.
+            Leggings
+            occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them
+            accusamus
+            labore sustainable VHS.
+          </div>
+        </ng-template>
+      </ngb-panel>
+    </ngb-accordion>
+
+
 </div>
+
+
+<ng-template #modalLong let-modal>
+  <div class="modal-header" >
+    <h4 class="modal-title" id="modal-basic-title">Apperçu</h4>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+    <div class="modal-body"  *ngIf="repport1FormsGroup.value['rep1Element'] == 0">
+      <h3 style="text-align: center;">Directions</h3>
+      <table class="table table-bordered table-striped table-sm"  id="dataTable1"><!--datatable [dtOptions]="dtOptions1"
+        [dtTrigger]="dtTrigger1"-->
+      <thead>
+        <tr>
+          <th>Code</th>
+          <th>Libellé</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let uniter of feuille; let i = index">
+          <td>{{ uniter[0] }}</td>
+          <td>{{ uniter[1] }}</td>
+
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <th>Code</th>
+          <th>Libellé</th>
+        </tr>
+      </tfoot>
+    </table>
+
+    </div>
+    <div class="modal-body"  *ngIf="repport1FormsGroup.value['rep1Element'] == 1">
+      <h3 style="text-align: center;">Types de Centre de Consommation</h3>
+      <table class="table table-bordered table-striped table-sm"  id="dataTable1"><!--datatable [dtOptions]="dtOptions1"
+        [dtTrigger]="dtTrigger1"-->
+      <thead>
+        <tr>
+          <th>Code</th>
+          <th>Libellé</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let uniter of feuille; let i = index">
+          <td>{{ uniter[0] }}</td>
+          <td>{{ uniter[1] }}</td>
+
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <th>Code</th>
+          <th>Libellé</th>
+        </tr>
+      </tfoot>
+    </table>
+
+    </div>
+    <div class="modal-body"  *ngIf="repport1FormsGroup.value['rep1Element'] == 2">
+      <h3 style="text-align: center;">Centre de Consommation</h3>
+      <table class="table table-bordered table-striped table-sm"  id="dataTable1"><!--datatable [dtOptions]="dtOptions1"
+        [dtTrigger]="dtTrigger1"-->
+      <thead>
+        <tr>
+          <th>Code</th>
+          <th>Libellé</th>
+          <th>Code Direction</th>
+          <th>Code Type</th>
+          <th>Centre Parent</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let uniter of feuille; let i = index">
+          <td>{{ uniter[0] }}</td>
+          <td>{{ uniter[1] }}</td>
+          <td>{{ uniter[0] }}</td>
+          <td>{{ uniter[1] }}</td>
+          <td>{{ uniter[0] }}</td>
+
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <th>Code</th>
+          <th>Libellé</th>
+          <th>Code Direction</th>
+          <th>Code Type</th>
+          <th>Centre Parent</th>
+        </tr>
+      </tfoot>
+    </table>
+
+    </div>
+    <div class="modal-body"  *ngIf="repport1FormsGroup.value['rep1Element'] == 3">
+      <h3 style="text-align: center;">Magasins</h3>
+      <table class="table table-bordered table-striped table-sm"  id="dataTable1"><!--datatable [dtOptions]="dtOptions1"
+        [dtTrigger]="dtTrigger1"-->
+      <thead>
+        <tr>
+          <th>Code</th>
+          <th>Libellé</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let uniter of feuille; let i = index">
+          <td>{{ uniter[0] }}</td>
+          <td>{{ uniter[1] }}</td>
+
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <th>Code</th>
+          <th>Libellé</th>
+        </tr>
+      </tfoot>
+    </table>
+
+    </div>
+    <div class="modal-body"  *ngIf="repport1FormsGroup.value['rep1Element'] == 4">
+      <h3 style="text-align: center;">Familles d'Article</h3>
+      <table class="table table-bordered table-striped table-sm"  id="dataTable1"><!--datatable [dtOptions]="dtOptions1"
+        [dtTrigger]="dtTrigger1"-->
+      <thead>
+        <tr>
+          <th>Code</th>
+          <th>Libellé</th>
+          <th>Code Super Famille</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let uniter of feuille; let i = index">
+          <td>{{ uniter[0] }}</td>
+          <td>{{ uniter[1] }}</td>
+          <td>{{ uniter[1] }}</td>
+
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <th>Code</th>
+          <th>Libellé</th>
+          <th>Code Super Famille</th>
+        </tr>
+      </tfoot>
+    </table>
+
+    </div>
+    <div class="modal-body" *ngIf="repport1FormsGroup.value['rep1Element'] == 5">
+      <h3 style="text-align: center;">Type d'Article</h3>
+      <table class="table table-bordered table-striped table-sm"  id="dataTable1"> <!--datatable [dtOptions]="dtOptions1"
+        [dtTrigger]="dtTrigger1"-->
+      <thead>
+        <tr>
+          <th>Code</th>
+          <th>Libellé</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let uniter of feuille; let i = index">
+          <td>{{ uniter[0] }}</td>
+          <td>{{ uniter[1] }}</td>
+
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <th>Code</th>
+          <th>Libellé</th>
+        </tr>
+      </tfoot>
+    </table>
+
+    </div>
+    <div class="modal-body"  *ngIf="repport1FormsGroup.value['rep1Element'] == 6">
+      <h3 style="text-align: center;">Articles</h3>
+      <table class="table table-bordered table-striped table-sm"  id="dataTable1"><!--datatable [dtOptions]="dtOptions1"
+        [dtTrigger]="dtTrigger1"-->
+      <thead>
+        <tr>
+          <th>Code</th>
+          <th>Libellé</th>
+          <th>TVA (en %)</th>
+          <th>Taxe Spécifiq. (en %)</th>
+          <th>Code Famille</th>
+          <th>Code Type Article</th>
+
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let uniter of feuille; let i = index">
+          <td>{{ uniter[0] }}</td>
+          <td>{{ uniter[1] }}</td>
+          <td>{{ uniter[2] }}</td>
+          <td>{{ uniter[3] }}</td>
+          <td>{{ uniter[4] }}</td>
+          <td>{{ uniter[5] }}</td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <th>Code</th>
+          <th>Libellé</th>
+          <th>TVA (en %)</th>
+          <th>Taxe Spécifiq. (en %)</th>
+          <th>Code Famille</th>
+          <th>Code Type Article</th>
+        </tr>
+      </tfoot>
+    </table>
+
+    </div>
+    <div class="modal-body"  *ngIf="repport1FormsGroup.value['rep1Element'] == 7">
+      <h3 style="text-align: center;">Types de Fournisseur</h3>
+      <table class="table table-bordered table-striped table-sm"  id="dataTable1"><!--datatable [dtOptions]="dtOptions1"
+        [dtTrigger]="dtTrigger1"-->
+      <thead>
+        <tr>
+          <th>Code</th>
+          <th>Libellé</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let uniter of feuille; let i = index">
+          <td>{{ uniter[0] }}</td>
+          <td>{{ uniter[1] }}</td>
+
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <th>Code</th>
+          <th>Libellé</th>
+        </tr>
+      </tfoot>
+    </table>
+
+    </div>
+    <div class="modal-body"  *ngIf="repport1FormsGroup.value['rep1Element'] == 8">
+      <h3 style="text-align: center;">Fournisseur</h3>
+      <table class="table table-bordered table-striped table-sm"  id="dataTable1"><!--datatable [dtOptions]="dtOptions1"
+        [dtTrigger]="dtTrigger1"-->
+      <thead>
+        <tr>
+          <th>Code</th>
+          <th>Identité</th>
+          <th>Téléphone</th>
+          <th>N° IFU</th>
+          <th>N° RCCM</th>
+          <th>Domaine d'Intervention</th>
+          <th>Code Catégorie</th>
+
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let uniter of feuille; let i = index">
+          <td>{{ uniter[0] }}</td>
+          <td>{{ uniter[1] }}</td>
+          <td>{{ uniter[2] }}</td>
+          <td>{{ uniter[3] }}</td>
+          <td>{{ uniter[4] }}</td>
+          <td>{{ uniter[5] }}</td>
+          <td>{{ uniter[6] }}</td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <th>Code</th>
+          <th>Identité</th>
+          <th>Téléphone</th>
+          <th>N° IFU</th>
+          <th>N° RCCM</th>
+          <th>Domaine d'Intervention</th>
+          <th>Code Catégorie</th>
+        </tr>
+      </tfoot>
+    </table>
+
+    </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-dark btn-rounded" (click)="modal.close('ok')">Ok</button>
+  </div>
+</ng-template>
+
+<ng-template #content let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title">Modal title</h4>
+    <button type="button" class="close" aria-label="Close" (click)="modal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <p>One fine body&hellip;</p>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-light" (click)="modal.close('Close click')">Close</button>
+  </div>
+</ng-template>
