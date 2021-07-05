@@ -9,7 +9,7 @@ import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
 import {SharedModule} from "./shared/shared.module";
 import {JwtInterceptor} from "./helpers/jwt.interceptor";
 
-import { registerLocaleData } from '@angular/common';
+import { HashLocationStrategy, LocationStrategy, registerLocaleData } from '@angular/common';
 import localeFr from '@angular/common/locales/fr';
 
 // the second parameter 'fr' is optional
@@ -29,6 +29,10 @@ registerLocaleData(localeFr, 'fr');
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
     /* The below line prevent the interceptor from inserting the access_token ... should look at it more deeply later
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true }, */
+    {
+      provide: LocationStrategy,
+      useClass: HashLocationStrategy
+    },
     {provide: LOCALE_ID, useValue: 'fr' }
   ],
   bootstrap: [AppComponent]

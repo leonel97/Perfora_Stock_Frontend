@@ -2,7 +2,7 @@
     <div class="breadcrumb">
       <h1>Gestion des exercices</h1>
       <ul>
-        <li><a routerLink="">Définition</a></li>
+        <li><a routerLink="">Fichier</a></li>
         <li>Exercice</li>
       </ul>
     </div>
@@ -10,17 +10,17 @@
   
     <div class="card mb-4">
       <div class="card-body">
-        <div class="card-title mb-3 border-bottom pb-2">Gestion des exercices</div>
+        <div class="card-title mb-3 border-bottom pb-2">Gestion des Exercices</div>
   
         <ul #nav="ngbNav" [(activeId)]="activeTabsNav" class="nav-tabs" ngbNav>
           <li [ngbNavItem]="1">
-            <a ngbNavLink>Liste des exercices</a>
+            <a ngbNavLink>Liste des Exercices</a>
             <ng-template ngbNavContent>
               <div class="row">
                 <div class="col-md-5">
                   <div class="form-group">
                     <input [formControl]="searchControl" class="form-control form-control-rounded" id="email"
-                           placeholder="Rechercher exercice" type="email">
+                           placeholder="Rechercher un Exercice" type="email">
                   </div>
                   
                 </div>
@@ -112,7 +112,7 @@
             </ng-template>
           </li>
           <li [ngbNavItem]="2">
-            <a ngbNavLink>Nouveau exercice</a>
+            <a ngbNavLink>Nouveau Exercice</a>
             <ng-template ngbNavContent>
   
               <div class="mb-2">
@@ -194,14 +194,14 @@
     </div>
     <div class="modal-body">
       <p>
-        <strong>Confirmez-vous la suppression de
+        <strong>Confirmez-vous la suppression 
           <span class="text-primary"> {{ exercice?.libExercice }}</span> ?</strong></p>
     </div>
     <div class="modal-footer">
       <button (click)="modal.dismiss('cancel')" class="btn btn-outline-secondary btn-rounded" type="button">Annuler
       </button>
       <button (click)="modal.close('Ok')" class="btn btn-danger btn-rounded" ngbAutofocus
-              type="button">Ok
+              type="button">Confirmer
       </button>
     </div>
   </ng-template>

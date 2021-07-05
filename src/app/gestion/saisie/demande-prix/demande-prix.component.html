@@ -102,6 +102,10 @@
                                   type="button" *ngIf="row.valideDemandePrix == true">
                             <i class="i-Reload"> </i>
                           </button>
+                          <button (click)="onGeneratBondClicked(modalGenerBond, row)" class="btn btn-outline-warning m-1 btn-sm"
+                                  type="button" *ngIf="row.valideDemandePrix == true">
+                            <i class="i-Mail-Send"> </i>
+                          </button>
                         </ng-template>
                       </ngx-datatable-column>
                     </ngx-datatable>
@@ -138,7 +142,6 @@
                         <div class="input-group">
                             <input formControlName="dateDemandePrix" id="picker1" class="form-control text-right" type="date"
                                 >
-
                         </div>
                       </div>
                       <!--div class="col-md">
@@ -149,7 +152,7 @@
                         </div>
                       </div-->
                       <div class="col-md form-group mb-3">
-                        <label for="picker1">Date limite de dépôt</label>
+                        <label for="picker1">Date limite de dépôt des Factures Proformat</label>
                         <div class="input-group">
                             <input formControlName="dateLimiteDemandePrix" id="picker2" class="form-control text-right"
                                 type="date">
@@ -158,12 +161,17 @@
                       </div>
                   </div>
                   <div class="row">
-                    <div class="col-md form-group">
+                    <div class="col-md-10 form-group">
                       <label for="orderNo">Désignation (observation) </label>
                       <input formControlName="designationDemandePrix" type="text" class="form-control" id="orderNo"
                           placeholder="Numéro">
 
                     </div>
+                    <div class="col-md-2 form-group">
+                      <button class="btn btn-primary float-right mb-4" style="margin-top: 13%; font-weight: bold;"
+                      (click)="openFrsConsulterDialog(modalFrsConsulter)">Fournisseurs Consulté(s) . . .</button>
+                    </div>
+
                     <!--div class="col-md form-group mb-3">
                       <label >Fournisseur</label>
                       <ng-select formControlName="frs">
@@ -257,7 +265,7 @@
   <div class="modal-body">
     <p>
       <strong>Confirmez-vous la suppression de
-        <span class="text-primary">{{ commandeAchat?.numComAchat }}</span> ?</strong></p>
+        <span class="text-primary">{{ demandePrix?.idDemandePrix }}</span> ?</strong></p>
   </div>
   <div class="modal-footer">
     <button (click)="modal.dismiss('cancel')" class="btn btn-outline-secondary btn-rounded" type="button">Cancel
@@ -265,5 +273,153 @@
     <button (click)="modal.close('Ok')" class="btn btn-danger btn-rounded" ngbAutofocus
             type="button">Ok
     </button>
+  </div>
+</ng-template>
+
+<ng-template #modalConfirmChoiFrs let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-title">Choix de Fournisseur</h4>
+    <button (click)="modal.dismiss('Cross click')" aria-describedby="modal-title" aria-label="Close button"
+            class="close"
+            type="button">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <p>
+      <strong>Confirmez-vous <strong class="text-success" *ngIf="etatChoix == false">le Choix</strong>
+      <strong class="text-danger" *ngIf="etatChoix == true">l'Annulation du choix</strong> du Fournisseur
+        <span class="text-primary">{{ etatChoixConcernedFrs.numFournisseur }} - {{ etatChoixConcernedFrs.identiteFrs }}</span> ?</strong></p>
+  </div>
+  <div class="modal-footer">
+    <button (click)="modal.dismiss('cancel')" class="btn btn-outline-secondary btn-rounded" type="button">Annuler
+    </button>
+    <button (click)="modal.close('Ok')" class="btn btn-danger btn-rounded" ngbAutofocus
+            type="button">Ok
+    </button>
+  </div>
+</ng-template>
+
+<ng-template #modalFrsConsulter let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-title">Fournisseurs Consultés</h4>
+    <button (click)="modal.dismiss('Cross click')" aria-describedby="modal-title" aria-label="Close button"
+            class="close"
+            type="button">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+
+    <div class="row">
+      <table class="table table-striped table-hover " id="tabListArt">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Fournisseur</th>
+            <th>Date de Remise</th>
+            <th>Choisir ?</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody >
+          <tr *ngFor="let lig of selectedCurrentFrsInter; let i = index">
+            <th>{{ i+1 }}</th>
+            <td>
+              <ng-select (click)="onFrsSelectClicked(i)" [(ngModel)]="lig.selectedFrs"
+               style="min-width: 180px;">
+                <ng-option *ngFor="let frs of lig.listFrs" [value]="frs.numFournisseur"
+                  >{{frs.codeFrs}} - {{frs.identiteFrs}}</ng-option>
+              </ng-select>
+            </td>
+            <td>
+              <input class="form-control text-right" type="date" [(ngModel)]="lig.dateRemis">
+            </td>
+            <td>
+              <p style="text-align: center;"><input class="form-check-input" type="checkbox"
+                [(ngModel)]="lig.choisit" (click)="onChoiceAFrsClickedDialog(modalConfirmChoiFrs, i)"></p>
+            </td>
+            <td>
+              <button type="button" class="btn btn-danger btn-sm" data-toggle="modal"
+              (click)="popALigneFrsConsulter(i)"><i class="i-Close-Window"></i></button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="row">
+      <button class="btn btn-primary float-right mb-4" style="width: 100%;"
+      (click)="pushALigneFrsConsulter()">Ajouter un Fournisseur</button>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button (click)="modal.dismiss('cancel')" class="btn btn-outline-secondary btn-rounded" type="button">Fermer
+    </button>
+    <button (click)="modal.close('Ok')" class="btn btn-success btn-rounded" ngbAutofocus
+            type="button">Valider
+    </button>
+  </div>
+</ng-template>
+
+<ng-template #modalGenerBond let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-title">Informations sur le Bond</h4>
+    <button (click)="modal.dismiss('Cross click')" aria-describedby="modal-title" aria-label="Close button"
+            class="close"
+            type="button">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+
+    <form [formGroup]="validateForm2">
+      <div class="row">
+        <div class="col-md">
+          <div class="form-group">
+              <label for="orderNo">Numéro DP</label>
+              <input formControlName="idDemandePrix" type="text" class="form-control" id="orderNo"
+                  placeholder="Numéro" readonly>
+          </div>
+        </div>
+
+        <div class="col-md form-group mb-3">
+          <label >Fournisseur</label>
+          <input formControlName="frs" type="text" class="form-control"
+                  placeholder="Numéro" readonly>
+        </div>
+
+      </div>
+      <div class="row">
+
+          <div class="col-md form-group mb-3">
+            <label for="picker1">Date de Commande</label>
+            <div class="input-group">
+                <input formControlName="dateCommande" id="picker1" class="form-control text-right" type="date"
+                    >
+            </div>
+          </div>
+          <div class="col-md">
+            <div class="col-md form-group" >
+                <label for="orderNo">Délais de Livraison (en jours)</label>
+                <input formControlName="delaiLivraison" type="number" class="form-control" id="orderNo"
+                    placeholder="Numéro">
+            </div>
+          </div>
+          <div class="col-md form-group mb-3">
+            <label for="picker2">Date de Remise</label>
+            <div class="input-group">
+                <input formControlName="dateRemise" id="picker2" class="form-control text-right" type="date"
+                    >
+            </div>
+          </div>
+      </div>
+
+    </form>
+
+  </div>
+  <div class="modal-footer">
+    <button (click)="modal.dismiss('cancel')" class="btn btn-outline-secondary btn-rounded" type="button">Fermer
+    </button>
+    <btn-loading btnClass="btn-primary" ngbAutofocus [loading]="loading2" (click)="generateBond(modal)">Générer</btn-loading>
   </div>
 </ng-template>

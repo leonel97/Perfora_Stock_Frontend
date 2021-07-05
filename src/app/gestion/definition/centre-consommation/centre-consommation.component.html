@@ -53,7 +53,7 @@
                       </ngx-datatable-column>
                       <ngx-datatable-column>
                         <ng-template ngx-datatable-header-template>
-                          Type Centre conso.
+                          Catégorie Centre conso.
                         </ng-template>
                         <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
                             {{ row.typeService.libTypService }} 
@@ -69,7 +69,7 @@
                       </ngx-datatable-column>
                       <ngx-datatable-column>
                         <ng-template ngx-datatable-header-template>
-                          Centre conso. parent
+                          Super Centre conso.
                         </ng-template>
                         <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
                             {{row.superService != null ? row.superService.libService : '' }} 
@@ -140,7 +140,7 @@
                         </div>
 
                         <div class="col-md-4 form-group mb-3">
-                            <label for="typeService">Type de centre de consommation <span class="required-field">*</span></label>
+                            <label for="typeService">Catégorie de centre de Consommation <span class="required-field">*</span></label>
                             <ng-select bindLabel="libTypService"  id="typeService" formControlName="typeService" placeholder="Entrer le type de centre de consommation">
                               <!--option [ngValue]="null">-- section parent -- </option-->
                               <ng-option *ngFor="let typeCentreconso of typeCentreConsommationList" [value]="typeCentreconso">{{typeCentreconso.libTypService}}</ng-option>
@@ -153,7 +153,7 @@
                         </div>
 
                         <div class="col-md-4 form-group mb-3">
-                            <label for="superService">Centre de consommation parent</label>
+                            <label for="superService">Super Centre de consommation</label>
                             <ng-select bindLabel="libService"  id="superService" formControlName="superService" placeholder="Entrer le Super Centre de Consomation">
                               <!--ng-option [ngValue]="null">-- Centre de consommation parent -- </ng-option-->
                               <ng-option *ngFor="let centreConso of centreConsommationList" [value]="centreConso">{{centreConso.libService}}</ng-option>

@@ -1,6 +1,6 @@
 <div class="">
     <div class="breadcrumb">
-      <h1>Gestion des fournisseurs</h1>
+      <h1>Gestion des Fournisseurs</h1>
       <ul>
         <li><a routerLink="">Définition</a></li>
         <li>Fournisseur</li>
@@ -10,11 +10,11 @@
   
     <div class="card mb-4">
       <div class="card-body">
-        <div class="card-title mb-3 border-bottom pb-2">Gestion des fournisseurs</div>
+        <div class="card-title mb-3 border-bottom pb-2">Gestion des Fournisseurs</div>
   
         <ul #nav="ngbNav" [(activeId)]="activeTabsNav" class="nav-tabs" ngbNav>
           <li [ngbNavItem]="1">
-            <a ngbNavLink>Liste desfournisseurs</a>
+            <a ngbNavLink>Liste des Fournisseurs</a>
             <ng-template ngbNavContent>
               <div class="row">
                 <div class="col-md-4">
@@ -81,7 +81,7 @@
             </ng-template>
           </li>
           <li [ngbNavItem]="2">
-            <a ngbNavLink>Nouveau fournisseur</a>
+            <a ngbNavLink>Nouveau Fournisseur</a>
             <ng-template ngbNavContent>
   
               <div class="mb-2">
@@ -110,7 +110,7 @@
                     </div>
 
                     <div class="col-md-3 form-group mb-3">
-                        <label for="tel">Catégorie <span class="required-field">*</span> </label>
+                        <label for="tel">Catégorie de Fournisseur <span class="required-field">*</span> </label>
                         <ng-select bindLabel="libCatFrs" id="categorieFrs" formControlName="categorieFrs" placeholder=" Entrer Catégorie du fournisseur">
                             <!--option [ngValue]="null">-- Centre de consommation parent -- </option-->
                             <ng-option *ngFor="let categorieFrs of typeFournisseurFiltered" [value]="categorieFrs">{{categorieFrs.libCatFrs}}</ng-option>

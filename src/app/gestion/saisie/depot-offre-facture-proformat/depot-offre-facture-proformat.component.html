@@ -9,4 +9,329 @@
 
     <div class="separator-breadcrumb border-top"></div>
     <!--Contenu component importation-->
+
+    <div class="card mb-4">
+      <div class="card-body">
+        <div class="card-title mb-3 border-bottom pb-2">Gestion des factures proformats</div>
+
+        <ul #nav="ngbNav" [(activeId)]="activeTabsNav" class="nav-tabs" ngbNav>
+          <li [ngbNavItem]="1">
+            <a ngbNavLink>Liste des factures proformats</a>
+            <ng-template ngbNavContent>
+              <div class="row">
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <input [formControl]="searchControl" class="form-control form-control-rounded" id="email"
+                           placeholder="Rechercher Factures Proformats">
+                  </div>
+                </div>
+                <div class="col-md-12">
+                  <div class="o-hidden">
+                    <ngx-datatable
+                      [columnMode]="'force'"
+                      [footerHeight]="50"
+                      [headerHeight]="50"
+                      [rowHeight]="'auto'"
+                      [rows]="fpfaFiltered"
+                      [limit]="4"
+                      class="material fullscreen"
+                      style="height: 500px; box-shadow: none; overflow-y:visible">
+
+                      <ngx-datatable-column [maxWidth]="50">
+                        <ng-template ngx-datatable-header-template>
+                          Validité
+                        </ng-template>
+                        <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                          <strong *ngIf="row.valideFpfa == true">V</strong>
+                        </ng-template>
+                      </ngx-datatable-column>
+
+                      <ngx-datatable-column>
+                        <ng-template ngx-datatable-header-template>
+                          Code
+                        </ng-template>
+                        <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                          {{ row.idFpfa }}
+                        </ng-template>
+                      </ngx-datatable-column>
+
+                      <ngx-datatable-column>
+                        <ng-template ngx-datatable-header-template>
+                          Date
+                        </ng-template>
+                        <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                          {{ row.dateFpfa | date: "dd-MM-yyyy"}}
+                        </ng-template>
+                      </ngx-datatable-column>
+
+                      <ngx-datatable-column>
+                        <ng-template ngx-datatable-header-template>
+                          N° Générique
+                        </ng-template>
+                        <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                          {{ row.designationFpfa }}
+                        </ng-template>
+                      </ngx-datatable-column>
+
+                      <ngx-datatable-column>
+                        <ng-template ngx-datatable-header-template>
+                          Demande de Prix
+                        </ng-template>
+                        <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                          {{ row.demandePrix.idDemandePrix }} du {{ row.demandePrix.dateDemandePrix | date: "dd-MM-yyyy"}}
+                        </ng-template>
+                      </ngx-datatable-column>
+
+                      <ngx-datatable-column>
+                        <ng-template ngx-datatable-header-template>
+                          Fournisseur
+                        </ng-template>
+                        <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                          {{ row.fournisseur?.codeFrs }} - {{ row?.fournisseur?.identiteFrs }}
+                        </ng-template>
+                      </ngx-datatable-column>
+
+                      <ngx-datatable-column>
+                        <ng-template ngx-datatable-header-template>
+                          Montant Total
+                        </ng-template>
+                        <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                          {{ getTotalOfAFpfa(row) }}
+                        </ng-template>
+                      </ngx-datatable-column>
+
+                      <ngx-datatable-column>
+                        <ng-template ngx-datatable-header-template>
+                          Actions
+                        </ng-template>
+                        <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                          <!--<strong>{{ row.code }}</strong>-->
+                          <button (click)="makeForm(row)" class="btn btn-primary m-1 btn-sm"
+                          type="button" *ngIf="row.valideFpfa == false">
+                            <i class="i-Pen-5"> </i>
+                          </button>
+                          <button (click)="confirm(modalConfirm, row)" class="btn btn-outline-danger m-1 btn-sm"
+                                  type="button" *ngIf="row.valideFpfa == false">
+                            <i class="i-Folder-Trash"> </i>
+                          </button>
+                          <button (click)="valider(row, true)" class="btn btn-outline-success m-1 btn-sm"
+                                  type="button" *ngIf="row.valideFpfa == false">
+                            <i class="i-Yes"> </i>
+                          </button>
+                          <button (click)="valider(row, false)" class="btn btn-outline-warning m-1 btn-sm"
+                                  type="button" *ngIf="row.valideFpfa == true">
+                            <i class="i-Reload"> </i>
+                          </button>
+                          <button (click)="openDetail(row)" class="btn btn-outline-warning m-1 btn-sm"
+                                  type="button" >
+                            <i class="i-Information"> </i>
+                          </button>
+                          <button  class="btn btn-outline-warning m-1 btn-sm"
+                                  type="button" >
+                            <i class="i-File-Download"> </i>
+                          </button>
+                        </ng-template>
+                      </ngx-datatable-column>
+                    </ngx-datatable>
+                  </div>
+                </div>
+              </div>
+            </ng-template>
+          </li>
+
+
+
+          <li [ngbNavItem]="2">
+            <a ngbNavLink><span *ngIf="! validateForm.value.idFpfa">Nouvelle</span><span *ngIf="validateForm.value.idFpfa && detailView == false" span>Modifier</span> <span *ngIf="validateForm.value.idFpfa && detailView == true" span>Détail sur</span> Facture Proformat</a>
+            <ng-template ngbNavContent>
+
+              <div class="mb-2">
+                <div class="d-flex mb-5" style="margin-bottom: 0;">
+                  <span class="m-auto"></span>
+                  <button class="btn btn-outline-secondary mr-3" (click)="resetForm()"><span *ngIf="!detailView">Annuler</span> <span *ngIf="detailView">Fermer</span></button>
+                  <btn-loading btnClass="btn-primary" [loading]="loading" (click)="submit()" *ngIf="!detailView" >Enrégistrer</btn-loading>
+                </div>
+                <form [formGroup]="validateForm">
+                  <h4 class="font-weight-bold">Informations sur la Facture Proformat d'Achat</h4>
+                  <div class="row">
+                      <div class="col-md" *ngIf="validateForm.value.idFpfa">
+                          <div class="col-md form-group">
+                              <label for="orderNo">Numéro</label>
+                              <input formControlName="idFpfa" type="text" class="form-control"
+                                  placeholder="Numéro" readonly>
+                          </div>
+                      </div>
+
+                      <div class="col-md form-group mb-3">
+                        <label >
+                          Demande de Prix
+                        </label>
+                        <ng-select formControlName="demandePrix" [readonly]="validateForm.value.numReception"
+                        (ngModelChange)="getInfosOnDpSelected()" >
+                          <ng-option *ngFor="let elem of dpList" [value]="elem.idDemandePrix">{{elem.idDemandePrix}} du {{elem.dateDemandePrix | date: "dd-MM-yyyy"}} ( {{ elem.exercice.codeExercice }} )</ng-option>
+
+                        </ng-select>
+                      </div>
+
+                      <div class="col-md form-group mb-3">
+                        <label >
+                          Fournisseurs Concernés
+                        </label>
+                        <ng-select formControlName="fournisseur" >
+                          <ng-option *ngFor="let elem of frsList" [value]="elem.numFournisseur">{{elem.codeFrs}} {{elem.identiteFrs}}</ng-option>
+
+                        </ng-select>
+                      </div>
+
+                  </div>
+                  <div class="row">
+                    <div class="col-md form-group mb-3">
+                      <label for="picker1">Date</label>
+                      <div class="input-group">
+                          <input formControlName="dateFpfa" id="picker1" class="form-control text-right" type="date"
+                          [readOnly]="detailView"  >
+
+                      </div>
+                    </div>
+                    <div class="col-md form-group mb-3">
+                      <label for="picker2">Date de Prise</label>
+                      <div class="input-group">
+                          <input formControlName="datePriseFpfa" id="picker2" class="form-control text-right" type="date"
+                          [readOnly]="detailView"  >
+
+                      </div>
+                    </div>
+                    <div class="col-md form-group mb-3">
+                      <label for="picker3">Date de Déplis</label>
+                      <div class="input-group">
+                          <input formControlName="dateDeplisFpfa" id="picker3" class="form-control text-right" type="date"
+                          [readOnly]="detailView"  >
+
+                      </div>
+                    </div>
+
+
+                  </div>
+                  <div class="row">
+                    <div class="col-md form-group">
+                      <label for="orderNo">N° Générique</label>
+                      <input formControlName="designationFpfa" type="text" class="form-control" id="orderNo"
+                          placeholder="Numéro" [readOnly]="detailView">
+
+                    </div>
+                    <div class="col-md form-group">
+                      <label for="orderNo">Observation</label>
+                      <input formControlName="obserFpfa" type="text" class="form-control" id="orderNo"
+                          placeholder="Numéro" [readOnly]="detailView">
+
+                    </div>
+                  </div>
+                </form>
+                  <div class="mt-3 mb-4 border-top"></div>
+                  <h4 class="font-weight-bold">Détails sur la Facture Proformat d'Achat</h4>
+
+                  <div class="row">
+                      <div class="col-md-12 table-responsive">
+                          <table class="table table-hover mb-3">
+                              <thead class="bg-gray-300">
+                                  <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">Article</th>
+                                    <th scope="col">PU HT</th>
+                                    <th scope="col">Quantité</th>
+                                    <th scope="col">Unité</th>
+                                    <th scope="col">Montant HT</th>
+                                    <th scope="col">TVA</th>
+                                    <th scope="col">Montant TTC</th>
+                                    <th scope="col"></th>
+                                  </tr>
+                              </thead>
+                              <tbody>
+                                  <tr *ngFor="let lig of ligneShow; let i = index;"
+                                      >
+                                      <th scope="row">{{i + 1}}</th>
+                                      <td>
+                                        <ng-select [(ngModel)]="lig.selectedArticl" (ngModelChange)="getInfosOfSelectArt(i)"
+                                        (click)="onArticleSelectClicked(i)" style="min-width: 180px;" [readonly]="detailView">
+                                          <ng-option *ngFor="let art of lig.listArticle" [value]="art.numArticle"
+                                           >{{art.codeArticle}} - {{art.libArticle}}</ng-option>
+                                        </ng-select>
+                                      </td>
+                                      <td>
+                                          <input type="number" class="form-control" [(ngModel)] = "lig.lignesFactureProFormAchat.prixUnitHtLigneFpfa"
+                                              placeholder="Prix Unitaire HT" (ngModelChange)="calculTotaux()">
+                                      </td>
+                                      <td>
+                                        <input type="number" class="form-control" [(ngModel)] = "lig.lignesFactureProFormAchat.qteLigneFpfa"
+                                            placeholder="Quantité" (ngModelChange)="calculTotaux()">
+                                      </td>
+                                      <td>
+                                        {{ lig.concernedLigneDp?.uniter.codeUniter}} - {{ lig.concernedLigneDp?.uniter.libUniter}}
+                                      </td>
+                                      <td>
+                                        {{ lig.lignesFactureProFormAchat.prixUnitHtLigneFpfa * lig.lignesFactureProFormAchat.qteLigneFpfa }}
+                                      </td>
+                                      <td>
+                                          <input type="number" class="form-control" [(ngModel)] = "lig.lignesFactureProFormAchat.tauxTvaLigneFpfa"
+                                              placeholder="Tva" (ngModelChange)="calculTotaux()">
+                                      </td>
+                                      <td>
+                                        {{ lig.lignesFactureProFormAchat.prixUnitHtLigneFpfa * lig.lignesFactureProFormAchat.qteLigneFpfa*(1+(lig.lignesFactureProFormAchat.tauxTvaLigneFpfa/100)) }}
+                                      </td>
+                                      <td>
+                                          <button class="btn btn-outline-secondary float-right" (click)="popALigneAppro(i)" *ngIf="!detailView">Retirer</button>
+                                      </td>
+                                  </tr>
+                              </tbody>
+                          </table>
+                          <button class="btn btn-primary float-right mb-4" (click)="pushALigneFactureProFormAcha()"
+                          [disabled]="!(validateForm.value.demandePrix && validateForm.value.fournisseur)" *ngIf="!detailView" >Ajouter une ligne</button>
+                      </div>
+
+                      <div class="col-md-12">
+                        <div class="float-right">
+                            <p>Total Montant HT &nbsp; : &nbsp; <span> {{ totaux[0] }} </span> &nbsp; F CFA</p>
+                            <p class="d-flex align-items-center">Total Montant TVA &nbsp; : &nbsp; <span> {{ totaux[1] }} </span> &nbsp; F CFA</p>
+                            <h5 class="font-weight-bold d-flex align-items-center">Total Montant TTC &nbsp; : &nbsp; <span> {{ totaux[2] }} </span> &nbsp; F CFA</h5>
+                        </div>
+                      </div>
+
+                  </div>
+
+              </div>
+
+            </ng-template>
+          </li>
+
+        </ul>
+
+        <div [ngbNavOutlet]="nav" class="mt-2"></div>
+
+      </div>
+    </div>
+
 </div>
+
+
+<ng-template #modalConfirm let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-title">Suppression</h4>
+    <button (click)="modal.dismiss('Cross click')" aria-describedby="modal-title" aria-label="Close button"
+            class="close"
+            type="button">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <p>
+      <strong>Confirmez-vous la suppression de
+        <span class="text-primary">{{ fpfa?.idFpfa }}</span> ?</strong></p>
+  </div>
+  <div class="modal-footer">
+    <button (click)="modal.dismiss('cancel')" class="btn btn-outline-secondary btn-rounded" type="button">Cancel
+    </button>
+    <button (click)="modal.close('Ok')" class="btn btn-danger btn-rounded" ngbAutofocus
+            type="button">Ok
+    </button>
+  </div>
+</ng-template>

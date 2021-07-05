@@ -2,6 +2,8 @@ import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
 import {GestionComponent} from "./gestion.component";
+import { AccueilComponent } from './accueil/accueil.component';
+
 
 let routes: Routes = [
   {
@@ -32,6 +34,10 @@ let routes: Routes = [
       {
         path: 'rapport',
         loadChildren: () => import('./rapport/rapport.module').then(ra => ra.RapportModule)
+      },
+      {
+        path: 'accueil',
+        component: AccueilComponent
       }
     ]
   }
