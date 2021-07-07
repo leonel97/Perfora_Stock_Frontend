@@ -165,7 +165,7 @@ export class ExerciceComponent implements OnInit {
       }, 3000);
     } else {
       const formData = this.validateForm.value;
-      if (formData.numCatFrs == null) {
+      if (formData.numExercice == null) {
         console.log("data", formData);
         
         this.enregistrerExercice(formData);
