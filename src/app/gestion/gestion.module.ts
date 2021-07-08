@@ -13,6 +13,7 @@ import {FormsModule} from "@angular/forms";
 import {PerfectScrollbarModule} from "ngx-perfect-scrollbar";
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {SharedPipesModule} from "../pipes/shared-pipes.module";
+import {NzDropDownModule} from "ng-zorro-antd/dropdown";
 
 
 @NgModule({
@@ -25,6 +26,7 @@ import {SharedPipesModule} from "../pipes/shared-pipes.module";
     PerfectScrollbarModule,
     SharedPipesModule,
     NgxEchartsModule,
+    NzDropDownModule,
   ]
 })
 export class GestionModule { }

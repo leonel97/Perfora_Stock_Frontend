@@ -8,5 +8,266 @@
     </div>
 
     <div class="separator-breadcrumb border-top"></div>
-    <!--Contenu component importation-->
+    <!--Contenu inventaire-->
+    
+    <div class="card mb-4">
+        <div class="card-body">
+          <div class="card-title mb-3 border-bottom pb-2">Gestion des Inventaires</div>
+  
+          <ul #nav="ngbNav" [(activeId)]="activeTabsNav" class="nav-tabs" ngbNav>
+            <li [ngbNavItem]="1">
+              <a ngbNavLink>Liste des Inventaires</a>
+              <ng-template ngbNavContent>
+                <div class="row">
+                  <div class="col-md-4">
+                    <div class="form-group">
+                      <input [formControl]="searchControl" class="form-control form-control-rounded" id="email"
+                             placeholder="Rechercher un Inventaire">
+                    </div>
+                  </div>
+                  <div class="col-md-12">
+                    <div class="o-hidden">
+                      <ngx-datatable
+                        [columnMode]="'force'"
+                        [footerHeight]="50"
+                        [headerHeight]="50"
+                        [rowHeight]="'auto'"
+                        [messages]="{emptyMessage: 'Aucune donnée à afficher !!!'}"
+                        [rows]=""
+                        [limit]="4"
+                        class="material fullscreen"
+                        style="height: 500px; box-shadow: none; overflow-y:visible">
+  
+                        <ngx-datatable-column [maxWidth]="50">
+                          <ng-template ngx-datatable-header-template>
+                            Validité
+                          </ng-template>
+                          <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                            <!--strong *ngIf="row.valideDemandePrix == true">V</strong-->
+                            <!--<strong *ngIf="row.commande.valide == false">A</strong>-->
+                          </ng-template>
+                        </ngx-datatable-column>
+  
+                        <ngx-datatable-column >
+                          <ng-template ngx-datatable-header-template>
+                            Numéro
+                          </ng-template>
+                        </ngx-datatable-column>
+  
+                        <ngx-datatable-column>
+                          <ng-template ngx-datatable-header-template>
+                            Magasin
+                          </ng-template>
+                          <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                           <!-- {{ row.dateDemandePrix | date :'short' }} -->
+                          </ng-template>
+                        </ngx-datatable-column>
+  
+                        <ngx-datatable-column>
+                          <ng-template ngx-datatable-header-template>
+                            Date Inventaire
+                          </ng-template>
+                          <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                           <!-- {{ row.designationDemandePrix }}-->
+                          </ng-template>
+                        </ngx-datatable-column>
+  
+                        <ngx-datatable-column>
+                          <ng-template ngx-datatable-header-template>
+                            Observation
+                          </ng-template>
+                          <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                              <!--{{ row.dateLimiteDemandePrix | date :'short' }}-->
+                          </ng-template>
+                        </ngx-datatable-column>
+  
+                        <!--ngx-datatable-column>
+                          <ng-template ngx-datatable-header-template>
+                            Actions
+                          </ng-template>
+                          <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                            <<strong>{{ row.code }}</strong>>
+                            <button (click)="makeForm(row)" class="btn btn-primary m-1 btn-sm"
+                            type="button" *ngIf="row.valideDemandePrix == false">
+                              <i class="i-Pen-5"> </i>
+                            </button>
+                            <button (click)="confirm(modalConfirm, row)" class="btn btn-outline-danger m-1 btn-sm"
+                                    type="button" *ngIf="row.valideDemandePrix == false">
+                              <i class="i-Folder-Trash"> </i>
+                            </button>
+                            <button (click)="valider(row, true)" class="btn btn-outline-success m-1 btn-sm"
+                                    type="button" *ngIf="row.valideDemandePrix == false">
+                              <i class="i-Yes"> </i>
+                            </button>
+                            <button (click)="valider(row, false)" class="btn btn-outline-warning m-1 btn-sm"
+                                    type="button" *ngIf="row.valideDemandePrix == true">
+                              <i class="i-Reload"> </i>
+                            </button>
+                            <button (click)="onGeneratBondClicked(modalGenerBond, row)" class="btn btn-outline-warning m-1 btn-sm"
+                                    type="button" *ngIf="row.valideDemandePrix == true">
+                              <i class="i-Mail-Send"> </i>
+                            </button>
+                          </ng-template>
+                        </ngx-datatable-column-->
+                      </ngx-datatable>
+                    </div>
+                  </div>
+                </div>
+              </ng-template>
+            </li>
+  
+  
+  
+            <li [ngbNavItem]="2">
+              <a ngbNavLink><span *ngIf="! validateForm.value.numInv">Nouveau</span><span *ngIf="validateForm.value.numInv" span>Modifier</span> Inventaire</a>
+              <ng-template ngbNavContent>
+  
+                <div class="mb-2">
+                  <div class="d-flex mb-5" style="margin-bottom: 0;">
+                    <span class="m-auto"></span>
+
+                    <!-- dropdown de fiche d'inventaire -->
+                    <div #myDrop2="ngbDropdown" class="d-inline-block" ngbDropdown>
+                        <button (focus)="myDrop2.open()" class="btn btn-primary mr-2" id="dropdownDecision" ngbDropdownAnchor> Fiche d'inventaire</button>
+                        <div aria-labelledby="dropdownManual" ngbDropdownMenu>
+                            <button  ngbDropdownItem> Sans Stock Théorique</button>
+                            <button  ngbDropdownItem> Avec Stock Théorique</button>
+                        </div>
+                   </div>
+                    <button class="btn btn-outline-secondary mr-3" (click)="resetForm()">Annuler</button>
+                    <btn-loading btnClass="btn-primary" [loading]="loading" (click)="submit()">Enrégistrer</btn-loading>
+                  </div>
+                  <form [formGroup]="validateForm">
+                    <h4 class="font-weight-bold">Informations sur l'inventaire</h4>
+                    <div class="row">
+                        <div class="col-md" *ngIf="validateForm.value.numInv">
+                            <div class="col-md form-group">
+                                <label for="orderNo">Numéro Inventaire</label>
+                                <input formControlName="numInv" type="text" class="form-control" id="orderNo"
+                                    placeholder="Numéro" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-6 form-group mb-3">
+                            <label for="magasin">Magasin</label>
+                            <ng-select bindLabel="libMagasin"  id="magasin" formControlName="magasin" placeholder="Entrer le magasin">
+                              <!--ng-option [ngValue]="null">-- Centre de consommation parent -- </ng-option-->
+                              <ng-option *ngFor="let magas of magasinFiltered" [value]="magas">{{magas.codeMagasin}} - {{magas.libMagasin}}</ng-option>
+                            </ng-select>
+                        </div>
+
+                        <div class="col-md-6 form-group mb-3">
+                          <label for="picker1">Date Inventaire</label>
+                          <div class="input-group">
+                              <input formControlName="dateInv" id="picker1" class="form-control text-right" type="date"
+                                  >
+                          </div>
+                        </div>
+                        <!--div class="col-md">
+                          <div class="col-md form-group" >
+                              <label for="orderNo">Délais de Livraison (en jours)</label>
+                              <input formControlName="delaiLivraison" type="number" class="form-control" id="orderNo"
+                                  placeholder="Numéro">
+                          </div>
+                        </div-->
+                        <!--div class="col-md form-group mb-3">
+                          <label for="picker1">Date limite de dépôt des Factures Proformat</label>
+                          <div class="input-group">
+                              <input formControlName="dateLimiteDemandePrix" id="picker2" class="form-control text-right"
+                                  type="date">
+  
+                          </div>
+                        </div-->
+                    </div>
+                    <div class="row">
+                      <div class="col-md-12 form-group">
+                        <label for="orderNo">Désignation (observation) </label>
+                        <input formControlName="descrInv" type="text" class="form-control" id="orderNo"
+                            placeholder="Numéro">
+  
+                      </div>
+                      <!--div class="col-md-2 form-group">
+                        <button class="btn btn-primary float-right mb-4" style="margin-top: 13%; font-weight: bold;"
+                        (click)="openFrsConsulterDialog(modalFrsConsulter)">Fournisseurs Consulté(s) . . .</button>
+                      </div-->
+  
+                      <!--div class="col-md form-group mb-3">
+                        <label >Fournisseur</label>
+                        <ng-select formControlName="frs">
+                          <ng-option *ngFor="let frs of fournisseurList" [value]="frs.numFournisseur">{{frs.codeFrs}} - {{frs.identiteFrs}}</ng-option>
+                        </ng-select>
+                      </div-->
+  
+                    </div>
+                  </form>
+                    <div class="mt-3 mb-4 border-top"></div>
+                    <h4 class="font-weight-bold">Détails sur l'inventaire</h4>
+  
+                    <div class="row">
+                        <div class="col-md-12 table-responsive">
+                            <table class="table table-hover mb-3">
+                                <thead class="bg-gray-300">
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Article</th>
+                                        <th scope="col">Stock Théo.</th>
+                                        <th scope="col">Stock Réel</th>
+                                        <th scope="col">CUMP</th>
+                                        <th scope="col">Ecart (Qté)</th>
+                                        <th scope="col">Ecart (Montant)</th>
+                                        <th scope="col">Observation</th>
+                                        <th scope="col"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let lig of ligneShow; let i = index;"
+                                        >
+                                        <th scope="row">{{i + 1}}</th>
+                                        <td>
+                                          <ng-select [(ngModel)]="lig.selectedArticl" (ngModelChange)="getUniterOfSelectArt(i)"
+                                          (click)="onArticleSelectClicked(i)" style="min-width: 180px;">
+                                            <ng-option *ngFor="let art of lig.listArticle" [value]="art.numArticle"
+                                             >{{art.codeArticle}} - {{art.libArticle}}</ng-option>
+                                          </ng-select>
+                                        </td>
+                                        <td>
+                                          <input type="number" class="form-control" [(ngModel)] = "lig.lignesDemandePrix.qteLigneDemandePrix"
+                                              placeholder="Quantité">
+                                        </td>
+                                        <td>
+                                          <ng-select [(ngModel)]="lig.selectedUniter" style="min-width: 180px;">
+                                            <ng-option *ngFor="let unit of lig.listUniter" [value]="unit.numUniter"
+                                             >{{unit.codeUniter}} - {{unit.libUniter}}</ng-option>
+                                          </ng-select>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-outline-secondary float-right" (click)="popALigneComAcha(i)">Retirer</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <button class="btn btn-primary float-right mb-4" (click)="pushALigneComAcha()">Ajouter une ligne</button>
+                        </div>
+  
+                        <!--div class="col-md-12">
+  
+                            <div class="float-right">
+                                <p>Total Montant HT : <span> {{ totaux[0] }} </span>  F CFA</p>
+                                <p class="d-flex align-items-center">Total Montant TVA : <span> {{ totaux[1] }} </span>  F CFA</p>
+                                <h5 class="font-weight-bold d-flex align-items-center">Total Montant TTC : <span> {{ totaux[2] }} </span>  F CFA</h5>
+                            </div>
+                        </div-->
+  
+                    </div>
+  
+                </div>
+  
+              </ng-template>
+            </li>
+  
+          </ul>
+  
+          <div [ngbNavOutlet]="nav" class="mt-2"></div>
+  
+        </div>
+      </div>
 </div>

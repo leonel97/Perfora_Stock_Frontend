@@ -531,7 +531,7 @@ export class EntreeArticleComponent  implements OnInit {
       }
     }
 
-    return (ligneCommande.qteLigneCommande - nbr);
+    return (ligneCommande?.qteLigneCommande - nbr);
 
   }
 
@@ -598,8 +598,8 @@ export class EntreeArticleComponent  implements OnInit {
         [Validators.required]],
     */
 
-      const recept = new Reception(formData.numReception, formData.observation, formData.dateReception, 
-        false, 0, formData.description, formData.refBordLivraiRecept, this.exerciceService.selectedExo, 
+      const recept = new Reception(formData.numReception, formData.observation, formData.dateReception,
+        false, 0, formData.description, formData.refBordLivraiRecept, this.exerciceService.selectedExo,
         formData.magasin);
 
 
@@ -624,7 +624,7 @@ export class EntreeArticleComponent  implements OnInit {
 
   enregistrerRecept(reception: Reception, lignesRecept: LigneReception[]): void {
     this.loading = true;
-    
+
     console.log('obj', new EncapReception(reception, lignesRecept));
     this.receptionService.addAReception2(new EncapReception(reception, lignesRecept)).subscribe(
       (data) => {
