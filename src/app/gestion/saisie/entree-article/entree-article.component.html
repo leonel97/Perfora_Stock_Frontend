@@ -179,6 +179,7 @@
                           <ng-option [value]="1">Appel d'Offre</ng-option>
                           <ng-option [value]="2">Bond Travail</ng-option>
                           <ng-option [value]="3">Lettre de Commande</ng-option>
+                          <ng-option [value]="4">Demande de Prix</ng-option>
                         </ng-select>
                       </div>
                       <div class="col-md form-group mb-3">
@@ -188,6 +189,7 @@
                           <span *ngIf="validateForm.value.numType == 1">Appel d'Offre</span>
                           <span *ngIf="validateForm.value.numType == 2">Bond Travail</span>
                           <span *ngIf="validateForm.value.numType == 3">Lettre de Commande</span>
+                          <span *ngIf="validateForm.value.numType == 4">Demande de Prix</span>
                         </label>
                         <ng-select formControlName="numFilleComm" [readonly]="validateForm.value.numReception"
                         (ngModelChange)="getInfosOnAFilleCommandeSelected()" >
@@ -203,11 +205,12 @@
                           <div *ngIf="validateForm.value.numType == 3">
                             <ng-option *ngFor="let elem of lettreCommandeList" [value]="elem.numLettreComm">{{elem.numLettreComm}} du {{elem.commande.dateCommande}} ( {{ elem.commande.frs.codeFrs }} - {{ elem.commande.frs.identiteFrs }} ) {{ elem.exercice.codeExercice }}</ng-option>
                           </div>
-                          
-                          
+                          <div *ngIf="validateForm.value.numType == 4">
+                            <ng-option *ngFor="let elem of demandePrixList" [value]="elem.idDemandePrix">{{elem.idDemandePrix}} du {{elem.dateDemandePrix}} Exercice {{ elem.exercice.codeExercice }}</ng-option>
+                          </div>
                         </ng-select>
                       </div>
-                      
+
                   </div>
                   <div class="row">
                     <div class="col-md-3 form-group mb-3">

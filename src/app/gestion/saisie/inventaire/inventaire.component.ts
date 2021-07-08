@@ -27,7 +27,7 @@ export class InventaireComponent implements OnInit {
   searchControl: FormControl = new FormControl();
   magasinFiltered;
 
-  disabledBtnDecision: boolean;
+  disabledBtnFicheInventaire: boolean;
 
   validateForm: FormGroup;
 

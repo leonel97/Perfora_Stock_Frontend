@@ -12,7 +12,10 @@ import { AppelOffre } from 'src/app/models/gestion/saisie/appelOffre.model';
 import { BondTravail } from 'src/app/models/gestion/saisie/bondTravail.model';
 import { Commande } from 'src/app/models/gestion/saisie/commande.model';
 import { CommandeAchat } from 'src/app/models/gestion/saisie/commandeAchat.model';
+import { ConsulterFrsForDp } from 'src/app/models/gestion/saisie/consulterFrsForDp.model';
+import { DemandePrix } from 'src/app/models/gestion/saisie/demandPrix.model';
 import { EncapReception } from 'src/app/models/gestion/saisie/encapsuleur-model/encapReception.model';
+import { FactureProFormAcha } from 'src/app/models/gestion/saisie/factureProFormAcha.model';
 import { LettreCommande } from 'src/app/models/gestion/saisie/lettreCommande.model';
 import { LigneCommande } from 'src/app/models/gestion/saisie/ligneCommande.model';
 import { LigneReception } from 'src/app/models/gestion/saisie/ligneReception.model';
@@ -26,6 +29,9 @@ import { AppelOffreService } from 'src/app/services/gestion/saisie/appel-offre.s
 import { BondTravailService } from 'src/app/services/gestion/saisie/bond-travail.service';
 import { CommandeAchatService } from 'src/app/services/gestion/saisie/commande-achat.service';
 import { CommandeService } from 'src/app/services/gestion/saisie/commande.service';
+import { ConsulterFrsForDpService } from 'src/app/services/gestion/saisie/consulter-frs-for-dp.service';
+import { DemandePrixService } from 'src/app/services/gestion/saisie/demandePrix.service';
+import { FactureProFormAchaService } from 'src/app/services/gestion/saisie/facture-pro-form-acha.service';
 import { LettreCommandeService } from 'src/app/services/gestion/saisie/lettre-commande.service';
 import { LigneCommandeService } from 'src/app/services/gestion/saisie/ligne-commande.service';
 import { LigneReceptionService } from 'src/app/services/gestion/saisie/ligne-reception.service';
@@ -64,6 +70,9 @@ export class EntreeArticleComponent  implements OnInit {
   appelOffreList: AppelOffre[] = [];
   bondTravailList: BondTravail[] = [];
   lettreCommandeList: LettreCommande[] = [];
+  demandePrixList: DemandePrix[] = [];
+  consulterFrsForDpList: ConsulterFrsForDp[] = [];
+  fpfaList: FactureProFormAcha[] = [];
   selectedLigneReceptList: LigneReception[] = [];
   magasinList: Magasin[] = [];
   articleList: Article[] = [];
@@ -92,6 +101,9 @@ export class EntreeArticleComponent  implements OnInit {
     private appelOffreService: AppelOffreService,
     private commandeAchatService: CommandeAchatService,
     private lettreCommandeService: LettreCommandeService,
+    private demandePrixService: DemandePrixService,
+    private consulterFrsForDpService: ConsulterFrsForDpService,
+    private fpfaService: FactureProFormAchaService,
     private exerciceService: ExerciceService,
     private stockerService: StockerService,
     private fb: FormBuilder,
@@ -131,6 +143,9 @@ export class EntreeArticleComponent  implements OnInit {
       this.getAllLettreCommande();
       this.getAllLigneCommande();
       this.getAllLigneReception();
+      this.getAllDemandePrix();
+      this.getAllFactureProFormAcha();
+      this.getAllConsulterFrsForDp();
 
   }
 
@@ -138,6 +153,39 @@ export class EntreeArticleComponent  implements OnInit {
     this.lettreCommandeService.getAllLettreCommande().subscribe(
       (data) => {
         this.lettreCommandeList = data;
+      },
+      (error: HttpErrorResponse) => {
+        console.log('Echec status ==> ' + error.status);
+      }
+    );
+  }
+
+  getAllDemandePrix(){
+    this.demandePrixService.getAllDemandePrix().subscribe(
+      (data) => {
+        this.demandePrixList = data;
+      },
+      (error: HttpErrorResponse) => {
+        console.log('Echec status ==> ' + error.status);
+      }
+    );
+  }
+
+  getAllConsulterFrsForDp(){
+    this.consulterFrsForDpService.getAllConsulterFrsForDp().subscribe(
+      (data) => {
+        this.consulterFrsForDpList = data;
+      },
+      (error: HttpErrorResponse) => {
+        console.log('Echec status ==> ' + error.status);
+      }
+    );
+  }
+
+  getAllFactureProFormAcha(){
+    this.fpfaService.getAllFactureProFormAcha().subscribe(
+      (data) => {
+        this.fpfaList = data;
       },
       (error: HttpErrorResponse) => {
         console.log('Echec status ==> ' + error.status);
@@ -360,9 +408,46 @@ export class EntreeArticleComponent  implements OnInit {
       }
     }
 
-    for(const lc of this.lettreCommandeList){
-      if(lc.numLettreComm == numFille){
-        return lc.commande;
+    for(const dp of this.demandePrixList){
+      if(dp.idDemandePrix == numFille){
+        let concernedConsu: ConsulterFrsForDp = null;
+        for(const consu of this.consulterFrsForDpList){
+          if(consu.demandePrix.idDemandePrix == dp.idDemandePrix && consu.choisit){
+            concernedConsu = consu;
+            break;
+          }
+        }
+
+        if(concernedConsu){
+          let concerFpfa: FactureProFormAcha = null;
+          for(const fpfa of this.fpfaList){
+            if(fpfa.demandePrix.idDemandePrix == dp.idDemandePrix
+              && fpfa.fournisseur.numFournisseur == concernedConsu.fournisseur.numFournisseur){
+                concerFpfa = fpfa;
+                break;
+              }
+          }
+
+          if(concerFpfa){
+
+            if(concerFpfa.commande){
+              return concerFpfa.commande;
+            }
+            else{
+              this.toastr.error('Veuillez d\'abord générer le bond de Commande pour le DP Afin de Procéder à la réception', 'Erreur !', { timeOut: 5000 });
+            }
+
+          }
+          else{
+            this.toastr.error('Aucune Facture Proformat enrégistrer pour le Fournisseur choisit pour ce DP', 'Erreur !', { timeOut: 5000 });
+          }
+
+        }
+        else{
+          this.toastr.error('Aucun fournisseur choisit pour cette DP', 'Erreur !', { timeOut: 5000 });
+        }
+
+
       }
     }
 
@@ -396,6 +481,12 @@ export class EntreeArticleComponent  implements OnInit {
       }
     }
 
+    for(const fpfa of this.fpfaList){
+      if(fpfa.commande?.numCommande == concernedComm?.numCommande){
+        return fpfa.demandePrix.idDemandePrix;
+      }
+    }
+
     return null;
 
   }
@@ -424,6 +515,12 @@ export class EntreeArticleComponent  implements OnInit {
     for(const lc of this.lettreCommandeList){
       if(lc.commande.numCommande == concernedComm.numCommande){
         return 3;
+      }
+    }
+
+    for(const fpfa of this.fpfaList){
+      if(fpfa.commande?.numCommande == concernedComm.numCommande){
+        return 4;
       }
     }
 
@@ -638,6 +735,9 @@ export class EntreeArticleComponent  implements OnInit {
         this.getAllCommandeAchat();
         this.getAllLettreCommande();
         this.getAllLigneCommande();
+        this.getAllDemandePrix();
+        this.getAllFactureProFormAcha();
+        this.getAllConsulterFrsForDp();
         console.log(data);
 
         this.receptionList.unshift(data.reception);
@@ -672,6 +772,9 @@ export class EntreeArticleComponent  implements OnInit {
         this.getAllCommandeAchat();
         this.getAllLettreCommande();
         this.getAllLigneCommande();
+        this.getAllDemandePrix();
+        this.getAllFactureProFormAcha();
+        this.getAllConsulterFrsForDp();
 
         console.log(data);
           const i = this.receptionList.findIndex(l => l.numReception == data.reception.numReception);
@@ -837,6 +940,9 @@ export class EntreeArticleComponent  implements OnInit {
             this.getAllCommandeAchat();
             this.getAllLettreCommande();
             this.getAllLigneCommande();
+            this.getAllDemandePrix();
+            this.getAllFactureProFormAcha();
+            this.getAllConsulterFrsForDp();
 
             if(data.valideRecep == reception.valideRecep){
               let msg: String = 'Validation'
