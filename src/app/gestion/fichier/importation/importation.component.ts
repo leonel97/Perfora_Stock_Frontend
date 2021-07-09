@@ -22,6 +22,7 @@ import { TypeArticleService } from 'src/app/services/gestion/definition/type-art
 import { TypeCentreConsommationService } from 'src/app/services/gestion/definition/typeCentreConsommation.service';
 import { TypeFournisseurService } from 'src/app/services/gestion/definition/typeFournisseur.service';
 import * as xlsx from 'xlsx';
+import { ExerciceService } from 'src/app/services/gestion/fichier/exercice.service';
 
 @Component({
   selector: 'app-importation',
@@ -44,7 +45,8 @@ export class ImportationComponent implements OnInit {
     private centreConsService: CentreConsommationService,
     private magasinService: MagasinService, private familleService: FamilleService,
     private typeArtiService: TypeArticleService, private articleService: ArticleService,
-    private typeFrsService: TypeFournisseurService, private fournisseurService: FournisseurService
+    private typeFrsService: TypeFournisseurService, private fournisseurService: FournisseurService,
+    private exerciceService: ExerciceService,
     ) {
     this.repport1FormsGroup = this.formBulder.group({
       rep1Element:0,
@@ -53,6 +55,9 @@ export class ImportationComponent implements OnInit {
    }
 
   ngOnInit(): void {
+
+    console.log("exoSel",  this.exerciceService.selectedExo);
+    
   }
 
   getFile(event: any) {

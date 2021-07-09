@@ -90,16 +90,22 @@ export class ExerciceComponent implements OnInit {
   // selected Exercice 
   selectOne(e, exo) {
     if (exo.isSelected == true) {
-      this.disabledBtnCloturer = false;
       this.activeExercice = exo;
-      console.log("exoCl",exo);
+
+      if (this.activeExercice.cloturerExo == true){
+        this.disabledBtnCloturer = true;
+        console.log("exoCl",exo);
+        this.exerciceService.selectedExo = exo;
+      }
+      else{
+        this.disabledBtnCloturer = false;
+        console.log("exoCl",exo);
+        this.exerciceService.selectedExo = exo;
+
+      }
       
-     /* for (let dossierDec of this.dossierJuridiqueList){
-        if (dossierDec.id !== dossier.id){
-          dossierDec.isSelected = false;
-        }
-      }*/
-      //this.dossierJuridiqueFiltered = [...this.dossierJuridiqueList];
+      
+   
     } else {
       this.disabledBtnCloturer = true;
       this.activeExercice = null;

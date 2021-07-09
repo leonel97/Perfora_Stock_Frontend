@@ -5,6 +5,8 @@ import { PerfectScrollbarDirective } from 'ngx-perfect-scrollbar';
 import {NavigationService} from "../services/common/navigation.service";
 import {SearchService} from "../services/common/search.service";
 
+import {ExerciceService} from "../services/gestion/fichier/exercice.service";
+
 @Component({
   selector: 'app-gestion',
   templateUrl: './gestion.component.html',
@@ -18,7 +20,8 @@ export class GestionComponent implements OnInit {
   constructor(
     public navService: NavigationService,
     public searchService: SearchService,
-    private router: Router
+    private router: Router,
+    public exerciceService : ExerciceService,
   ) { }
 
   ngOnInit() {

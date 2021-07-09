@@ -48,13 +48,13 @@
         
                         </ng-template>
                         <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
-                        <span *ngIf="row.cloturerExo == false">
-                          <label class="checkbox checkbox-outline-light">
-                            <input (change)="selectOne($event, row)" [(ngModel)]="row.isSelected" type="checkbox">
-                            <span></span>
+                        <!--span *ngIf="row.cloturerExo == false"-->
+                          <label class="checkbox checkbox-outline-light ">
+                            <input (change)="selectOne($event, row)" [(ngModel)]="row.isSelected" type="checkbox" ng-model="checkboxModel">
+                           
                             <span class="checkmark"></span>
                           </label>
-                        </span>
+                        <!--/span-->
                         </ng-template>
                       </ngx-datatable-column>
 
@@ -88,6 +88,14 @@
                         </ng-template>
                         <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
                             {{ row.dateFin | date : 'dd MMMM yyyy' }}
+                        </ng-template>
+                      </ngx-datatable-column>
+                      <ngx-datatable-column>
+                        <ng-template ngx-datatable-header-template>
+                          Etat 
+                        </ng-template>
+                        <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                          {{ row.cloturerExo == true ? 'Clôturé' : 'Non clôturé' }}
                         </ng-template>
                       </ngx-datatable-column>
                       <ngx-datatable-column>

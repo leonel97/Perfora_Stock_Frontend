@@ -12,7 +12,7 @@ export class ExerciceService {
 
   url: string = environment.backend2 + '/commune/exercice';
 
-  selectedExo: Exercice = null;
+   selectedExo: Exercice = null;
 
   constructor(private http: HttpClient) {
     this.list().subscribe(
