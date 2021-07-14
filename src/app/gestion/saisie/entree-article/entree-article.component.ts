@@ -38,6 +38,13 @@ import { LigneReceptionService } from 'src/app/services/gestion/saisie/ligne-rec
 import { ReceptionService } from 'src/app/services/gestion/saisie/reception.service';
 import { StockerService } from 'src/app/services/gestion/saisie/stocker.service';
 
+import {jsPDF} from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import * as moment from  'moment';
+import { Utils } from 'src/app/utilitaires/utils';
+import { NumberToLetter } from 'convertir-nombre-lettre';
+
+
 export interface modelLigneRecept{
   ligneReception: LigneReception;
   listArticle: Article[];
@@ -47,7 +54,7 @@ export interface modelLigneRecept{
   prixUnitaire: number;
   concernedLigneCom: LigneCommande;
   concernedStocker: Stocker;
-  qteRest?: number;
+  qteRest: number;
 
 }
 
@@ -82,6 +89,8 @@ export class EntreeArticleComponent  implements OnInit {
   reception: Reception = null;
   ligneShow: modelLigneRecept[] = [];
   detailView: boolean = false;
+
+  etatVali: boolean = false;
 
   totaux: number[] = [0, 0, 0];
 
@@ -378,7 +387,7 @@ export class EntreeArticleComponent  implements OnInit {
             prixUnitaire: ligCo.puLigneReception,
             concernedLigneCom: ligCo.ligneCommande,
             concernedStocker: this.getStockerByArtiAndMagasin(ligCo.ligneCommande.article, reception.magasin),
-
+            qteRest: this.getQteRestanOfALigCom(ligCo.ligneCommande) + ligCo.quantiteLigneReception
           });
         }
       }
@@ -652,17 +661,30 @@ export class EntreeArticleComponent  implements OnInit {
       this.validateForm.controls[i].updateValueAndValidity();
     }
 
+    let lignShowValid: boolean = true;
+
+    for(const lig of this.ligneShow){
+      if(lig.ligneReception.quantiteLigneReception > lig.qteRest){
+        lignShowValid = false;
+        break;
+      }
+    }
+
     if (this.validateForm.valid == false) {
       this.loading = true;
       setTimeout(() => {
         this.loading = false;
         this.toastr.error('Veuillez remplir le Formulaire convenablement.', ' Erreur !', {progressBar: true});
       }, 3000);
-    } else if (this.ligneShow.length == 0) {
+    } else if (this.ligneShow.length == 0 || lignShowValid == false) {
       this.loading = true;
       setTimeout(() => {
         this.loading = false;
+        if(this.ligneShow.length == 0)
         this.toastr.error('Veuillez Ajouter au moins une Ligne.', ' Erreur !', {progressBar: true});
+        if(lignShowValid == false)
+        this.toastr.error('Veuillez Renseigner les Quantités Convenablement.', ' Erreur !', {progressBar: true});
+
       }, 3000);
     } else {
       const formData = this.validateForm.value;
@@ -677,23 +699,6 @@ export class EntreeArticleComponent  implements OnInit {
       formData.magasin = this.magasinList[m];
     }
 
-    /*
-    numReception: [reception != null ? reception.numReception: null],
-      dateReception: [reception != null ? reception.dateReception: null,
-      [Validators.required]],
-      observation: [reception != null ? reception.observation : null],
-      refBordLivraiRecept: [reception != null ? reception.refBordLivraiRecept : null],
-      description: [reception != null ? reception.referenceReception : null],
-      magasin: [reception != null ? reception.magasin.numMagasin : null,
-        [Validators.required]],
-      valideRecep: [reception != null ? reception.valideRecep : false],
-      numComm: [reception != null ? this.getCommandeOfAReception(reception).numCommande : null,
-        [Validators.required]],
-      numType: [reception != null ? this.getTypeCommandeOfARecept(reception) : null,
-        [Validators.required]],
-      numFilleComm: [reception != null ? this.getNumFilleCommandeOfARecept(reception) : null,
-        [Validators.required]],
-    */
 
       const recept = new Reception(formData.numReception, formData.observation, formData.dateReception,
         false, 0, formData.description, formData.refBordLivraiRecept, this.exerciceService.selectedExo,
@@ -702,9 +707,15 @@ export class EntreeArticleComponent  implements OnInit {
 
       let lignesRecept: LigneReception[] = [];
       this.ligneShow.forEach((element, inde) => {
-        const j = element.listArticle.findIndex(l => l.numArticle == element.selectedArticl);
+        //const j = element.listArticle.findIndex(l => l.numArticle == element.selectedArticl);
 
         element.ligneReception.ligneCommande = element.concernedLigneCom;
+        if(element.qteRest <= element.ligneReception.quantiteLigneReception){
+          element.ligneReception.ligneCommande.satisfaite = true;
+        }
+        else{
+          element.ligneReception.ligneCommande.satisfaite = false;
+        }
         lignesRecept.push(element.ligneReception);
 
       });
@@ -839,6 +850,7 @@ export class EntreeArticleComponent  implements OnInit {
       concernedLigneCom: null,
       prixUnitaire: 0,
       concernedStocker: null,
+      qteRest:0,
     });
   }
 
@@ -917,51 +929,65 @@ export class EntreeArticleComponent  implements OnInit {
 
   }
 
-  valider(reception: Reception, eta: boolean){
+  valider(reception: Reception, eta: boolean, content){
 
-    reception.valideRecep = eta;
+    
+    this.etatVali = eta;
 
-    this.receptionService.editAReception3(reception.numReception, reception).subscribe(
-      (data) => {
+    this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', centered: true})
+      .result.then((result) => {
+      //this.confirmResut = `Closed with: ${result}`;
+      reception.valideRecep = eta;
 
-        const i = this.receptionList.findIndex(l => l.numReception == data.numReception);
-            if (i > -1) {
-              this.receptionList[i] = data;
-              this.receptionFiltered = [...this.receptionList.sort((a, b) => a.numReception.localeCompare(b.numReception.valueOf()))];
-            }
+      this.receptionService.editAReception3(reception.numReception, reception).subscribe(
+        (data) => {
+  
+          const i = this.receptionList.findIndex(l => l.numReception == data.numReception);
+              if (i > -1) {
+                this.receptionList[i] = data;
+                this.receptionFiltered = [...this.receptionList.sort((a, b) => a.numReception.localeCompare(b.numReception.valueOf()))];
+              }
+  
+              this.getAllLigneReception();
+              this.getAllArticle();
+              this.getAllUniter();
+              this.getAllMagasin();
+              this.getAllStocker();
+              this.getAllAppelOffre();
+              this.getAllBondTravail();
+              this.getAllCommandeAchat();
+              this.getAllLettreCommande();
+              this.getAllLigneCommande();
+              this.getAllDemandePrix();
+              this.getAllFactureProFormAcha();
+              this.getAllConsulterFrsForDp();
+  
+              if(data.valideRecep == reception.valideRecep){
+                let msg: String = 'Validation'
+                if(eta == false) msg = 'Annulation';
+                this.toastr.success(msg+' effectuée avec succès.', 'Success', { timeOut: 5000 });
+              } else {
+                let msg: String = 'Erreur lors de l\'entrée de l\'Article dans le Magasin.'
+                if(eta == false) msg = 'Erreur lors du Retour de l\'Article dans le Magasin Annulation';
+                this.toastr.error(msg.valueOf(), 'Erreur !', { timeOut: 5000 });
+              }
+  
+  
+        },
+        (error: HttpErrorResponse) => {
+          console.log('Echec status ==> ' + error.status);
+          this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000 });
+  
+        }
+      );
+  
 
-            this.getAllLigneReception();
-            this.getAllArticle();
-            this.getAllUniter();
-            this.getAllMagasin();
-            this.getAllStocker();
-            this.getAllAppelOffre();
-            this.getAllBondTravail();
-            this.getAllCommandeAchat();
-            this.getAllLettreCommande();
-            this.getAllLigneCommande();
-            this.getAllDemandePrix();
-            this.getAllFactureProFormAcha();
-            this.getAllConsulterFrsForDp();
 
-            if(data.valideRecep == reception.valideRecep){
-              let msg: String = 'Validation'
-              if(eta == false) msg = 'Annulation';
-              this.toastr.success(msg+' effectuée avec succès.', 'Success', { timeOut: 5000 });
-            } else {
-              let msg: String = 'Erreur lors de l\'entrée de l\'Article dans le Magasin.'
-              if(eta == false) msg = 'Erreur lors du Retour de l\'Article dans le Magasin Annulation';
-              this.toastr.error(msg.valueOf(), 'Erreur !', { timeOut: 5000 });
-            }
+    }, (reason) => {
+      console.log(`Dismissed with: ${reason}`);
+    });
 
 
-      },
-      (error: HttpErrorResponse) => {
-        console.log('Echec status ==> ' + error.status);
-        this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000 });
-
-      }
-    );
 
   }
 
@@ -973,6 +999,235 @@ export class EntreeArticleComponent  implements OnInit {
   closeDetail(){
     this.resetForm();
     this.detailView = false;
+  }
+
+  generateLignes(){
+
+    let concernedCommande:Commande = this.getCommandeByNumFille(this.validateForm.value.numFilleComm);
+
+    let tab: modelLigneRecept[] = [];
+
+    for(const ligCom of this.ligneCommandeList){
+      if(ligCom.numCommande.numCommande == concernedCommande.numCommande 
+        && ligCom.satisfaite == false && ligCom.article.famille.magasin.numMagasin == this.validateForm.value.magasin){
+
+          tab.push({
+            ligneReception: new LigneReception(this.getQteRestanOfALigCom(ligCom), ligCom.puLigneCommande, '', 0, ligCom, null),
+            listArticle: null,
+            uniter: ligCom.uniter,
+            selectedArticl: null,
+            selectedUniter: null,
+            concernedLigneCom: ligCom,
+            prixUnitaire: ligCom.puLigneCommande,
+            concernedStocker: this.getStockerByArtiAndMagasin(ligCom.article, this.validateForm.value.magasin),
+            qteRest: this.getQteRestanOfALigCom(ligCom),
+          });
+
+      }
+    }
+
+    this.ligneShow = tab;
+
+    this.calculTotaux();
+
+  }
+
+  isAFilleComSitisfaied(numFille: String) : boolean{
+    let concernedCom: Commande = this.getCommandeByNumFille(numFille);
+
+    if(concernedCom){
+      let finded: boolean = false;
+      for(const lig of this.ligneCommandeList){
+        if(lig.numCommande.numCommande == concernedCom.numCommande 
+          && lig.satisfaite == false){
+            return false;
+          }
+          else if(lig.numCommande.numCommande == concernedCom.numCommande){
+            finded = true;
+          }
+      }
+
+      if(finded == true){
+        return true;
+      }
+
+      return false;
+
+    }
+    
+    return false;
+
+  }
+
+  onTypeComChange(){
+
+    this.ligneShow = [];
+    this.validateForm.patchValue({
+      numFilleComm:null,
+    });
+
+    this.calculTotaux();
+
+  }
+
+  openPdfToPrint(element: Reception){
+
+
+    let totalHT : number = 0;
+    let totalTVA : number = 0;
+    let totalTTC : number = 0;
+
+    const doc = new jsPDF();
+    
+    autoTable(doc, {
+      theme: 'plain',
+      margin: { top: 5, left:35, right:9, bottom:100 },
+      columnStyles: {
+        0: { textColor: 'blue', fontStyle: 'bold', halign: 'left' },
+        1: { textColor: 'blue', fontStyle: 'bold', halign: 'right' },
+      },
+      body: [
+        ['PORT AUTONOME DE LOME\n\nTel.: 22.27.47.42/22.27.33.91/22.27.33.92\nFax: (228) 22.27.26.27\nCARTE N° 950113V',
+        'REPUBLIQUE TOGOLAISE\n\nTravail-Liberté-Patrie       ']
+      ]
+      ,
+    });
+    doc.addImage(Utils.logoUrlData, 'jpeg', 10, 5, 25, 25);
+    
+
+    doc.setDrawColor(0);
+    doc.setFillColor(233 , 242, 248);
+    doc.roundedRect(50, 35, 110, 10, 3, 3, 'FD');
+    doc.setFontSize(20);
+    doc.text('ORDRE D\'ENTREE', 70, 43);
+
+    autoTable(doc, {
+      theme: 'plain',
+      startY:50,
+      margin: { top: 0 },
+      columnStyles: {
+        0: { textColor: 0, fontStyle: 'bold', halign: 'center' },
+      },
+      body: [
+        ['Ordre d\'entree N° '+element.numReception+' du '+moment(element.dateReception).format('DD/MM/YYYY')]
+      ]
+      ,
+    });
+
+    let numFille: String = this.getNumFilleCommandeOfARecept(element);
+    let commande: Commande = this.getCommandeByNumFille(numFille);
+
+    autoTable(doc, {
+      theme: 'plain',
+      startY:60,
+      margin: { right: 100 },
+      columnStyles: {
+        0: { textColor: 0, fontStyle: 'bold', halign: 'left' },
+        1: { textColor: 0, halign: 'left' },
+      },
+      body: [
+        ['Réf Commande :', ''+numFille],
+        ['Fournisseur :', commande.frs.codeFrs+' - '+commande.frs.identiteFrs],
+        ['Magasin :', element.magasin.codeMagasin+' - '+element.magasin.libMagasin]
+      ]
+      ,
+    });
+
+    autoTable(doc, {
+      theme: 'plain',
+      startY:60,
+      margin: { left: 100 },
+      columnStyles: {
+        0: { textColor: 0, fontStyle: 'bold', halign: 'left' },
+        1: { textColor: 0, halign: 'left' },
+      },
+      body: [
+        ['N° Générique :', ''+(element.refBordLivraiRecept ? element.refBordLivraiRecept : '')],
+        ['Ref B/L :', ''+(element.observation ? element.observation : '')],
+        
+      ]
+      ,
+    });
+
+    autoTable(doc, {
+      theme: 'plain',
+      //startY:50,
+      margin: { top: 0 },
+      columnStyles: {
+        0: { textColor: 0, halign: 'left' },
+      },
+      body: [
+        ["\nA reçu livraison au magasin ce jour des articles décrits ci-dessous :"]
+      ]
+      ,
+    });
+
+    let lignes = [];
+
+    this.ligneReceptList.forEach(element2 => {
+      if(element2.reception.numReception == element.numReception){
+        let lig = [];
+        lig.push(element2.ligneCommande.article.codeArticle);
+        lig.push(element2.ligneCommande.article.libArticle);
+        lig.push(element2.quantiteLigneReception);
+        lig.push(element2.ligneCommande.uniter.libUniter);
+        lig.push(element2.ligneCommande.puLigneCommande);
+        lig.push(element2.ligneCommande.tva);
+        let ht = element2.quantiteLigneReception*element2.ligneCommande.puLigneCommande;
+        lig.push(ht*(1+(element2.ligneCommande.tva/100)));
+        lignes.push(lig);
+
+        totalHT+= ht;
+        totalTVA+= ht*(element2.ligneCommande.tva/100);
+        totalTTC+= ht*(1+(element2.ligneCommande.tva/100));
+      }
+
+    });
+
+    autoTable(doc, {
+      theme: 'grid',
+      head: [['Article', 'Désignation', 'Quantité', 'Unité', 'PU', 'TVA(%)', 'Montant']],
+      headStyles:{
+        fillColor: [41, 128, 185],
+        textColor: 255,
+        fontStyle: 'bold' ,
+    },
+      margin: { top: 100 },
+      body: lignes
+      ,
+    });
+
+
+    autoTable(doc, {
+      theme: 'grid',
+      margin: { top: 100, left:130 },
+      columnStyles: {
+        0: { fillColor: [41, 128, 185], textColor: 255, fontStyle: 'bold' },
+      },
+      body: [
+        ['Total HT', totalHT],
+        ['Total Montant TVA', totalTVA],
+        ['Total TTC', totalTTC]
+      ]
+      ,
+    });
+
+    autoTable(doc, {
+      theme: 'plain',
+      margin: { top: 50, bottom:0 },
+      columnStyles: {
+        0: { textColor: 0, fontStyle: 'bold', halign: 'left' },
+      },
+      body: [
+        ["Arrêté le présent Ordre d'Entrée à la Somme de : "+NumberToLetter(totalTTC)+' Francs CFA']
+      ]
+      ,
+    });
+
+    
+
+    doc.output('dataurlnewwindow');
+
   }
 
 }

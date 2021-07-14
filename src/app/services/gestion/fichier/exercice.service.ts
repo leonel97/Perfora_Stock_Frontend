@@ -12,15 +12,18 @@ export class ExerciceService {
 
   url: string = environment.backend2 + '/commune/exercice';
 
-   selectedExo: Exercice = null;
+  public selectedExo: Exercice = null;
 
   constructor(private http: HttpClient) {
     this.list().subscribe(
       (data: any) => {
         if(data.length){
-          this.selectedExo = data[data.length-1];
+          //this.selectedExo = data[data.length-1];
+          this.selectedExo = data.filter( defaultExo => defaultExo.cloturerExo == false)[0];
           console.log('selected exo', this.selectedExo);
         }
+        if( this.selectedExo == undefined ||  this.selectedExo == null)
+        this.selectedExo = data[data.length-1];
       },
       (error: HttpErrorResponse) => {
         console.log('Echec atatus ==> ' + error.status);

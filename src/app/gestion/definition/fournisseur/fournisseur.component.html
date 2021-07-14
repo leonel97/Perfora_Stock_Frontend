@@ -53,6 +53,14 @@
                       </ngx-datatable-column>
                       <ngx-datatable-column>
                         <ng-template ngx-datatable-header-template>
+                          N° Compte Bancaire
+                        </ng-template>
+                        <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                            {{ row.description }} 
+                        </ng-template>
+                      </ngx-datatable-column>
+                      <ngx-datatable-column>
+                        <ng-template ngx-datatable-header-template>
                           Catégorie Fournisseur
                         </ng-template>
                         <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
@@ -154,7 +162,7 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-md-7 form-group mb-3">
+                    <div class="col-md-4 form-group mb-3">
                       <label for="code">Domaine d'intervention  <span class="required-field">*</span> </label>
                       <input class="form-control" formControlName="domaineInterven" id="domaineInterven"
                              placeholder="Entrer le domaine d'intervention" type="text" autocomplete="off">
@@ -163,6 +171,12 @@
                            class="error-field">
                         Ce champs est obligatoire !
                       </div>
+                    </div>
+
+                    <div class="col-md-3 form-group mb-3">
+                      <label for="description">N° Compte Bancaire </label>
+                      <input class="form-control" formControlName="description" id="description"
+                             placeholder="Entrer le N° du Compte Bancire" type="text" autocomplete="off">
                     </div>
   
                     <div class="col-md-1 form-group mb-1">

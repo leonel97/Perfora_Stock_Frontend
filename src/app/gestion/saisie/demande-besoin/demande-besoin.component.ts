@@ -20,6 +20,10 @@ import { ExerciceService } from 'src/app/services/gestion/fichier/exercice.servi
 import { DemandeApproService } from 'src/app/services/gestion/saisie/demande-appro.service';
 import { LigneDemandeApproService } from 'src/app/services/gestion/saisie/ligne-demande-appro.service';
 
+import {jsPDF} from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import * as moment from  'moment';
+import { Utils } from 'src/app/utilitaires/utils';
 
 
 export interface modelLigneDemandeAppro{
@@ -52,6 +56,8 @@ export class DemandeBesoinComponent  implements OnInit {
   loading: boolean;
   demandeAppro: DemandeApprovisionnement = null;
   ligneShow: modelLigneDemandeAppro[] = [];
+
+  etatVali: boolean = false;
 
   totaux: number[] = [0, 0, 0];
 
@@ -344,6 +350,7 @@ export class DemandeBesoinComponent  implements OnInit {
 
   modifierDemandeAppro(id: String, demandeAppro: DemandeApprovisionnement, lignesDa: LigneDemandeAppro[]): void {
     this.loading = true;
+    console.log('Send',new EncapDemandeAppro(demandeAppro, lignesDa));
     this.demandeApproService.editADemandeAppro2(id, new EncapDemandeAppro(demandeAppro, lignesDa)).subscribe(
       (data) => {
         this.getAllLigneDemandeAppro();
@@ -469,38 +476,139 @@ export class DemandeBesoinComponent  implements OnInit {
   }
 
 
-  valider(demandeAppro: DemandeApprovisionnement, eta: boolean){
+  valider(demandeAppro: DemandeApprovisionnement, eta: boolean, content){
 
-    demandeAppro.valideDA = eta;
+    this.etatVali = eta;
 
-    this.demandeApproService.editADemandeAppro(demandeAppro.numDA, demandeAppro).subscribe(
-      (data) => {
+    this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', centered: true})
+    .result.then((result) => {
+    //this.confirmResut = `Closed with: ${result}`;
+    
+      demandeAppro.valideDA = eta;
 
-        demandeAppro = data;
+      this.demandeApproService.editADemandeAppro(demandeAppro.numDA, demandeAppro).subscribe(
+        (data) => {
 
-        const i = this.demandeApproList.findIndex(l => l.numDA == demandeAppro.numDA);
-            if (i > -1) {
-              this.demandeApproList[i] = demandeAppro;
-              this.demandeApproFiltered = [...this.demandeApproList.sort((a, b) => a.numDA.localeCompare(b.numDA.valueOf()))];
-            }
+          demandeAppro = data;
 
-            this.getAllArticle();
-            this.getAllUniter();
-            this.getAllLigneDemandeAppro();
-            this.getAllAffecterUniterToArticle();
-            this.getAllService();
+          const i = this.demandeApproList.findIndex(l => l.numDA == demandeAppro.numDA);
+              if (i > -1) {
+                this.demandeApproList[i] = demandeAppro;
+                this.demandeApproFiltered = [...this.demandeApproList.sort((a, b) => a.numDA.localeCompare(b.numDA.valueOf()))];
+              }
 
-            let msg: String = 'Validation'
-            if(eta == false) msg = 'Annulation';
-            this.toastr.success(msg+' effectuée avec succès.', 'Success', { timeOut: 5000 });
+              this.getAllArticle();
+              this.getAllUniter();
+              this.getAllLigneDemandeAppro();
+              this.getAllAffecterUniterToArticle();
+              this.getAllService();
 
+              let msg: String = 'Validation'
+              if(eta == false) msg = 'Annulation';
+              this.toastr.success(msg+' effectuée avec succès.', 'Success', { timeOut: 5000 });
+
+        },
+        (error: HttpErrorResponse) => {
+          console.log('Echec status ==> ' + error.status);
+          this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000 });
+
+        }
+      );
+
+
+
+    }, (reason) => {
+      console.log(`Dismissed with: ${reason}`);
+    });
+
+
+  }
+
+  openPdfToPrint(element: DemandeApprovisionnement){
+
+    const doc = new jsPDF();
+    
+    autoTable(doc, {
+      theme: 'plain',
+      margin: { top: 5, left:35, right:9, bottom:100 },
+      columnStyles: {
+        0: { textColor: 'blue', fontStyle: 'bold', halign: 'left' },
+        1: { textColor: 'blue', fontStyle: 'bold', halign: 'right' },
       },
-      (error: HttpErrorResponse) => {
-        console.log('Echec status ==> ' + error.status);
-        this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000 });
+      body: [
+        ['PORT AUTONOME DE LOME\n\nTel.: 22.27.47.42/22.27.33.91/22.27.33.92\nFax: (228) 22.27.26.27\nCARTE N° 950113V',
+        'REPUBLIQUE TOGOLAISE\n\nTravail-Liberté-Patrie       ']
+      ]
+      ,
+    });
+    doc.addImage(Utils.logoUrlData, 'jpeg', 10, 5, 25, 25);
+    
 
+    doc.setDrawColor(0);
+    doc.setFillColor(233 , 242, 248);
+    doc.roundedRect(50, 35, 110, 10, 3, 3, 'FD');
+    doc.setFontSize(20);
+    doc.text('DEMANDE DE BESOIN', 67, 43);
+
+    autoTable(doc, {
+      theme: 'plain',
+      startY:50,
+      margin: { top: 0 },
+      columnStyles: {
+        0: { textColor: 0, fontStyle: 'bold', halign: 'center' },
+      },
+      body: [
+        ['Expression de Besoin N° '+element.numDA+' du '+moment(element.dateDA).format('DD/MM/YYYY')]
+      ]
+      ,
+    });
+
+    autoTable(doc, {
+      theme: 'plain',
+      startY:60,
+      margin: { right: 0 },
+      columnStyles: {
+        0: { textColor: 0, fontStyle: 'bold', halign: 'left' },
+        1: { textColor: 0, halign: 'left' },
+      },
+      body: [
+        ['Centre Demandeuse :', element.service.codeService+' - '+element.service.libService],
+      ]
+      ,
+    });
+
+    let lignes = [];
+
+    this.ligneDemandeApproList.forEach(element2 => {
+      if(element2.appro.numDA == element.numDA){
+        let lig = [];
+        lig.push(element2.article.codeArticle);
+        lig.push(element2.article.libArticle);
+        lig.push(element2.quantiteDemandee);
+        lig.push(element2.uniter.libUniter);
+
+        lignes.push(lig);
       }
-    );
+
+    });
+
+    autoTable(doc, {
+      theme: 'grid',
+      head: [['Article', 'Désignation', 'Quantité', 'Unité']],
+      headStyles:{
+        fillColor: [41, 128, 185],
+        textColor: 255,
+        fontStyle: 'bold' ,
+    },
+      margin: { top: 100 },
+      body: lignes
+      ,
+    });
+
+
+    
+
+    doc.output('dataurlnewwindow');
 
   }
 

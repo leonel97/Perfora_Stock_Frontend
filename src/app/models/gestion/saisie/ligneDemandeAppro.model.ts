@@ -7,7 +7,7 @@ export class LigneDemandeAppro {
   public idLigneDA: number = null;
 
   constructor(public quantiteDemandee: number, public article: Article, public uniter: Uniter,
-    public appro: DemandeApprovisionnement){
+    public appro: DemandeApprovisionnement, public satisfaite?: boolean){
 
   }
 

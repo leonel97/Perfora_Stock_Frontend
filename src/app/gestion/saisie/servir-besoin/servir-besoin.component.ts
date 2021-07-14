@@ -24,7 +24,11 @@ import { LigneApproService } from 'src/app/services/gestion/saisie/ligne-appro.s
 import { LigneDemandeApproService } from 'src/app/services/gestion/saisie/ligne-demande-appro.service';
 import { StockerService } from 'src/app/services/gestion/saisie/stocker.service';
 
-
+import {jsPDF} from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import * as moment from  'moment';
+import { Utils } from 'src/app/utilitaires/utils';
+import { NumberToLetter } from 'convertir-nombre-lettre';
 
 
 export interface modelLigneAppro{
@@ -36,6 +40,7 @@ export interface modelLigneAppro{
   coutUnitaire: number;
   concernedLigneDa: LigneDemandeAppro;
   concernedStocker: Stocker;
+  qteRest: number;
 
 }
 
@@ -64,6 +69,8 @@ export class ServirBesoinComponent  implements OnInit {
   appro: Approvisionnement = null;
   ligneShow: modelLigneAppro[] = [];
   detailView: boolean = false;
+
+  etatVali: boolean = false;
 
   totaux: number[] = [0, 0, 0];
 
@@ -209,6 +216,19 @@ export class ServirBesoinComponent  implements OnInit {
     );
   }
 
+  getQteRestanteOfALigneDa(ligne: LigneDemandeAppro) : number{
+    let qteLivrer: number = 0;
+
+    this.ligneApproList.forEach(element => {
+      if(element.ligneDA.idLigneDA == ligne.idLigneDA){
+        qteLivrer += element.quantiteLigneAppro;
+      }
+    });
+
+    return ligne.quantiteDemandee - qteLivrer;
+
+  }
+
 
   filerData(val) {
     if (val) {
@@ -243,7 +263,7 @@ export class ServirBesoinComponent  implements OnInit {
       magasin: [appro != null ? appro.magasin.numMagasin : null,
         [Validators.required]],
       valideAppro: [appro != null ? appro.valideAppro : false],
-      numDA: [appro != null ? this.getDemandeApproOfAAppro(appro).numDA : null,
+      numDA: [appro != null ? this.getDemandeApproOfAAppro(appro)?.numDA : null,
         [Validators.required]],
 
     });
@@ -262,6 +282,8 @@ export class ServirBesoinComponent  implements OnInit {
             coutUnitaire: ligCo.puligneAppro,
             concernedLigneDa: ligCo.ligneDA,
             concernedStocker: this.getStockerByArtiAndMagasin(ligCo.ligneDA.article, appro.magasin),
+            qteRest: this.getQteRestanteOfALigneDa(ligCo.ligneDA) + ligCo.quantiteLigneAppro,
+
           });
         }
       }
@@ -334,8 +356,9 @@ export class ServirBesoinComponent  implements OnInit {
 
     this.ligneShow[ind].listArticle = this.getNotUsedArticle();
 
-    this.ligneShow[ind].ligneAppro.quantiteLigneAppro = this.ligneShow[ind]?.concernedLigneDa?.quantiteDemandee;
+    this.ligneShow[ind].ligneAppro.quantiteLigneAppro = this.getQteRestanteOfALigneDa(this.ligneShow[ind].concernedLigneDa);
     this.ligneShow[ind].ligneAppro.puligneAppro = this.ligneShow[ind].concernedStocker.cmup;
+    this.ligneShow[ind].qteRest = this.getQteRestanteOfALigneDa(this.ligneShow[ind].concernedLigneDa);
 
   }
 
@@ -370,17 +393,32 @@ export class ServirBesoinComponent  implements OnInit {
       this.validateForm.controls[i].updateValueAndValidity();
     }
 
+    let lignShowValid: boolean = true;
+
+    for(const lig of this.ligneShow){
+      if(lig.concernedStocker?.quantiterStocker < lig.ligneAppro.quantiteLigneAppro 
+        || lig.concernedLigneDa?.quantiteDemandee < lig.ligneAppro.quantiteLigneAppro 
+        || lig.qteRest < lig.ligneAppro.quantiteLigneAppro){
+        lignShowValid = false;
+        break;
+      }
+    }
+
     if (this.validateForm.valid == false) {
       this.loading = true;
       setTimeout(() => {
         this.loading = false;
         this.toastr.error('Veuillez remplir le Formulaire convenablement.', ' Erreur !', {progressBar: true});
       }, 3000);
-    } else if (this.ligneShow.length == 0) {
+    } else if (this.ligneShow.length == 0 || lignShowValid == false) {
       this.loading = true;
       setTimeout(() => {
         this.loading = false;
+        if(this.ligneShow.length == 0)
         this.toastr.error('Veuillez Ajouter au moins une Ligne.', ' Erreur !', {progressBar: true});
+        if(lignShowValid == false)
+        this.toastr.error('Veuillez Renseigner les Quantités Convenablement.', ' Erreur !', {progressBar: true});
+
       }, 3000);
     } else {
       const formData = this.validateForm.value;
@@ -400,9 +438,17 @@ export class ServirBesoinComponent  implements OnInit {
 
       let lignesAppr: LigneAppro[] = [];
       this.ligneShow.forEach((element, inde) => {
-        const j = element.listArticle.findIndex(l => l.numArticle == element.selectedArticl);
+        //const j = element.listArticle.findIndex(l => l.numArticle == element.selectedArticl);
 
         element.ligneAppro.ligneDA = element.concernedLigneDa;
+        
+        if(element.qteRest <= element.ligneAppro.quantiteLigneAppro){
+          element.ligneAppro.ligneDA.satisfaite = true;
+        }
+        else {
+          element.ligneAppro.ligneDA.satisfaite = false;
+        }
+
         lignesAppr.push(element.ligneAppro);
 
       });
@@ -529,6 +575,8 @@ export class ServirBesoinComponent  implements OnInit {
       concernedLigneDa: null,
       coutUnitaire: 0,
       concernedStocker: null,
+      qteRest: 0,
+
     });
   }
 
@@ -603,45 +651,58 @@ export class ServirBesoinComponent  implements OnInit {
 
   }
 
-  valider(appro: Approvisionnement, eta: boolean){
+  valider(appro: Approvisionnement, eta: boolean, content){
 
-    appro.valideAppro = eta;
+    this.etatVali = eta;
 
-    this.approService.editAAppro3(appro.numAppro, appro).subscribe(
-      (data) => {
+    this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', centered: true})
+    .result.then((result) => {
+    //this.confirmResut = `Closed with: ${result}`;
+    
+      appro.valideAppro = eta;
 
-        const i = this.approList.findIndex(l => l.numAppro == data.numAppro);
-            if (i > -1) {
-              this.approList[i] = data;
-              this.approFiltered = [...this.approList.sort((a, b) => a.numAppro.localeCompare(b.numAppro.valueOf()))];
-            }
+      this.approService.editAAppro3(appro.numAppro, appro).subscribe(
+        (data) => {
 
-            if(data.valideAppro == appro.valideAppro){
-              let msg: String = 'Validation'
-              if(eta == false) msg = 'Annulation';
-              this.toastr.success(msg+' effectuée avec succès.', 'Success', { timeOut: 5000 });
-            } else {
-              let msg: String = 'Erreur lors de la Sortie de l\'Article du Magasin, Il n\'est peut être pas disponible dans ce magasin.'
-              if(eta == false) msg = 'Erreur lors du Retour de l\'Article dans le Magasin Annulation';
-              this.toastr.error(msg.valueOf(), 'Erreur !', { timeOut: 5000 });
-            }
+          const i = this.approList.findIndex(l => l.numAppro == data.numAppro);
+              if (i > -1) {
+                this.approList[i] = data;
+                this.approFiltered = [...this.approList.sort((a, b) => a.numAppro.localeCompare(b.numAppro.valueOf()))];
+              }
 
-            this.getAllArticle();
-            this.getAllUniter();
-            this.getAllLigneAppro();
-            this.getAllDemandeAppro();
-            this.getAllLigneDemandeAppro();
-            this.getAllMagasin();
-            this.getAllStocker();
+              if(data.valideAppro == appro.valideAppro){
+                let msg: String = 'Validation'
+                if(eta == false) msg = 'Annulation';
+                this.toastr.success(msg+' effectuée avec succès.', 'Success', { timeOut: 5000 });
+              } else {
+                let msg: String = 'Erreur lors de la Sortie de l\'Article du Magasin, Il n\'est peut être pas disponible dans ce magasin.'
+                if(eta == false) msg = 'Erreur lors du Retour de l\'Article dans le Magasin Annulation';
+                this.toastr.error(msg.valueOf(), 'Erreur !', { timeOut: 5000 });
+              }
+
+              this.getAllArticle();
+              this.getAllUniter();
+              this.getAllLigneAppro();
+              this.getAllDemandeAppro();
+              this.getAllLigneDemandeAppro();
+              this.getAllMagasin();
+              this.getAllStocker();
 
 
-      },
-      (error: HttpErrorResponse) => {
-        console.log('Echec status ==> ' + error.status);
-        this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000 });
+        },
+        (error: HttpErrorResponse) => {
+          console.log('Echec status ==> ' + error.status);
+          this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000 });
 
-      }
-    );
+        }
+      );
+
+
+
+    }, (reason) => {
+      console.log(`Dismissed with: ${reason}`);
+    });
+
 
   }
 
@@ -653,6 +714,156 @@ export class ServirBesoinComponent  implements OnInit {
   closeDetail(){
     this.resetForm();
     this.detailView = false;
+  }
+
+  isADemApproSitisfaied(da: DemandeApprovisionnement) : boolean{
+    //let concernedCom: Commande = this.getCommandeByNumFille(numFille);
+
+    if(da){
+      let finded: boolean = false;
+      for(const lig of this.ligneDemandeApproList){
+        if(lig.appro.numDA == da.numDA 
+          && lig.satisfaite == false){
+            return false;
+          }
+          else if(lig.appro.numDA == da.numDA){
+            finded = true;
+          }
+      }
+
+      if(finded == true){
+        return true;
+      }
+
+      return false;
+
+    }
+    
+    return false;
+
+  }
+
+  openPdfToPrint(element: Approvisionnement){
+
+
+    let totalTTC : number = 0;
+
+    const doc = new jsPDF();
+    
+    autoTable(doc, {
+      theme: 'plain',
+      margin: { top: 5, left:35, right:9, bottom:100 },
+      columnStyles: {
+        0: { textColor: 'blue', fontStyle: 'bold', halign: 'left' },
+        1: { textColor: 'blue', fontStyle: 'bold', halign: 'right' },
+      },
+      body: [
+        ['PORT AUTONOME DE LOME\n\nTel.: 22.27.47.42/22.27.33.91/22.27.33.92\nFax: (228) 22.27.26.27\nCARTE N° 950113V',
+        'REPUBLIQUE TOGOLAISE\n\nTravail-Liberté-Patrie       ']
+      ]
+      ,
+    });
+    doc.addImage(Utils.logoUrlData, 'jpeg', 10, 5, 25, 25);
+    
+
+    doc.setDrawColor(0);
+    doc.setFillColor(233 , 242, 248);
+    doc.roundedRect(50, 35, 110, 10, 3, 3, 'FD');
+    doc.setFontSize(20);
+    doc.text('ORDRE DE SORTIE', 67, 43);
+
+    autoTable(doc, {
+      theme: 'plain',
+      startY:50,
+      margin: { top: 0 },
+      columnStyles: {
+        0: { textColor: 0, fontStyle: 'bold', halign: 'center' },
+      },
+      body: [
+        ['Ordre de Sortie N° '+element.numAppro+' du '+moment(element.dateAppro).format('DD/MM/YYYY')]
+      ]
+      ,
+    });
+
+    let lignes = [];
+    let demAppr: DemandeApprovisionnement = null;
+
+    this.ligneApproList.forEach(element2 => {
+      if(element2.appro.numAppro == element.numAppro){
+        demAppr = element2.ligneDA.appro;
+        let lig = [];
+        lig.push(element2.ligneDA.article.codeArticle);
+        lig.push(element2.ligneDA.article.libArticle);
+        lig.push(element2.quantiteLigneAppro);
+        lig.push(element2.ligneDA.uniter.libUniter);
+        lig.push(element2.puligneAppro);
+        let ht = element2.quantiteLigneAppro*element2.puligneAppro;
+        lig.push(ht);
+        lignes.push(lig);
+
+        totalTTC+= ht;
+      }
+
+    });
+
+    autoTable(doc, {
+      theme: 'plain',
+      startY:60,
+      margin: { right: 50 },
+      columnStyles: {
+        0: { textColor: 0, fontStyle: 'bold', halign: 'left' },
+        1: { textColor: 0, halign: 'left' },
+      },
+      body: [
+        ['Réf Demande de Besoins :', ''+demAppr?.numDA],
+        ['Centre Demandeuse :', demAppr?.service.codeService+' - '+demAppr?.service.libService],
+        ['Magasin :', element.magasin.codeMagasin+' - '+element.magasin.libMagasin]
+      ]
+      ,
+    });
+
+    
+
+    autoTable(doc, {
+      theme: 'grid',
+      head: [['Article', 'Désignation', 'Quantité', 'Unité', 'PU', 'Montant']],
+      headStyles:{
+        fillColor: [41, 128, 185],
+        textColor: 255,
+        fontStyle: 'bold' ,
+    },
+      margin: { top: 100 },
+      body: lignes
+      ,
+    });
+
+
+    autoTable(doc, {
+      theme: 'grid',
+      margin: { top: 100, left:130 },
+      columnStyles: {
+        0: { fillColor: [41, 128, 185], textColor: 255, fontStyle: 'bold' },
+      },
+      body: [
+        ['Total TTC', totalTTC]
+      ]
+      ,
+    });
+
+    autoTable(doc, {
+      theme: 'plain',
+      margin: { top: 50, bottom:0 },
+      columnStyles: {
+        0: { textColor: 0, fontStyle: 'bold', halign: 'left' },
+      },
+      body: [
+        ["Arrêté le présent Ordre de Sortie à la Somme de : "+NumberToLetter(totalTTC)+' Francs CFA']
+      ]
+      ,
+    });
+
+    doc.output('dataurlnewwindow');
+
   }
 
 }

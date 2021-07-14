@@ -25,6 +25,13 @@ import { FactureProFormAchaService } from 'src/app/services/gestion/saisie/factu
 import { LigneFactureProFormAchatService } from 'src/app/services/gestion/saisie/ligne-facture-pro-form-achat.service';
 import { LigneDemandePrixService } from 'src/app/services/gestion/saisie/ligneDemandePrix.service';
 
+import {jsPDF} from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import * as moment from  'moment';
+import { Utils } from 'src/app/utilitaires/utils';
+
+
+
 export interface modelLigneFactureProFormAchat{
   lignesFactureProFormAchat: LigneFactureProFormAchat;
   listArticle: Article[];
@@ -58,6 +65,8 @@ export class DepotOffreFactureProformatComponent implements OnInit {
   fpfa: FactureProFormAcha = null;
   ligneShow: modelLigneFactureProFormAchat[] = [];
   detailView: boolean = false;
+
+  etatVali: boolean = false;
 
   totaux: number[] = [0, 0, 0];
 
@@ -565,37 +574,50 @@ export class DepotOffreFactureProformatComponent implements OnInit {
 
   }
 
-  valider(fpfa: FactureProFormAcha, eta: boolean){
+  valider(fpfa: FactureProFormAcha, eta: boolean, content){
 
-    fpfa.valideFpfa = eta;
+    this.etatVali = eta;
 
-    this.fpfaService.editAFactureProFormAcha(fpfa.idFpfa, fpfa).subscribe(
-      (data) => {
+    this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', centered: true})
+      .result.then((result) => {
+      //this.confirmResut = `Closed with: ${result}`;
+      fpfa.valideFpfa = eta;
 
-        this.getAllLigneFactureProFormAcha();
-        this.getAllArticle();
-        this.getAllConsulterFrsForDp();
-        this.getAllDemandePrix();
-        this.getAllLigneDemandePrix();
+      this.fpfaService.editAFactureProFormAcha(fpfa.idFpfa, fpfa).subscribe(
+        (data) => {
+  
+          this.getAllLigneFactureProFormAcha();
+          this.getAllArticle();
+          this.getAllConsulterFrsForDp();
+          this.getAllDemandePrix();
+          this.getAllLigneDemandePrix();
+  
+          const i = this.fpfaList.findIndex(l => l.idFpfa == data.idFpfa);
+              if (i > -1) {
+                this.fpfaList[i] = data;
+                this.fpfaFiltered = [...this.fpfaList.sort((a, b) => a.idFpfa.localeCompare(b.idFpfa.valueOf()))];
+              }
+  
+              let msg: String = 'Validation'
+              if(eta == false) msg = 'Annulation';
+              this.toastr.success(msg+' effectuée avec succès.', 'Success', { timeOut: 5000 });
+  
+  
+        },
+        (error: HttpErrorResponse) => {
+          console.log('Echec status ==> ' + error.status);
+          this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000 });
+  
+        }
+      );
+  
 
-        const i = this.fpfaList.findIndex(l => l.idFpfa == data.idFpfa);
-            if (i > -1) {
-              this.fpfaList[i] = data;
-              this.fpfaFiltered = [...this.fpfaList.sort((a, b) => a.idFpfa.localeCompare(b.idFpfa.valueOf()))];
-            }
 
-            let msg: String = 'Validation'
-            if(eta == false) msg = 'Annulation';
-            this.toastr.success(msg+' effectuée avec succès.', 'Success', { timeOut: 5000 });
+    }, (reason) => {
+      console.log(`Dismissed with: ${reason}`);
+    });
 
 
-      },
-      (error: HttpErrorResponse) => {
-        console.log('Echec status ==> ' + error.status);
-        this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000 });
-
-      }
-    );
 
   }
 
@@ -607,6 +629,69 @@ export class DepotOffreFactureProformatComponent implements OnInit {
   closeDetail(){
     this.resetForm();
     this.detailView = false;
+  }
+
+  openPdfToPrint(element: FactureProFormAcha){
+
+
+    let totalHT : number = 0;
+    let totalTVA : number = 0;
+    let totalTTC : number = 0;
+
+    const doc = new jsPDF();
+    doc.addImage(Utils.logoUrlData, 'jpeg', 10, 5, 25, 25);
+    doc.setDrawColor(0);
+    doc.setFillColor(233 , 242, 248);
+    doc.roundedRect(50, 35, 110, 10, 3, 3, 'FD');
+    doc.setFontSize(20);
+    doc.text('FACTURE PROFORMAT DE FOURNISSEUR', 67, 43);
+    let lignes = [];
+
+    autoTable(doc, {
+      theme: 'grid',
+      head: [['Article', 'Désignation', 'Quantité', 'PU', 'TVA(%)', 'Montant']],
+      headStyles:{
+        fillColor: [41, 128, 185],
+        textColor: 255,
+        fontStyle: 'bold' ,
+    },
+      margin: { top: 100 },
+      body: lignes
+      ,
+    });
+
+
+    autoTable(doc, {
+      theme: 'grid',
+      margin: { top: 100, left:130 },
+      columnStyles: {
+        0: { fillColor: [41, 128, 185], textColor: 255, fontStyle: 'bold' },
+      },
+      body: [
+        ['Total HT', totalHT],
+        ['Total Montant TVA', totalTVA],
+        ['Total TTC', totalTTC]
+      ]
+      ,
+    });
+
+    autoTable(doc, {
+      theme: 'plain',
+      margin: { top: 100 },
+      columnStyles: {
+        0: { textColor: 0, fontStyle: 'bold', halign: 'center' },
+        2: { textColor: 0, fontStyle: 'bold', halign: 'left' },
+      },
+      body: [
+        ['Le Directeur Général\n\n\n\n\n',
+        '\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t',
+        'Le Fournisseur\n\n\n\n\n\t\t\t\t\t\t\t\t\t\t\t\t']
+      ]
+      ,
+    });
+
+    doc.output('dataurlnewwindow');
+
   }
 
 }

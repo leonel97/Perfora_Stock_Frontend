@@ -50,7 +50,7 @@
                         <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
                         <!--span *ngIf="row.cloturerExo == false"-->
                           <label class="checkbox checkbox-outline-light ">
-                            <input (change)="selectOne($event, row)" [(ngModel)]="row.isSelected" type="checkbox" ng-model="checkboxModel">
+                            <input (change)="selectOne($event, row)" [(ngModel)]="row.isSelected" type="checkbox" >
                            
                             <span class="checkmark"></span>
                           </label>
@@ -104,11 +104,11 @@
                         </ng-template>
                         <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
                           <!--<strong>{{ row.code }}</strong>-->
-                          <button (click)="makeForm(row)" class="btn btn-primary m-1 btn-sm" type="button">
+                          <button (click)="makeForm(row)" class="btn btn-primary m-1 btn-sm" type="button" ngbTooltip="Modifier" placement="bottom">
                             <i class="i-Pen-5"> </i>
                           </button>
                           <button (click)="confirm(modalConfirm, row)" class="btn btn-outline-danger m-1 btn-sm"
-                                  type="button">
+                                  type="button" ngbTooltip="Supprimer" placement="bottom">
                             <i class="i-Folder-Trash"> </i>
                           </button>
                         </ng-template>

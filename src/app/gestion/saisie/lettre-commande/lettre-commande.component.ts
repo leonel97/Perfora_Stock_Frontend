@@ -23,6 +23,13 @@ import { LettreCommandeService } from 'src/app/services/gestion/saisie/lettre-co
 import { LigneCommandeService } from 'src/app/services/gestion/saisie/ligne-commande.service';
 import { modelLigneCommande } from '../commande-achat/commande-achat.component';
 
+import {jsPDF} from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import * as moment from  'moment';
+import { Utils } from 'src/app/utilitaires/utils';
+import { NumberToLetter } from 'convertir-nombre-lettre';
+
+
 @Component({
   selector: 'app-lettre-commande',
   templateUrl: './lettre-commande.component.html',
@@ -44,6 +51,8 @@ export class LettreCommandeComponent implements OnInit {
   loading: boolean;
   lettreCommande: LettreCommande = null;
   ligneShow: modelLigneCommande[] = [];
+
+  etatVali: boolean = false;
 
   totaux: number[] = [0, 0, 0];
 
@@ -516,8 +525,15 @@ export class LettreCommandeComponent implements OnInit {
 
   }
 
-  valider(lettreCommande: LettreCommande, eta: boolean){
+  valider(lettreCommande: LettreCommande, eta: boolean, content){
 
+    
+    this.etatVali = eta;
+
+    this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', centered: true})
+      .result.then((result) => {
+      //this.confirmResut = `Closed with: ${result}`;
+      
     lettreCommande.commande.valide = eta;
 
     this.commandeService.editACommande(lettreCommande.commande.numCommande.toString(), lettreCommande.commande).subscribe(
@@ -542,6 +558,196 @@ export class LettreCommandeComponent implements OnInit {
 
       }
     );
+
+
+
+    }, (reason) => {
+      console.log(`Dismissed with: ${reason}`);
+    });
+
+
+  }
+
+  openPdfToPrint(element: LettreCommande){
+
+
+    let totalHT : number = 0;
+    let totalTVA : number = 0;
+    let totalTTC : number = 0;
+
+    const doc = new jsPDF();
+
+    autoTable(doc, {
+      theme: 'plain',
+      margin: { top: 5, left:35, right:9, bottom:100 },
+      columnStyles: {
+        0: { textColor: 'blue', fontStyle: 'bold', halign: 'left' },
+        1: { textColor: 'blue', fontStyle: 'bold', halign: 'right' },
+      },
+      body: [
+        ['PORT AUTONOME DE LOME\n\nTel.: 22.27.47.42/22.27.33.91/22.27.33.92\nFax: (228) 22.27.26.27\nCARTE N° 950113V',
+        'REPUBLIQUE TOGOLAISE\n\nTravail-Liberté-Patrie       ']
+      ]
+      ,
+    });
+    doc.addImage(Utils.logoUrlData, 'jpeg', 10, 5, 25, 25);
+
+    autoTable(doc, {
+      startY:35,
+      theme: 'plain',
+      //margin: { right: 100 },
+      columnStyles: {
+        0: { textColor: 0, halign: 'left', fontSize:9 },
+        1: { textColor: 0, fontStyle:'bold', halign: 'right', fontSize:9 },
+      },
+      body: [
+        ['B.P. 1225', 'Lomé, le '+moment(Date.now()).format('DD/MM/YYYY')],
+        ['Tél. : 22 27 47 42 / 22 27 33 91 / 22 27 33 92'],
+        ['Télex : 5243 TOGOPORT'],
+        ['TELEFAX : 22 27 26 27 DG'],
+        ['TELEFAX : 22 27 90 66 DFC'],
+        ['Adresse Télégr. Togoport'],
+        ['Union Togolaise de Banque: 60164'],
+      ]
+      ,
+    });
+    
+    //doc.setFontSize(14);
+    //doc.text('Lettre de Commande N° '+element.numLettreComm+' | AP/ST', 95, 65);
+    doc.setFontSize(18);
+    doc.text('A', 95, 90);
+    autoTable(doc, {
+      startY:91,
+      theme: 'plain',
+      margin: { left: 93 },
+      columnStyles: {
+        0: { textColor: 0, fontStyle: 'bold', halign: 'left', fontSize:12 },
+      },
+      body: [
+        ['Monsieur le Directeur de \n'+element.commande.frs.identiteFrs]
+      ]
+      ,
+    });
+
+    autoTable(doc, {
+      //startY:91,
+      theme: 'plain',
+      margin: { right: 100 },
+      columnStyles: {
+        0: { textColor: 0, fontStyle: 'bold', halign: 'left', fontSize:11 },
+      },
+      body: [
+        ['Objet : Lettre de Commande']
+      ]
+      ,
+    });
+
+    autoTable(doc, {
+      //startY:91,
+      theme: 'plain',
+      //margin: { right: 100 },
+      columnStyles: {
+        0: { textColor: 0, halign: 'left', fontSize:11 },
+      },
+      body: [
+        ['\t\t\t\t\t\t\t\t\tMonsieur le Directeur, '],
+        ['\tComme suite à votre proposition de prix n°\t\t\t\t\t\t du \t\t\t\t\t\t.'],
+        ['\tNous avons l\'honneur de vous passer commande ferme pour la fourniture de :']
+      ]
+      ,
+    });
+
+    let lignes = [];
+
+    this.ligneCommandeList.forEach(element2 => {
+      
+      if(element2.numCommande.numCommande == element.commande.numCommande){
+        let lig = [];
+        lig.push(element2.article.codeArticle);
+        lig.push(element2.article.libArticle);
+        lig.push(element2.qteLigneCommande);
+        lig.push(element2.puLigneCommande);
+        lig.push(element2.tva);
+        let ht = element2.qteLigneCommande*element2.puLigneCommande;
+        lig.push(ht*(1+(element2.tva/100)));
+        lignes.push(lig);
+
+        totalHT+= ht;
+        totalTVA+= ht*(element2.tva/100);
+        totalTTC+= ht*(1+(element2.tva/100));
+      }
+
+    });
+
+    autoTable(doc, {
+      theme: 'grid',
+      head: [['Article', 'Désignation', 'Quantité', 'PU', 'TVA(%)', 'Montant']],
+      headStyles:{
+        fillColor: [41, 128, 185],
+        textColor: 255,
+        fontStyle: 'bold' ,
+    },
+      margin: { top: 100 },
+      body: lignes
+      ,
+    });
+
+
+    autoTable(doc, {
+      theme: 'grid',
+      margin: { top: 0, left:130 },
+      columnStyles: {
+        0: { fillColor: [41, 128, 185], textColor: 255, fontStyle: 'bold' },
+      },
+      body: [
+        ['Total HT', totalHT],
+        ['Total Montant TVA', totalTVA],
+        ['Total TTC', totalTTC]
+      ]
+      ,
+    });
+
+    autoTable(doc, {
+      theme: 'plain',
+      margin: { top: 0 },
+      columnStyles: {
+        0: { textColor: 0, halign: 'right' },
+        1: { textColor: 0, fontStyle: 'bold', halign: 'left' },
+      },
+      body: [
+        ['MONTANT TOTAL :', NumberToLetter(totalTTC)+' Francs CFA'],
+        ['Délais de livraison :', element.commande.delaiLivraison+' Jour(s)']
+      ]
+      ,
+    });
+
+    autoTable(doc, {
+      theme: 'plain',
+      margin: { top: 0 },
+      columnStyles: {
+        0: { textColor: 0, fontStyle: 'bold', halign: 'left' },
+        
+      },
+      body: [
+        ['Veuillez agréer, Monsieur le Directeur, l\'expression de nos salutations distinguées.']
+      ]
+      ,
+    });
+
+    autoTable(doc, {
+      theme: 'plain',
+      margin: { top: 0 },
+      columnStyles: {
+        0: { textColor: 0, fontStyle: 'bold', halign: 'center' },
+        
+      },
+      body: [
+        ['Le Directeur Général\n\n\n\n\n\n\n\nContre-Amiral Fogan K. ADEGNON']
+      ]
+      ,
+    });
+
+    doc.output('dataurlnewwindow');
 
   }
 

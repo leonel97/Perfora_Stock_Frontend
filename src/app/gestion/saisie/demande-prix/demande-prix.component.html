@@ -106,6 +106,10 @@
                                   type="button" *ngIf="row.valideDemandePrix == true">
                             <i class="i-Mail-Send"> </i>
                           </button>
+                          <button (click)="openPdfToPrint(row)" class="btn btn-outline-warning m-1 btn-sm"
+                                  type="button" >
+                            <i class="i-File-Download"> </i>
+                          </button>
                         </ng-template>
                       </ngx-datatable-column>
                     </ngx-datatable>
@@ -133,7 +137,7 @@
                       <div class="col-md" *ngIf="validateForm.value.idDemandePrix">
                           <div class="col-md form-group">
                               <label for="orderNo">Numéro DP</label>
-                              <input formControlName="idDemandePrix" type="text" class="form-control" id="orderNo"
+                              <input formControlName="idDemandePrix" type="text" class="form-control" 
                                   placeholder="Numéro" readonly>
                           </div>
                       </div>
@@ -147,7 +151,7 @@
                       <!--div class="col-md">
                         <div class="col-md form-group" >
                             <label for="orderNo">Délais de Livraison (en jours)</label>
-                            <input formControlName="delaiLivraison" type="number" class="form-control" id="orderNo"
+                            <input formControlName="delaiLivraison" type="number" class="form-control" 
                                 placeholder="Numéro">
                         </div>
                       </div-->
@@ -163,7 +167,7 @@
                   <div class="row">
                     <div class="col-md-10 form-group">
                       <label for="orderNo">Désignation (observation) </label>
-                      <input formControlName="designationDemandePrix" type="text" class="form-control" id="orderNo"
+                      <input formControlName="designationDemandePrix" type="text" class="form-control" 
                           placeholder="Numéro">
 
                     </div>
@@ -377,7 +381,7 @@
         <div class="col-md">
           <div class="form-group">
               <label for="orderNo">Numéro DP</label>
-              <input formControlName="idDemandePrix" type="text" class="form-control" id="orderNo"
+              <input formControlName="idDemandePrix" type="text" class="form-control" 
                   placeholder="Numéro" readonly>
           </div>
         </div>
@@ -401,7 +405,7 @@
           <div class="col-md">
             <div class="col-md form-group" >
                 <label for="orderNo">Délais de Livraison (en jours)</label>
-                <input formControlName="delaiLivraison" type="number" class="form-control" id="orderNo"
+                <input formControlName="delaiLivraison" type="number" class="form-control" 
                     placeholder="Numéro">
             </div>
           </div>
@@ -423,3 +427,30 @@
     <btn-loading btnClass="btn-primary" ngbAutofocus [loading]="loading2" (click)="generateBond(modal)">Générer</btn-loading>
   </div>
 </ng-template>
+
+
+<ng-template #modalValid let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-title" *ngIf="etatVali == true">Validation</h4>
+    <h4 class="modal-title" id="modal-title" *ngIf="etatVali == false">Annulation</h4>
+    <button (click)="modal.dismiss('Cross click')" aria-describedby="modal-title" aria-label="Close button"
+            class="close"
+            type="button">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <p>
+      <strong>Confirmez-vous <strong class="text-success" *ngIf="etatVali == true">la Validation</strong>
+      <strong class="text-danger" *ngIf="etatVali == false">l'Annulation</strong> de la pièce ?</strong>
+    </p>
+  </div>
+  <div class="modal-footer">
+    <button (click)="modal.dismiss('cancel')" class="btn btn-outline-secondary btn-rounded" type="button">NON
+    </button>
+    <button (click)="modal.close('Ok')" class="btn btn-danger btn-rounded" ngbAutofocus
+            type="button">OUI
+    </button>
+  </div>
+</ng-template>
+

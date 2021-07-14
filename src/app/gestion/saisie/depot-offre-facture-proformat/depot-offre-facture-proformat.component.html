@@ -114,11 +114,11 @@
                                   type="button" *ngIf="row.valideFpfa == false">
                             <i class="i-Folder-Trash"> </i>
                           </button>
-                          <button (click)="valider(row, true)" class="btn btn-outline-success m-1 btn-sm"
+                          <button (click)="valider(row, true, modalValid)" class="btn btn-outline-success m-1 btn-sm"
                                   type="button" *ngIf="row.valideFpfa == false">
                             <i class="i-Yes"> </i>
                           </button>
-                          <button (click)="valider(row, false)" class="btn btn-outline-warning m-1 btn-sm"
+                          <button (click)="valider(row, false, modalValid)" class="btn btn-outline-warning m-1 btn-sm"
                                   type="button" *ngIf="row.valideFpfa == true">
                             <i class="i-Reload"> </i>
                           </button>
@@ -126,7 +126,7 @@
                                   type="button" >
                             <i class="i-Information"> </i>
                           </button>
-                          <button  class="btn btn-outline-warning m-1 btn-sm"
+                          <button (click)="openPdfToPrint(row)" class="btn btn-outline-warning m-1 btn-sm"
                                   type="button" >
                             <i class="i-File-Download"> </i>
                           </button>
@@ -166,7 +166,7 @@
                         <label >
                           Demande de Prix
                         </label>
-                        <ng-select formControlName="demandePrix" [readonly]="validateForm.value.numReception"
+                        <ng-select formControlName="demandePrix" [readonly]="validateForm.value.numReception || detailView"
                         (ngModelChange)="getInfosOnDpSelected()" >
                           <ng-option *ngFor="let elem of dpList" [value]="elem.idDemandePrix">{{elem.idDemandePrix}} du {{elem.dateDemandePrix | date: "dd-MM-yyyy"}} ( {{ elem.exercice.codeExercice }} )</ng-option>
 
@@ -177,7 +177,7 @@
                         <label >
                           Fournisseurs Concernés
                         </label>
-                        <ng-select formControlName="fournisseur" >
+                        <ng-select formControlName="fournisseur" [readonly]="detailView">
                           <ng-option *ngFor="let elem of frsList" [value]="elem.numFournisseur">{{elem.codeFrs}} {{elem.identiteFrs}}</ng-option>
 
                         </ng-select>
@@ -215,13 +215,13 @@
                   <div class="row">
                     <div class="col-md form-group">
                       <label for="orderNo">N° Générique</label>
-                      <input formControlName="designationFpfa" type="text" class="form-control" id="orderNo"
+                      <input formControlName="designationFpfa" type="text" class="form-control" 
                           placeholder="Numéro" [readOnly]="detailView">
 
                     </div>
                     <div class="col-md form-group">
                       <label for="orderNo">Observation</label>
-                      <input formControlName="obserFpfa" type="text" class="form-control" id="orderNo"
+                      <input formControlName="obserFpfa" type="text" class="form-control" 
                           placeholder="Numéro" [readOnly]="detailView">
 
                     </div>
@@ -259,11 +259,11 @@
                                       </td>
                                       <td>
                                           <input type="number" class="form-control" [(ngModel)] = "lig.lignesFactureProFormAchat.prixUnitHtLigneFpfa"
-                                              placeholder="Prix Unitaire HT" (ngModelChange)="calculTotaux()">
+                                              placeholder="Prix Unitaire HT" (ngModelChange)="calculTotaux()" [readOnly]="detailView">
                                       </td>
                                       <td>
                                         <input type="number" class="form-control" [(ngModel)] = "lig.lignesFactureProFormAchat.qteLigneFpfa"
-                                            placeholder="Quantité" (ngModelChange)="calculTotaux()">
+                                            placeholder="Quantité" (ngModelChange)="calculTotaux()" [readOnly]="detailView">
                                       </td>
                                       <td>
                                         {{ lig.concernedLigneDp?.uniter.codeUniter}} - {{ lig.concernedLigneDp?.uniter.libUniter}}
@@ -273,7 +273,7 @@
                                       </td>
                                       <td>
                                           <input type="number" class="form-control" [(ngModel)] = "lig.lignesFactureProFormAchat.tauxTvaLigneFpfa"
-                                              placeholder="Tva" (ngModelChange)="calculTotaux()">
+                                              placeholder="Tva" (ngModelChange)="calculTotaux()" [readOnly]="detailView">
                                       </td>
                                       <td>
                                         {{ lig.lignesFactureProFormAchat.prixUnitHtLigneFpfa * lig.lignesFactureProFormAchat.qteLigneFpfa*(1+(lig.lignesFactureProFormAchat.tauxTvaLigneFpfa/100)) }}
@@ -335,3 +335,30 @@
     </button>
   </div>
 </ng-template>
+
+
+<ng-template #modalValid let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-title" *ngIf="etatVali == true">Validation</h4>
+    <h4 class="modal-title" id="modal-title" *ngIf="etatVali == false">Annulation</h4>
+    <button (click)="modal.dismiss('Cross click')" aria-describedby="modal-title" aria-label="Close button"
+            class="close"
+            type="button">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <p>
+      <strong>Confirmez-vous <strong class="text-success" *ngIf="etatVali == true">la Validation</strong>
+      <strong class="text-danger" *ngIf="etatVali == false">l'Annulation</strong> de la pièce ?</strong>
+    </p>
+  </div>
+  <div class="modal-footer">
+    <button (click)="modal.dismiss('cancel')" class="btn btn-outline-secondary btn-rounded" type="button">NON
+    </button>
+    <button (click)="modal.close('Ok')" class="btn btn-danger btn-rounded" ngbAutofocus
+            type="button">OUI
+    </button>
+  </div>
+</ng-template>
+

@@ -23,6 +23,13 @@ import { CommandeService } from 'src/app/services/gestion/saisie/commande.servic
 import { LigneCommandeService } from 'src/app/services/gestion/saisie/ligne-commande.service';
 import { modelLigneCommande } from '../commande-achat/commande-achat.component';
 
+import {jsPDF} from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import * as moment from  'moment';
+import { Utils } from 'src/app/utilitaires/utils';
+import { NumberToLetter } from 'convertir-nombre-lettre';
+
+
 @Component({
   selector: 'app-bon-travail',
   templateUrl: './bon-travail.component.html',
@@ -44,6 +51,8 @@ export class BonTravailComponent  implements OnInit {
   loading: boolean;
   bondTravail: BondTravail = null;
   ligneShow: modelLigneCommande[] = [];
+
+  etatVali: boolean = false;
 
   totaux: number[] = [0, 0, 0];
 
@@ -516,33 +525,189 @@ export class BonTravailComponent  implements OnInit {
 
   }
 
-  valider(bondTravail: BondTravail, eta: boolean){
+  valider(bondTravail: BondTravail, eta: boolean, content){
 
-    bondTravail.commande.valide = eta;
+    this.etatVali = eta;
 
-    this.commandeService.editACommande(bondTravail.commande.numCommande.toString(), bondTravail.commande).subscribe(
-      (data) => {
+    this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', centered: true})
+      .result.then((result) => {
+      //this.confirmResut = `Closed with: ${result}`;
+      
+      bondTravail.commande.valide = eta;
 
-        bondTravail.commande = data;
+      this.commandeService.editACommande(bondTravail.commande.numCommande.toString(), bondTravail.commande).subscribe(
+        (data) => {
 
-        const i = this.bondTravailList.findIndex(l => l.numBondTravail == bondTravail.numBondTravail);
-            if (i > -1) {
-              this.bondTravailList[i] = bondTravail;
-              this.bondTravailFiltered = [...this.bondTravailList.sort((a, b) => a.numBondTravail.localeCompare(b.numBondTravail.valueOf()))];
-            }
+          bondTravail.commande = data;
 
-            let msg: String = 'Validation'
-            if(eta == false) msg = 'Annulation';
-            this.toastr.success(msg+' effectuée avec succès.', 'Success', { timeOut: 5000 });
+          const i = this.bondTravailList.findIndex(l => l.numBondTravail == bondTravail.numBondTravail);
+              if (i > -1) {
+                this.bondTravailList[i] = bondTravail;
+                this.bondTravailFiltered = [...this.bondTravailList.sort((a, b) => a.numBondTravail.localeCompare(b.numBondTravail.valueOf()))];
+              }
 
-      },
-      (error: HttpErrorResponse) => {
-        console.log('Echec status ==> ' + error.status);
-        this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000 });
+              let msg: String = 'Validation'
+              if(eta == false) msg = 'Annulation';
+              this.toastr.success(msg+' effectuée avec succès.', 'Success', { timeOut: 5000 });
 
-      }
-    );
+        },
+        (error: HttpErrorResponse) => {
+          console.log('Echec status ==> ' + error.status);
+          this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000 });
+
+        }
+      );
+
+
+
+    }, (reason) => {
+      console.log(`Dismissed with: ${reason}`);
+    });
 
   }
 
+  openPdfToPrint(element: BondTravail){
+
+    let totalHT : number = 0;
+    let totalTVA : number = 0;
+    let totalTTC : number = 0;
+
+    const doc = new jsPDF();
+    autoTable(doc, {
+      theme: 'plain',
+      margin: { top: 5, left:35, right:9, bottom:100 },
+      columnStyles: {
+        0: { textColor: 'blue', fontStyle: 'bold', halign: 'left' },
+        1: { textColor: 'blue', fontStyle: 'bold', halign: 'right' },
+      },
+      body: [
+        ['PORT AUTONOME DE LOME\n\nTel.: 22.27.47.42/22.27.33.91/22.27.33.92\nFax: (228) 22.27.26.27\nCARTE N° 950113V',
+        'REPUBLIQUE TOGOLAISE\n\nTravail-Liberté-Patrie       ']
+      ]
+      ,
+    });
+    doc.addImage(Utils.logoUrlData, 'jpeg', 10, 5, 25, 25);
+    
+    doc.setDrawColor(0);
+    doc.setFillColor(233 , 242, 248);
+    doc.roundedRect(50, 35, 110, 10, 3, 3, 'FD');
+    doc.setFontSize(20);
+    doc.text('BOND DE TRAVAIL', 67, 43);
+    autoTable(doc, {
+      theme: 'plain',
+      startY:50,
+      margin: { top: 1000 },
+      columnStyles: {
+        0: { textColor: 0, fontStyle: 'bold', halign: 'center' },
+      },
+      body: [
+        ['Bond de Commande N° '+element.numBondTravail+' du '+moment(element.commande.dateCommande).format('DD/MM/YYYY')]
+      ]
+      ,
+    });
+
+    autoTable(doc, {
+      theme: 'plain',
+      margin: { top: 0, bottom: 0 },
+      columnStyles: {
+        0: { textColor: 0, halign: 'left' },
+      },
+      body: [
+        ['Le Fournisseur : '+element.commande.frs.codeFrs+'  '+element.commande.frs.identiteFrs+'\n\nest prié de livrer au PORT AUTONOME les matières et objets désignés ci-après :']
+      ]
+      ,
+    });
+
+
+    let lignes = [];
+    this.ligneCommandeList.forEach(element2 => {
+      if(element2.numCommande.numCommande == element.commande.numCommande){
+        let lig = [];
+        lig.push(element2.article.codeArticle);
+        lig.push(element2.article.libArticle);
+        lig.push(element2.qteLigneCommande);
+        lig.push(element2.puLigneCommande);
+        lig.push(element2.tva);
+        let ht = element2.qteLigneCommande*element2.puLigneCommande;
+        lig.push(ht*(1+(element2.tva/100)));
+        lignes.push(lig);
+
+        totalHT+= ht;
+        totalTVA+= ht*(element2.tva/100);
+        totalTTC+= ht*(1+(element2.tva/100));
+      }
+
+    });
+    autoTable(doc, {
+      theme: 'grid',
+      head: [['Article', 'Désignation', 'Quantité', 'PU', 'TVA(%)', 'Montant']],
+      headStyles:{
+        fillColor: [41, 128, 185],
+        textColor: 255,
+        fontStyle: 'bold' ,
+    },
+      margin: { top: 10 },
+      body: lignes
+      ,
+    });
+
+
+    autoTable(doc, {
+      theme: 'grid',
+      margin: { top: 100, left:130 },
+      columnStyles: {
+        0: { fillColor: [41, 128, 185], textColor: 255, fontStyle: 'bold' },
+      },
+      body: [
+        ['Total HT', totalHT],
+        ['Total Montant TVA', totalTVA],
+        ['Total TTC', totalTTC]
+      ]
+      ,
+    });
+
+    autoTable(doc, {
+      theme: 'plain',
+      margin: { top: 50, bottom:0 },
+      columnStyles: {
+        0: { textColor: 0, fontStyle: 'bold', halign: 'left' },
+      },
+      body: [
+        ['Arrêté le présent Bon de Commande à la somme de : '+NumberToLetter(totalTTC)+' Francs CFA']
+      ]
+      ,
+    });
+
+    autoTable(doc, {
+      theme: 'plain',
+      margin: { top: 0 },
+      columnStyles: {
+        0: { textColor: 0, fontStyle: 'bold', halign: 'left' },
+        1: { textColor: 0, fontStyle: 'bold', halign: 'right' },
+      },
+      body: [
+        ['Délais de Livraison '+element.commande.delaiLivraison+'  Jour(s)',
+        'Lomé, le '+moment(Date.now()).format('DD/MM/YYYY')],
+      ]
+      ,
+    });
+
+    autoTable(doc, {
+      theme: 'plain',
+      margin: { top: 100 },
+      columnStyles: {
+        0: { textColor: 0, fontStyle: 'bold', halign: 'center' },
+        2: { textColor: 0, fontStyle: 'bold', halign: 'left' },
+      },
+      body: [
+        ['Le Directeur Général\n\n\n\n\n',
+        '\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t',
+        'Le Fournisseur\n\n\n\n\n\t\t\t\t\t\t\t\t\t\t\t\t']
+      ]
+      ,
+    });
+
+    doc.output('dataurlnewwindow');
+
+  }
 }

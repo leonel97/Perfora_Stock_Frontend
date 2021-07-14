@@ -20,6 +20,7 @@ export class ExerciceComponent implements OnInit {
   validateForm: FormGroup;
   exerciceList: Exercice[] = [];
   loading: boolean;
+  exoCloture: boolean = false ;
   exercice: Exercice = null;
 
   disabledBtnCloturer: boolean;
@@ -173,8 +174,21 @@ export class ExerciceComponent implements OnInit {
       const formData = this.validateForm.value;
       if (formData.numExercice == null) {
         console.log("data", formData);
-        
-        this.enregistrerExercice(formData);
+      
+        // verification d'un exerce non cloturé lors de la création d'un noouveau exercice
+        this.exerciceFiltered.forEach(element => {
+          if(element.cloturerExo == false)
+          {
+            this.exoCloture = true;
+          }
+          
+        });
+        if ( this.exoCloture == true ){
+          this.toastr.error('Veuillez clôturez l\'exercice encours.', ' Attention !', {progressBar: true});
+        }
+        else{
+          this.enregistrerExercice(formData);
+        }
       } else {
         this.modifierExercice(formData.numExercice,formData);
       }

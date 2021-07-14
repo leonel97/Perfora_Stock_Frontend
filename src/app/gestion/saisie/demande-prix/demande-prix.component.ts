@@ -20,6 +20,7 @@ import { LigneDemandePrix } from 'src/app/models/gestion/saisie/ligneDemandePrix
 import {jsPDF} from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import * as moment from  'moment';
+import { NumberToLetter } from 'convertir-nombre-lettre';
 
 import { AffectUniterToArticleService } from 'src/app/services/gestion/definition/affect-uniter-to-article.service';
 import { ArticleService } from 'src/app/services/gestion/definition/article.service';
@@ -35,6 +36,7 @@ import { ConsulterFrsForDpService } from 'src/app/services/gestion/saisie/consul
 import { ConsulterFrsForDp } from 'src/app/models/gestion/saisie/consulterFrsForDp.model';
 import { FactureProFormAchaService } from 'src/app/services/gestion/saisie/facture-pro-form-acha.service';
 import { FactureProFormAcha } from 'src/app/models/gestion/saisie/factureProFormAcha.model';
+import { Utils } from 'src/app/utilitaires/utils';
 
 export interface modelLigneDemandePrix{
   lignesDemandePrix: LigneDemandePrix;
@@ -81,6 +83,8 @@ export class DemandePrixComponent implements OnInit {
   selectedCurrentFrsInter: selectedCurrentFrsInt[] = [];
   etatChoix: boolean = false;
   etatChoixConcernedFrs: Fournisseur = null;
+
+  etatVali: boolean = false;
 
   totaux: number[] = [0, 0, 0];
 
@@ -619,32 +623,45 @@ export class DemandePrixComponent implements OnInit {
 
   }
 
-  valider(demandePrix: DemandePrix, eta: boolean){
+  valider(demandePrix: DemandePrix, eta: boolean, content){
 
-    demandePrix.valideDemandePrix = eta;
+    this.etatVali = eta;
 
-    this.demandePrixService.editDemandePrix(demandePrix.idDemandePrix.toString(), demandePrix).subscribe(
-      (data) => {
+    this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', centered: true})
+      .result.then((result) => {
+      //this.confirmResut = `Closed with: ${result}`;
+      
+      demandePrix.valideDemandePrix = eta;
 
-        demandePrix = data;
+      this.demandePrixService.editDemandePrix(demandePrix.idDemandePrix.toString(), demandePrix).subscribe(
+        (data) => {
 
-        const i = this.demandePrixList.findIndex(l => l.idDemandePrix == demandePrix.idDemandePrix);
-            if (i > -1) {
-              this.demandePrixList[i] = demandePrix;
-              this.demandePrixFiltered = [...this.demandePrixList.sort((a, b) => a.idDemandePrix.localeCompare(b.idDemandePrix.valueOf()))];
-            }
+          demandePrix = data;
 
-            let msg: String = 'Validation'
-            if(eta == false) msg = 'Annulation';
-            this.toastr.success(msg+' effectuée avec succès.', 'Success', { timeOut: 5000 });
+          const i = this.demandePrixList.findIndex(l => l.idDemandePrix == demandePrix.idDemandePrix);
+              if (i > -1) {
+                this.demandePrixList[i] = demandePrix;
+                this.demandePrixFiltered = [...this.demandePrixList.sort((a, b) => a.idDemandePrix.localeCompare(b.idDemandePrix.valueOf()))];
+              }
 
-      },
-      (error: HttpErrorResponse) => {
-        console.log('Echec status ==> ' + error.status);
-        this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000 });
+              let msg: String = 'Validation'
+              if(eta == false) msg = 'Annulation';
+              this.toastr.success(msg+' effectuée avec succès.', 'Success', { timeOut: 5000 });
 
-      }
-    );
+        },
+        (error: HttpErrorResponse) => {
+          console.log('Echec status ==> ' + error.status);
+          this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000 });
+
+        }
+      );
+
+
+
+    }, (reason) => {
+      console.log(`Dismissed with: ${reason}`);
+    });
+
 
   }
 
@@ -805,26 +822,289 @@ export class DemandePrixComponent implements OnInit {
 
   bondCommandeToPdf(encapCommannde: EncapCommande, fpfa: FactureProFormAcha, frs: Fournisseur){
 
+    let totalHT : number = 0;
+    let totalTVA : number = 0;
+    let totalTTC : number = 0;
+
     const doc = new jsPDF();
+    autoTable(doc, {
+      theme: 'plain',
+      margin: { top: 5, left:35, right:9, bottom:100 },
+      columnStyles: {
+        0: { textColor: 'blue', fontStyle: 'bold', halign: 'left' },
+        1: { textColor: 'blue', fontStyle: 'bold', halign: 'right' },
+      },
+      body: [
+        ['PORT AUTONOME DE LOME\n\nTel.: 22.27.47.42/22.27.33.91/22.27.33.92\nFax: (228) 22.27.26.27\nCARTE N° 950113V',
+        'REPUBLIQUE TOGOLAISE\n\nTravail-Liberté-Patrie       ']
+      ]
+      ,
+    });
+    doc.addImage(Utils.logoUrlData, 'jpeg', 10, 5, 25, 25);
+    
     doc.setDrawColor(0);
-    doc.setFillColor(255, 255, 255);
-    doc.roundedRect(50, 20, 110, 15, 3, 3, 'FD');
-    doc.setFontSize(25);
-    doc.text('RAPPORT', 59, 30);
+    doc.setFillColor(233 , 242, 248);
+    doc.roundedRect(50, 35, 110, 10, 3, 3, 'FD');
+    doc.setFontSize(20);
+    doc.text('BOND DE COMMANDE', 67, 43);
+    autoTable(doc, {
+      theme: 'plain',
+      startY:50,
+      margin: { top: 1000 },
+      columnStyles: {
+        0: { textColor: 0, fontStyle: 'bold', halign: 'center' },
+      },
+      body: [
+        ['Bond de Commande faisant Référence à la Demande de Prix N° '+fpfa.demandePrix.idDemandePrix+' du '+moment(fpfa.demandePrix.dateDemandePrix).format('DD/MM/YYYY')]
+      ]
+      ,
+    });
+
+    autoTable(doc, {
+      theme: 'plain',
+      margin: { top: 0, bottom: 0 },
+      columnStyles: {
+        0: { textColor: 0, halign: 'left' },
+      },
+      body: [
+        ['Le Fournisseur : '+fpfa.fournisseur.codeFrs+'  '+fpfa.fournisseur.identiteFrs+'\n\nest prié de livrer au PORT AUTONOME les matières et objets désignés ci-après :']
+      ]
+      ,
+    });
+
+
     let lignes = [];
-  lignes.push(['Salima', 'AGONHE']);
+    encapCommannde.ligneCommandes.forEach(element => {
+      let lig = [];
+      lig.push(element.article.codeArticle);
+      lig.push(element.article.libArticle);
+      lig.push(element.qteLigneCommande);
+      lig.push(element.puLigneCommande);
+      lig.push(element.tva);
+      let ht = element.qteLigneCommande*element.puLigneCommande;
+      lig.push(ht*(1+(element.tva/100)));
+      lignes.push(lig);
+
+      totalHT+= ht;
+      totalTVA+= ht*(element.tva/100);
+      totalTTC+= ht*(1+(element.tva/100));
+
+    });
     autoTable(doc, {
       theme: 'grid',
-      head: [['Article', 'Désignation', 'Quantité', 'PU', 'Montant', 'Plage(s)']],
+      head: [['Article', 'Désignation', 'Quantité', 'PU', 'TVA(%)', 'Montant']],
       headStyles:{
         fillColor: [41, 128, 185],
         textColor: 255,
         fontStyle: 'bold' ,
     },
-      margin: { top: 100 },
+      margin: { top: 10 },
       body: lignes
       ,
     });
+
+
+    autoTable(doc, {
+      theme: 'grid',
+      margin: { top: 100, left:130 },
+      columnStyles: {
+        0: { fillColor: [41, 128, 185], textColor: 255, fontStyle: 'bold' },
+      },
+      body: [
+        ['Total HT', totalHT],
+        ['Total Montant TVA', totalTVA],
+        ['Total TTC', totalTTC]
+      ]
+      ,
+    });
+
+    autoTable(doc, {
+      theme: 'plain',
+      margin: { top: 50, bottom:0 },
+      columnStyles: {
+        0: { textColor: 0, fontStyle: 'bold', halign: 'left' },
+      },
+      body: [
+        ['Arrêté le présent Bon de Commande à la somme de : '+NumberToLetter(totalTTC)+' Francs CFA']
+      ]
+      ,
+    });
+
+    autoTable(doc, {
+      theme: 'plain',
+      margin: { top: 0 },
+      columnStyles: {
+        0: { textColor: 0, fontStyle: 'bold', halign: 'left' },
+        1: { textColor: 0, fontStyle: 'bold', halign: 'right' },
+      },
+      body: [
+        ['Délais de Livraison '+encapCommannde.commande.delaiLivraison+'  Jour(s)',
+        'Lomé, le '+moment(Date.now()).format('DD/MM/YYYY')],
+      ]
+      ,
+    });
+
+    autoTable(doc, {
+      theme: 'plain',
+      margin: { top: 100 },
+      columnStyles: {
+        0: { textColor: 0, fontStyle: 'bold', halign: 'center' },
+        2: { textColor: 0, fontStyle: 'bold', halign: 'left' },
+      },
+      body: [
+        ['Le Directeur Général\n\n\n\n\n',
+        '\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t',
+        'Le Fournisseur\n\n\n\n\n\t\t\t\t\t\t\t\t\t\t\t\t']
+      ]
+      ,
+    });
+
+    doc.output('dataurlnewwindow');
+
+  }
+
+  openPdfToPrint(element: DemandePrix){
+
+
+    const doc = new jsPDF();
+    let listFrs : Fournisseur[] = [];
+    this.consulterFrsForDpList.forEach(element3 => {
+      if(element3.demandePrix.idDemandePrix == element.idDemandePrix){
+        listFrs.push(element3.fournisseur);
+      }
+    });
+
+    let lignes = [];
+
+    this.ligneDemandePrixList.forEach(element2 => {
+      if(element.idDemandePrix == element2.demandePrix.idDemandePrix){
+        let lig = [];
+
+        lig.push(element2.article.codeArticle);
+        lig.push(element2.article.libArticle);
+        lig.push('');
+        lig.push(element2.qteLigneDemandePrix);
+        lig.push(element2.uniter.libUniter);
+        lig.push('');
+        lig.push('');
+
+        lignes.push(lig);
+
+      }
+    });
+
+    listFrs.forEach((element3, ind) => {
+      
+      autoTable(doc, {
+        theme: 'plain',
+        margin: { top: 5, left:35, right:9, bottom:100 },
+        columnStyles: {
+          0: { textColor: 'blue', fontStyle: 'bold', halign: 'left' },
+          1: { textColor: 'blue', fontStyle: 'bold', halign: 'right' },
+        },
+        body: [
+          ['PORT AUTONOME DE LOME\n\nTel.: 22.27.47.42/22.27.33.91/22.27.33.92\nFax: (228) 22.27.26.27\nCARTE N° 950113V',
+          'REPUBLIQUE TOGOLAISE\n\nTravail-Liberté-Patrie       ']
+        ]
+        ,
+      });
+      doc.addImage(Utils.logoUrlData, 'jpeg', 10, 5, 25, 25);
+  
+      doc.setDrawColor(0);
+      doc.setFillColor(233 , 242, 248);
+      doc.roundedRect(50, 35, 110, 10, 3, 3, 'FD');
+      doc.setFontSize(20);
+      doc.text('DEMANDE DE PRIX', 67, 43);
+      doc.setFontSize(14);
+      doc.text('Demande de Prix N° '+element.idDemandePrix+' | AP/ST', 95, 55);
+      doc.setFontSize(18);
+      doc.text('A', 95, 65);
+      autoTable(doc, {
+        startY:68,
+        theme: 'plain',
+        margin: { left: 94 },
+        columnStyles: {
+          0: { textColor: 0, fontStyle: 'bold', halign: 'left', fontSize:12 },
+        },
+        body: [
+          [''+element3.identiteFrs]
+        ]
+        ,
+      });
+  
+      autoTable(doc, {
+        
+        theme: 'plain',
+        margin: { top: 20 },
+        columnStyles: {
+          0: { textColor: 0, halign: 'left', fontSize:11 },
+        },
+        body: [
+          ["Vous êtes prié de faire parvenir au Port Autonome de Lomé, sous pli fermé et au plus tard le "+moment(element.dateLimiteDemandePrix).format('DD/MM/yyyy')+" votre offre de prix relative aux articles suivants :"]
+        ]
+        ,
+      });
+  
+      autoTable(doc, {
+        startY: 100,
+        theme: 'grid',
+        head: [['Article', 'Désignation', 'Réf Fourn', 'Quantité', 'Unité', 'PU HT', 'TVA(%)']],
+        headStyles:{
+          fillColor: [41, 128, 185],
+          textColor: 255,
+          fontStyle: 'bold' ,
+      },
+        margin: { top: 100 },
+        body: lignes
+        ,
+      });
+  
+  
+      
+  
+      autoTable(doc, {
+        theme: 'plain',
+        margin: { top: 100 },
+        columnStyles: {
+          0: { textColor: 0, fontStyle: 'bold', halign: 'center' },
+          2: { textColor: 0, fontStyle: 'bold', halign: 'left' },
+        },
+        body: [
+          ['Le Directeur Général\n\n\n\n\n',
+          '\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t',
+          'Le Fournisseur\n\n\n\n\n\t\t\t\t\t\t\t\t\t\t\t\t']
+        ]
+        ,
+      });
+  
+
+      autoTable(doc, {
+        theme: 'plain',
+        margin: { top: 20 },
+        columnStyles: {
+          0: { textColor: 0, fontStyle: 'bold', halign: 'right', fontSize:8.5 },
+          1: { textColor: 0, halign: 'left', fontSize:8.5 },
+        },
+        body: [
+          ['NB :', "1) Nous retrouner l'original de cette demande de prix"],
+          ['', "2) Nous répondre par une facture proforma sur votre papier en-tête en précisant le N° de la demande"],
+          ['', "3) Indiquer le taux de la TVA sur la facture proforma"],
+          ['', "4) Sous pli fermé obligatoire, les plis doivent être déposés au service APPRO-STOCK du PORT AUTONOME DE LOME"],
+          ['', "5) Préciser sur l'enveloppe, le delai de retour du pli et le N° de la demande de prix"],
+          ['', "6) Ne pas mettre sur l'enveloppe un signe quelconque qui permettrait de vous identifier"],
+          ['', "7) Préciser sur la facture proforma les montants HTVA et TTC"]
+        ]
+        ,
+      });
+
+
+      if(ind != listFrs.length - 1){
+        doc.addPage();
+      }
+
+    });
+    
+    
     doc.output('dataurlnewwindow');
 
   }

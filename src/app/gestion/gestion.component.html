@@ -11,7 +11,7 @@
 
     <br>
     <div id="gestion" class="row col-md-12">
-     <marquee behavior="" direction=""> <strong class="content font-weight-bold"> SYSTEME DE GESTION DES STOCKS, APPROVISIONNEMENTS ET FACTURATIONS : Perfora-Stock : {{this.exerciceService.selectedExo.libExercice}}</strong> </marquee>
+     <marquee behavior="" direction=""> <strong class="content font-weight-bold"> SYSTEME DE GESTION DES STOCKS, APPROVISIONNEMENTS ET FACTURATIONS : Perfora-Stock : {{this.exerciceService.selectedExo != null || this.exerciceService.selectedExo != undefined ? this.exerciceService.selectedExo.libExercice : 'Aucun exercice selectionné'}}</strong> </marquee>
     </div>
 
     <br>

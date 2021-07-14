@@ -125,11 +125,11 @@
                                   type="button" *ngIf="row.valideAppro == false">
                             <i class="i-Folder-Trash"> </i>
                           </button>
-                          <button (click)="valider(row, true)" class="btn btn-outline-success m-1 btn-sm"
+                          <button (click)="valider(row, true, modalValid)" class="btn btn-outline-success m-1 btn-sm"
                                   type="button" *ngIf="row.valideAppro == false">
                             <i class="i-Yes"> </i>
                           </button>
-                          <button (click)="valider(row, false)" class="btn btn-outline-warning m-1 btn-sm"
+                          <button (click)="valider(row, false, modalValid)" class="btn btn-outline-warning m-1 btn-sm"
                                   type="button" *ngIf="row.valideAppro == true">
                             <i class="i-Reload"> </i>
                           </button>
@@ -137,7 +137,7 @@
                                   type="button" >
                             <i class="i-Information"> </i>
                           </button>
-                          <button  class="btn btn-outline-warning m-1 btn-sm"
+                          <button (click)="openPdfToPrint(row)" class="btn btn-outline-warning m-1 btn-sm"
                                   type="button" >
                             <i class="i-File-Download"> </i>
                           </button>
@@ -176,14 +176,17 @@
                         <label >Demande de Besoin</label>
                         <ng-select formControlName="numDA" [readonly]="validateForm.value.numAppro"
                         (ngModelChange)="getInfosOnDaSelected()" >
-                          <ng-option *ngFor="let da of demandeApproList" [value]="da.numDA">{{da.numDA}} du {{da.dateDA}} ( {{ da.service.codeService }} - {{ da.service.libService }} )</ng-option>
+                        <div *ngFor="let da of demandeApproList">
+                          <ng-option *ngIf="!isADemApproSitisfaied(da)" [value]="da.numDA">{{da.numDA}} du {{da.dateDA}} ( {{ da.service.codeService }} - {{ da.service.libService }} )</ng-option>
+                        </div>
+                          
                         </ng-select>
                       </div>
                       <div class="col-md-3 form-group mb-3">
                         <label for="picker1">Date</label>
                         <div class="input-group">
                             <input formControlName="dateAppro" id="picker1" class="form-control text-right" type="date"
-                                >
+                            [readOnly]="detailView"  >
 
                         </div>
                       </div>
@@ -191,14 +194,14 @@
                   <div class="row">
                     <div class="col-md form-group">
                       <label for="orderNo">N° Générique</label>
-                      <input formControlName="description" type="text" class="form-control" id="orderNo"
-                          placeholder="Numéro">
+                      <input formControlName="description" type="text" class="form-control"
+                          placeholder="Numéro" [readOnly]="detailView">
 
                     </div>
 
                     <div class="col-md form-group mb-3">
                       <label >Magasin</label>
-                      <ng-select formControlName="magasin" (ngModelChange)="getInfosOnMagasinSelected()">
+                      <ng-select formControlName="magasin" (ngModelChange)="getInfosOnMagasinSelected()" [readonly]="detailView">
                         <ng-option *ngFor="let mag of magasinList" [value]="mag.numMagasin">{{mag.codeMagasin}} - {{mag.libMagasin}}</ng-option>
                       </ng-select>
                     </div>
@@ -217,6 +220,8 @@
                                       <th scope="col">Article</th>
                                       <th scope="col">Quantité</th>
                                       <th scope="col">Unité</th>
+                                      <th scope="col">Qté Demandée</th>
+                                      <th scope="col">Qté Restante</th>
                                       <th scope="col">Disponibilité</th>
                                       <th scope="col">Coût Unitaire</th>
                                       <th scope="col">Montant</th>
@@ -229,17 +234,24 @@
                                       <th scope="row">{{i + 1}}</th>
                                       <td>
                                         <ng-select [(ngModel)]="lig.selectedArticl" (ngModelChange)="getInfosOfSelectArt(i)"
-                                        (click)="onArticleSelectClicked(i)" style="min-width: 180px;">
+                                        (click)="onArticleSelectClicked(i)" style="min-width: 180px;" [readonly]="detailView">
                                           <ng-option *ngFor="let art of lig.listArticle" [value]="art.numArticle"
                                            >{{art.codeArticle}} - {{art.libArticle}}</ng-option>
                                         </ng-select>
                                       </td>
                                       <td>
-                                        <input type="number" class="form-control" [(ngModel)] = "lig.ligneAppro.quantiteLigneAppro"
-                                            placeholder="Quantité" (change)="calculTotaux()">
+                                        <input type="number" class="form-control" [(ngModel)] = "lig.ligneAppro.quantiteLigneAppro" 
+                                        [ngStyle]="{'background-color': (lig.concernedStocker?.quantiterStocker < lig.ligneAppro.quantiteLigneAppro || lig.concernedLigneDa?.quantiteDemandee < lig.ligneAppro.quantiteLigneAppro || lig.qteRest < lig.ligneAppro.quantiteLigneAppro) ? 'rgb(255, 172, 172)': null}"
+                                            placeholder="Quantité" (change)="calculTotaux()" [readOnly]="detailView">
                                       </td>
                                       <td>
                                         {{lig.concernedLigneDa?.uniter?.codeUniter}} - {{lig.concernedLigneDa?.uniter?.libUniter}}
+                                      </td>
+                                      <td>
+                                        {{lig.concernedLigneDa?.quantiteDemandee}}
+                                      </td>
+                                      <td>
+                                        {{lig.qteRest}}
                                       </td>
                                       <td>
                                         {{lig.concernedStocker?.quantiterStocker}}
@@ -251,7 +263,7 @@
                                         {{lig.ligneAppro.puligneAppro * lig.ligneAppro.quantiteLigneAppro}}
                                       </td>
                                       <td>
-                                          <button class="btn btn-outline-secondary float-right" (click)="popALigneAppro(i)">Retirer</button>
+                                          <button class="btn btn-outline-secondary float-right" (click)="popALigneAppro(i)" *ngIf="!detailView">Retirer</button>
                                       </td>
                                   </tr>
                               </tbody>
@@ -306,4 +318,31 @@
     </button>
   </div>
 </ng-template>
+
+
+<ng-template #modalValid let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-title" *ngIf="etatVali == true">Validation</h4>
+    <h4 class="modal-title" id="modal-title" *ngIf="etatVali == false">Annulation</h4>
+    <button (click)="modal.dismiss('Cross click')" aria-describedby="modal-title" aria-label="Close button"
+            class="close"
+            type="button">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <p>
+      <strong>Confirmez-vous <strong class="text-success" *ngIf="etatVali == true">la Validation</strong>
+      <strong class="text-danger" *ngIf="etatVali == false">l'Annulation</strong> de la pièce ?</strong>
+    </p>
+  </div>
+  <div class="modal-footer">
+    <button (click)="modal.dismiss('cancel')" class="btn btn-outline-secondary btn-rounded" type="button">NON
+    </button>
+    <button (click)="modal.close('Ok')" class="btn btn-danger btn-rounded" ngbAutofocus
+            type="button">OUI
+    </button>
+  </div>
+</ng-template>
+
 
