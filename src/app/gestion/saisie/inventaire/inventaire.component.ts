@@ -57,6 +57,8 @@ export class InventaireComponent implements OnInit {
   generateLine: boolean = false ;
   detailView: boolean = false;
 
+  etatVali: boolean = false;
+
   
 
   activeTabsNav;
@@ -339,63 +341,74 @@ export class InventaireComponent implements OnInit {
     this.inventaire = inventaire;
     this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', centered: true})
       .result.then((result) => {
-      //this.confirmResut = `Closed with: ${result}`;
+
       this.inventaireService.deleteInventaire2(inventaire?.numInv.toString()).subscribe(
         (data) => {
 
           console.log(data);
           const i = this.inventaireList.findIndex(l => l.numInv == inventaire.numInv);
           if (i > -1) {
-            this.inventaireList.splice(i, 1);
-            this.inventaireFiltered = [...this.inventaireList.sort((a, b) => a.numInv.localeCompare(b.numInv.valueOf()))];
+              this.inventaireList.splice(i, 1);
+              this.inventaireFiltered = [...this.inventaireList.sort((a, b) => a.numInv.localeCompare(b.numInv.valueOf()))];
           }
-          /*setTimeout(() => {
-            this.toastr.success('Suppression effectuée avec succès.', 'Success!', {progressBar: true});
-          }, 3000);*/
+
           this.resetForm();
           this.toastr.success('Suppression effectué avec succès.', 'Success!', { timeOut: 5000 });
         },
         (error: HttpErrorResponse) => {
           console.log('Echec status ==> ' + error.status);
           this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000 });
-          /*setTimeout(() => {
-            this.toastr.error('Erreur avec le status ' + error.status, ' Erreur !', {progressBar: true});
-          }, 3000);*/
         });
+
     }, (reason) => {
       console.log(`Dismissed with: ${reason}`);
     });
   }
 
   //Validate inventaire 
-  valider(inventaire: Inventaire, eta: boolean){
+  valider(inventaire: Inventaire, eta: boolean, content){
 
-    inventaire.valideInve = eta;
+    this.etatVali = eta;
+    
 
-    this.inventaireService.editInventaire(inventaire.numInv.toString(), inventaire).subscribe(
-      (data) => {
+    
+    this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', centered: true})
+    .result.then((result) => {
+      inventaire.valideInve = eta;
+   
+            // Procéder à l'ajustement des stocks
+            this.inventaireService.editInventaire3(inventaire.numInv.toString(), inventaire).subscribe(
+              (data) => {
 
-        // Procéder à l'ajustement des stocks
+                this.toastr.success('Validation effectuée avec succès.', 'Success', { timeOut: 5000 });
 
-        inventaire = data;
+                this.toastr.success('stock ajusté avec succès ', 'Success !', { timeOut: 5000 });
 
-        const i = this.inventaireList.findIndex(l => l.numInv == inventaire.numInv);
-            if (i > -1) {
-              this.inventaireList[i] = inventaire;
-              this.inventaireFiltered = [...this.inventaireList.sort((a, b) => a.numInv.localeCompare(b.numInv.valueOf()))];
-            }
 
-            let msg: String = 'Validation'
-            if(eta == false) msg = 'Annulation';
-            this.toastr.success(msg+' effectuée avec succès.', 'Success', { timeOut: 5000 });
+                const i = this.inventaireList.findIndex(l => l.numInv == data.numInv);
+                if (i > -1) {
+                  this.inventaireList[i] = data;
+                  this.inventaireFiltered = [...this.inventaireList.sort((a, b) => a.numInv.localeCompare(b.numInv.valueOf()))];
+                  console.log('value inventaire ', this.inventaireFiltered);
+                  
+                }
+        
+              },
+              (error: HttpErrorResponse) => {
+                console.log('Echec status ==> ' + error.status);
+                this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000 });
+        
+              }
+            );
 
-      },
-      (error: HttpErrorResponse) => {
-        console.log('Echec status ==> ' + error.status);
-        this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000 });
 
-      }
-    );
+            //End ajustement des stocks
+    
+
+  }, (reason) => {
+    console.log(`Dismissed with: ${reason}`);
+  });
+
 
   }
 

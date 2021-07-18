@@ -2,7 +2,7 @@
     <div class="breadcrumb">
         <h1> Gestion des inventaires</h1>
         <ul>
-            <li><a href="">Saisie</a></li>
+            <li><a routerLink="">Saisie</a></li>
             <li>Inventaire</li>
         </ul>
     </div>
@@ -98,7 +98,7 @@
                                     type="button"  ngbTooltip="Supprimer" placement="bottom" *ngIf="row.valideInve == false">
                               <i class="i-Folder-Trash"> </i>
                             </button>
-                            <button (click)="valider(row, true)" class="btn btn-outline-success m-1 btn-sm"
+                            <button (click)="valider(row, true, modalValid)" class="btn btn-outline-success m-1 btn-sm"
                                     type="button"  ngbTooltip="Valider" placement="bottom" *ngIf="row.valideInve == false">
                               <i class="i-Yes"> </i>
                             </button>
@@ -147,16 +147,16 @@
                   <form [formGroup]="validateForm">
                     <h4 class="font-weight-bold">Informations sur l'inventaire</h4>
                     <div class="row">
-                        <div class="col-md" *ngIf="validateForm.value.numInv">
+                        <div class="col-md" *ngIf="validateForm.value.numInv ">
                             <div class="col-md form-group">
                                 <label for="orderNo">Numéro Inventaire</label>
-                                <input formControlName="numInv" type="text" class="form-control" id="orderNo"
+                                <input formControlName="numInv" type="text" class="form-control" id="numInv"
                                     placeholder="Numéro" readonly>
                             </div>
                         </div>
                         <div class="col-md-6 form-group mb-3">
                             <label for="magasin">Magasin</label>
-                            <ng-select bindLabel="libMagasin"  id="magasin" formControlName="magasin" placeholder="Entrer le magasin" >
+                            <ng-select bindLabel="libMagasin"  id="magasin" formControlName="magasin" placeholder="Entrer le magasin"  [readonly]="detailView" >
                               <!--ng-option [ngValue]="null">-- Centre de consommation parent -- </ng-option-->
                               <ng-option *ngFor="let magas of magasinFiltered" [value]="magas">{{magas.codeMagasin}} - {{magas.libMagasin}}</ng-option>
                             </ng-select>
@@ -165,44 +165,19 @@
                         <div class="col-md-6 form-group mb-3">
                           <label for="picker1">Date Inventaire</label>
                           <div class="input-group">
-                              <input formControlName="dateInv" id="picker1" class="form-control text-right" type="date"
-                                  >
+                              <input formControlName="dateInv" id="picker1" class="form-control text-right" type="date"  [readonly]="detailView">
                           </div>
                         </div>
-                        <!--div class="col-md">
-                          <div class="col-md form-group" >
-                              <label for="orderNo">Délais de Livraison (en jours)</label>
-                              <input formControlName="delaiLivraison" type="number" class="form-control" id="orderNo"
-                                  placeholder="Numéro">
-                          </div>
-                        </div-->
-                        <!--div class="col-md form-group mb-3">
-                          <label for="picker1">Date limite de dépôt des Factures Proformat</label>
-                          <div class="input-group">
-                              <input formControlName="dateLimiteDemandePrix" id="picker2" class="form-control text-right"
-                                  type="date">
-  
-                          </div>
-                        </div-->
+                       
                     </div>
                     <div class="row">
                       <div class="col-md-12 form-group">
                         <label for="orderNo">Désignation (observation) </label>
-                        <input formControlName="descrInv" type="text" class="form-control" id="orderNo"
+                        <input formControlName="descrInv" type="text" class="form-control" id="descrInv"  [readonly]="detailView"
                             placeholder="Description ou observation sur l'inventaire" autocomplete="off">
   
                       </div>
-                      <!--div class="col-md-2 form-group">
-                        <button class="btn btn-primary float-right mb-4" style="margin-top: 13%; font-weight: bold;"
-                        (click)="openFrsConsulterDialog(modalFrsConsulter)">Fournisseurs Consulté(s) . . .</button>
-                      </div-->
-  
-                      <!--div class="col-md form-group mb-3">
-                        <label >Fournisseur</label>
-                        <ng-select formControlName="frs">
-                          <ng-option *ngFor="let frs of fournisseurList" [value]="frs.numFournisseur">{{frs.codeFrs}} - {{frs.identiteFrs}}</ng-option>
-                        </ng-select>
-                      </div-->
+                     
   
                     </div>
                   </form>
@@ -237,7 +212,7 @@
                                         </td>
                                         <td>
                                           <input type="number" class="form-control" [(ngModel)] = "ligInventaire.stockreel"
-                                              placeholder="Stock Réel">
+                                              placeholder="Stock Réel"  [readonly]="detailView">
                                         </td>
                                         <td>
                                           {{ ligInventaire.pu  }}
@@ -250,12 +225,12 @@
                                         </td>
                                         <td>
                                           <input type="text" class="form-control" [(ngModel)] = "ligInventaire.observation"
-                                          placeholder="Observation">
+                                          placeholder="Observation"  [readonly]="detailView">
                                         </td>
                                     </tr>
                                 </tbody>
                             </table>
-                            <button class="btn btn-primary float-right mb-4" (click)="showAllLigneArticleConcernedMagasin()"  [disabled]="!(validateForm.value.magasin && validateForm.value.dateInv)">Générer les lignes</button>
+                            <button class="btn btn-primary float-right mb-4" (click)="showAllLigneArticleConcernedMagasin()"  [disabled]="!(validateForm.value.magasin && validateForm.value.dateInv ) || detailView">Générer les lignes</button>
                         </div>
   
                         <!--div class="col-md-12">
@@ -305,3 +280,31 @@
     </button>
   </div>
 </ng-template>
+
+<!--Modal de validation-->
+
+<ng-template #modalValid let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-title" *ngIf="etatVali == true">Validation</h4>
+    <h4 class="modal-title" id="modal-title" *ngIf="etatVali == false">Annulation</h4>
+    <button (click)="modal.dismiss('Cross click')" aria-describedby="modal-title" aria-label="Close button"
+            class="close"
+            type="button">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <p>
+      <strong>Confirmez-vous <strong class="text-success" *ngIf="etatVali == true">la Validation</strong>
+      <strong class="text-danger" *ngIf="etatVali == false">l'Annulation</strong> de la pièce ?</strong>
+    </p>
+  </div>
+  <div class="modal-footer">
+    <button (click)="modal.dismiss('cancel')" class="btn btn-outline-secondary btn-rounded" type="button">NON
+    </button>
+    <button (click)="modal.close('Ok')" class="btn btn-danger btn-rounded" ngbAutofocus
+            type="button">OUI
+    </button>
+  </div>
+</ng-template>
+

@@ -30,20 +30,25 @@ export class InventaireService {
       return this.httpCli.post<EncapInventaire>(this.host+'/stock/inventaire/list2', corps);
     }
 
-    editInventaire(code:String, corps:Inventaire){
+    editInventaire(code:string, corps:Inventaire){
       return this.httpCli.put<Inventaire>(this.host+'/stock/inventaire/byCodSto/'+code, corps);
     }
 
-    editInventaire2(code:String, corps:EncapInventaire){
+    editInventaire2(code:string, corps:EncapInventaire){
       return this.httpCli.put<EncapInventaire>(this.host+'/stock/inventaire/byCodSto2/'+code, corps);
     }
 
-    deleteInventaire(code:String){
+    deleteInventaire(code:string){
       return this.httpCli.delete<boolean>(this.host+'/stock/inventaire/byCodSto/'+code);
     }
 
-    deleteInventaire2(code:String){
+    deleteInventaire2(code:string){
       return this.httpCli.delete<boolean>(this.host+'/stock/inventaire/byCodSto2/'+code);
+    }
+
+    // ajustement des stocks à la validation de l'inventaire
+    editInventaire3(code:string, corps:Inventaire){
+      return this.httpCli.put<Inventaire>(this.host+'/stock/inventaire/byCodSto3/'+code, corps);
     }
 
 

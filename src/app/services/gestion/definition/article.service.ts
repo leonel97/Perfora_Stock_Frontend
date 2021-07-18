@@ -25,6 +25,14 @@ export class ArticleService {
     return this.httpCli.post<Article>(this.host+'/stock/article/list', corps);
   }
 
+  addAListArticle(corps: Article[]){
+    return this.httpCli.post<Article[]>(this.host+'/stock/article/list2', corps);
+  }
+
+  addAListArticleForStockInit(corps: Article[]){
+    return this.httpCli.post<Article[]>(this.host+'/stock/article/list3', corps);
+  }
+
   editArticle(code:String, corps:Article){
     return this.httpCli.put<Article>(this.host+'/stock/article/byCodArt/'+code, corps);
   }
