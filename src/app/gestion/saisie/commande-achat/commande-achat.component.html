@@ -96,23 +96,23 @@
                         <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
                           <!--<strong>{{ row.code }}</strong>-->
                           <button (click)="makeForm(row)" class="btn btn-primary m-1 btn-sm"
-                          type="button" *ngIf="row.commande.valide == false">
+                          type="button" *ngIf="row.commande.valide == false" ngbTooltip="Modifier" placement="bottom">
                             <i class="i-Pen-5"> </i>
                           </button>
                           <button (click)="confirm(modalConfirm, row)" class="btn btn-outline-danger m-1 btn-sm"
-                                  type="button" *ngIf="row.commande.valide == false">
+                                  type="button" *ngIf="row.commande.valide == false" ngbTooltip="Supprimer" placement="bottom">
                             <i class="i-Folder-Trash"> </i>
                           </button>
                           <button (click)="valider(row, true, modalValid)" class="btn btn-outline-success m-1 btn-sm"
-                                  type="button" *ngIf="row.commande.valide == false">
+                                  type="button" *ngIf="row.commande.valide == false" ngbTooltip="Valider" placement="bottom">
                             <i class="i-Yes"> </i>
                           </button>
                           <button (click)="valider(row, false, modalValid)" class="btn btn-outline-warning m-1 btn-sm"
-                                  type="button" *ngIf="row.commande.valide == true">
+                                  type="button" *ngIf="row.commande.valide == true" ngbTooltip="Annuler" placement="bottom">
                             <i class="i-Reload"> </i>
                           </button>
                           <button (click)="openPdfToPrint(row)" class="btn btn-outline-warning m-1 btn-sm"
-                                  type="button" >
+                                  type="button" ngbTooltip="Imprimer" placement="bottom">
                             <i class="i-File-Download"> </i>
                           </button>
                         </ng-template>
@@ -142,7 +142,7 @@
                       <div class="col-md" *ngIf="validateForm.value.numComAchat">
                           <div class="col-md form-group">
                               <label for="orderNo">Numéro</label>
-                              <input formControlName="numComAchat" type="text" class="form-control" 
+                              <input formControlName="numComAchat" type="text" class="form-control"
                                   placeholder="Numéro" readonly>
                           </div>
                       </div>
@@ -157,7 +157,7 @@
                       <div class="col-md">
                         <div class="col-md form-group" >
                             <label for="orderNo">Délais de Livraison (en jours)</label>
-                            <input formControlName="delaiLivraison" type="number" class="form-control" 
+                            <input formControlName="delaiLivraison" type="number" class="form-control"
                                 placeholder="Numéro">
                         </div>
                       </div>
@@ -173,7 +173,7 @@
                   <div class="row">
                     <div class="col-md form-group">
                       <label for="orderNo">Références</label>
-                      <input formControlName="description" type="text" class="form-control" 
+                      <input formControlName="description" type="text" class="form-control"
                           placeholder="Numéro">
 
                     </div>

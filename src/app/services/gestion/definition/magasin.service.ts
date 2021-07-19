@@ -25,6 +25,10 @@ export class MagasinService {
    return this.httpCli.post<Magasin>(this.host+'/stock/magasin/list', corps);
   }
 
+  addAListMagasin(corps: Magasin[]){
+    return this.httpCli.post<Magasin[]>(this.host+'/stock/magasin/list2', corps);
+  }
+
   editAMagasin(code:String, corps:Magasin){
     return this.httpCli.put<Magasin>(this.host+'/stock/magasin/byCodMag/'+code, corps);
   }

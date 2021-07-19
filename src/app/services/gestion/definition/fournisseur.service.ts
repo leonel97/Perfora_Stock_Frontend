@@ -18,6 +18,10 @@ export class FournisseurService {
     return this.http.post(`${this.url}/list`, fournisseur);
   }
 
+  addAListFournisseur(corps: Fournisseur[]){
+    return this.http.post<Fournisseur[]>(`${this.url}/list2`, corps);
+  }
+
   deleteFournisseur(id: String): Observable<Object> {
     return this.http.delete(`${this.url}/byCodFou/`+ id);
   }

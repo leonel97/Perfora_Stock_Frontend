@@ -537,27 +537,27 @@ export class AppelOffreComponent implements OnInit {
 
       this.commandeService.editACommande(appelOffre.commande.numCommande.toString(), appelOffre.commande).subscribe(
         (data) => {
-  
+
           appelOffre.commande = data;
-  
+
           const i = this.appelOffreList.findIndex(l => l.numAppelOffre == appelOffre.numAppelOffre);
               if (i > -1) {
                 this.appelOffreList[i] = appelOffre;
                 this.appelOffreFiltered = [...this.appelOffreList.sort((a, b) => a.numAppelOffre.localeCompare(b.numAppelOffre.valueOf()))];
               }
-  
+
               let msg: String = 'Validation'
               if(eta == false) msg = 'Annulation';
               this.toastr.success(msg+' effectuée avec succès.', 'Success', { timeOut: 5000 });
-  
+
         },
         (error: HttpErrorResponse) => {
           console.log('Echec status ==> ' + error.status);
           this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000 });
-  
+
         }
       );
-        
+
 
 
     }, (reason) => {
@@ -588,7 +588,7 @@ export class AppelOffreComponent implements OnInit {
       ,
     });
     doc.addImage(Utils.logoUrlData, 'jpeg', 10, 5, 25, 25);
-    
+
     doc.setDrawColor(0);
     doc.setFillColor(233 , 242, 248);
     doc.roundedRect(50, 35, 110, 10, 3, 3, 'FD');
@@ -627,6 +627,7 @@ export class AppelOffreComponent implements OnInit {
         lig.push(element2.article.codeArticle);
         lig.push(element2.article.libArticle);
         lig.push(element2.qteLigneCommande);
+        lig.push(element2.uniter.libUniter);
         lig.push(element2.puLigneCommande);
         lig.push(element2.tva);
         let ht = element2.qteLigneCommande*element2.puLigneCommande;
@@ -641,7 +642,7 @@ export class AppelOffreComponent implements OnInit {
     });
     autoTable(doc, {
       theme: 'grid',
-      head: [['Article', 'Désignation', 'Quantité', 'PU', 'TVA(%)', 'Montant']],
+      head: [['Article', 'Désignation', 'Quantité', 'Unité', 'PU', 'TVA(%)', 'Montant']],
       headStyles:{
         fillColor: [41, 128, 185],
         textColor: 255,

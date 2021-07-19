@@ -30,12 +30,13 @@ export class UniterService {
     return this.httpCli.post<Uniter>(this.host+'/stock/uniter/list', corps);
   }
 
+  addAListUniter(corps:Uniter[]){
+    return this.httpCli.post<Uniter[]>(this.host+'/stock/uniter/list2', corps);
+  }
+
   deleteAUniter(code:String){
     return this.httpCli.delete<Boolean>(this.host+'/stock/uniter/byCodUni/'+code);
   }
-
-
-
 
 
 }

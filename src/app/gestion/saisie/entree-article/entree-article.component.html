@@ -117,27 +117,27 @@
                         <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
                           <!--<strong>{{ row.code }}</strong>-->
                           <button (click)="makeForm(row)" class="btn btn-primary m-1 btn-sm"
-                          type="button" *ngIf="row.valideRecep == false">
+                          type="button" *ngIf="row.valideRecep == false" ngbTooltip="Modifier" placement="bottom">
                             <i class="i-Pen-5"> </i>
                           </button>
                           <button (click)="confirm(modalConfirm, row)" class="btn btn-outline-danger m-1 btn-sm"
-                                  type="button" *ngIf="row.valideRecep == false">
+                                  type="button" *ngIf="row.valideRecep == false" ngbTooltip="Supprimer" placement="bottom">
                             <i class="i-Folder-Trash"> </i>
                           </button>
                           <button (click)="valider(row, true, modalValid)" class="btn btn-outline-success m-1 btn-sm"
-                                  type="button" *ngIf="row.valideRecep == false">
+                                  type="button" *ngIf="row.valideRecep == false" ngbTooltip="Valider" placement="bottom">
                             <i class="i-Yes"> </i>
                           </button>
                           <button (click)="valider(row, false, modalValid)" class="btn btn-outline-warning m-1 btn-sm"
-                                  type="button" *ngIf="row.valideRecep == true">
+                                  type="button" *ngIf="row.valideRecep == true" ngbTooltip="Annuler" placement="bottom">
                             <i class="i-Reload"> </i>
                           </button>
                           <button (click)="openDetail(row)" class="btn btn-outline-warning m-1 btn-sm"
-                                  type="button" >
+                                  type="button" ngbTooltip="Détail" placement="bottom" >
                             <i class="i-Information"> </i>
                           </button>
                           <button (click)="openPdfToPrint(row)" class="btn btn-outline-warning m-1 btn-sm"
-                                  type="button" >
+                                  type="button" ngbTooltip="Imprimer" placement="bottom">
                             <i class="i-File-Download"> </i>
                           </button>
                         </ng-template>
@@ -195,33 +195,33 @@
                         (ngModelChange)="getInfosOnAFilleCommandeSelected()" >
                           <div *ngIf="validateForm.value.numType == 0">
                             <div *ngFor="let elem of commandeAchaList">
-                              <ng-option  *ngIf="!isAFilleComSitisfaied(elem.numComAchat)" [value]="elem.numComAchat">{{elem.numComAchat}} du {{elem.commande.dateCommande}} ( {{ elem.commande.frs.codeFrs }} - {{ elem.commande.frs.identiteFrs }} ) {{ elem.exercice.codeExercice }}</ng-option>
+                              <ng-option  *ngIf="!isAFilleComSitisfaied(elem.numComAchat) && elem.commande.valide" [value]="elem.numComAchat">{{elem.numComAchat}} du {{elem.commande.dateCommande}} ( {{ elem.commande.frs.codeFrs }} - {{ elem.commande.frs.identiteFrs }} ) {{ elem.exercice.codeExercice }}</ng-option>
                             </div>
-                            
+
                           </div>
                           <div *ngIf="validateForm.value.numType == 1">
                             <div *ngFor="let elem of appelOffreList">
-                              <ng-option *ngIf="!isAFilleComSitisfaied(elem.numAppelOffre)" [value]="elem.numAppelOffre">{{elem.numAppelOffre}} du {{elem.commande.dateCommande}} ( {{ elem.commande.frs.codeFrs }} - {{ elem.commande.frs.identiteFrs }} ) {{ elem.exercice.codeExercice }}</ng-option>
+                              <ng-option *ngIf="!isAFilleComSitisfaied(elem.numAppelOffre) && elem.commande.valide" [value]="elem.numAppelOffre">{{elem.numAppelOffre}} du {{elem.commande.dateCommande}} ( {{ elem.commande.frs.codeFrs }} - {{ elem.commande.frs.identiteFrs }} ) {{ elem.exercice.codeExercice }}</ng-option>
                             </div>
-                            
+
                           </div>
                           <div *ngIf="validateForm.value.numType == 2">
                             <div *ngFor="let elem of bondTravailList" >
-                              <ng-option *ngIf="!isAFilleComSitisfaied(elem.numBondTravail)" [value]="elem.numBondTravail">{{elem.numBondTravail}} du {{elem.commande.dateCommande}} ( {{ elem.commande.frs.codeFrs }} - {{ elem.commande.frs.identiteFrs }} ) {{ elem.exercice.codeExercice }}</ng-option>
+                              <ng-option *ngIf="!isAFilleComSitisfaied(elem.numBondTravail) && elem.commande.valide" [value]="elem.numBondTravail">{{elem.numBondTravail}} du {{elem.commande.dateCommande}} ( {{ elem.commande.frs.codeFrs }} - {{ elem.commande.frs.identiteFrs }} ) {{ elem.exercice.codeExercice }}</ng-option>
                             </div>
-                            
+
                           </div>
                           <div *ngIf="validateForm.value.numType == 3">
                             <div *ngFor="let elem of lettreCommandeList" >
-                              <ng-option *ngIf="!isAFilleComSitisfaied(elem.numLettreComm)" [value]="elem.numLettreComm">{{elem.numLettreComm}} du {{elem.commande.dateCommande}} ( {{ elem.commande.frs.codeFrs }} - {{ elem.commande.frs.identiteFrs }} ) {{ elem.exercice.codeExercice }}</ng-option>
+                              <ng-option *ngIf="!isAFilleComSitisfaied(elem.numLettreComm) && elem.commande.valide" [value]="elem.numLettreComm">{{elem.numLettreComm}} du {{elem.commande.dateCommande}} ( {{ elem.commande.frs.codeFrs }} - {{ elem.commande.frs.identiteFrs }} ) {{ elem.exercice.codeExercice }}</ng-option>
                             </div>
-                            
+
                           </div>
                           <div *ngIf="validateForm.value.numType == 4">
                             <div *ngFor="let elem of demandePrixList" >
-                              <ng-option *ngIf="!isAFilleComSitisfaied(elem.idDemandePrix)" [value]="elem.idDemandePrix">{{elem.idDemandePrix}} du {{elem.dateDemandePrix}} Exercice {{ elem.exercice.codeExercice }}</ng-option>
+                              <ng-option *ngIf="!isAFilleComSitisfaied(elem.idDemandePrix) && elem.valideDemandePrix" [value]="elem.idDemandePrix">{{elem.idDemandePrix}} du {{elem.dateDemandePrix}} Exercice {{ elem.exercice.codeExercice }}</ng-option>
                             </div>
-                            
+
                           </div>
                         </ng-select>
                       </div>
@@ -238,13 +238,13 @@
                     </div>
                     <div class="col-md form-group">
                       <label for="orderNo">N° Générique</label>
-                      <input formControlName="description" type="text" class="form-control" 
+                      <input formControlName="description" type="text" class="form-control"
                           placeholder="Numéro" [readOnly]="detailView">
 
                     </div>
                     <div class="col-md form-group">
                       <label for="orderNo">Référence BL</label>
-                      <input formControlName="refBordLivraiRecept" type="text" class="form-control" 
+                      <input formControlName="refBordLivraiRecept" type="text" class="form-control"
                           placeholder="Numéro" [readOnly]="detailView">
 
                     </div>
@@ -260,7 +260,7 @@
                   <div class="row">
                     <div class="col-md form-group">
                       <label for="orderNo">Observation</label>
-                      <input formControlName="observation" type="text" class="form-control" 
+                      <input formControlName="observation" type="text" class="form-control"
                           placeholder="Observation" [readOnly]="detailView">
 
                     </div>

@@ -107,29 +107,30 @@
                         <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
                           <!--<strong>{{ row.code }}</strong>-->
                           <button (click)="makeForm(row)" class="btn btn-primary m-1 btn-sm"
-                          type="button" *ngIf="row.valideFpfa == false">
+                          type="button" *ngIf="row.valideFpfa == false" ngbTooltip="Modifier" placement="bottom">
                             <i class="i-Pen-5"> </i>
                           </button>
                           <button (click)="confirm(modalConfirm, row)" class="btn btn-outline-danger m-1 btn-sm"
-                                  type="button" *ngIf="row.valideFpfa == false">
+                                  type="button" *ngIf="row.valideFpfa == false" ngbTooltip="Supprimer" placement="bottom">
                             <i class="i-Folder-Trash"> </i>
                           </button>
                           <button (click)="valider(row, true, modalValid)" class="btn btn-outline-success m-1 btn-sm"
-                                  type="button" *ngIf="row.valideFpfa == false">
+                                  type="button" *ngIf="row.valideFpfa == false" ngbTooltip="Valider" placement="bottom">
                             <i class="i-Yes"> </i>
                           </button>
                           <button (click)="valider(row, false, modalValid)" class="btn btn-outline-warning m-1 btn-sm"
-                                  type="button" *ngIf="row.valideFpfa == true">
+                                  type="button" *ngIf="row.valideFpfa == true" ngbTooltip="Annuler" placement="bottom">
                             <i class="i-Reload"> </i>
                           </button>
                           <button (click)="openDetail(row)" class="btn btn-outline-warning m-1 btn-sm"
-                                  type="button" >
+                                  type="button" ngbTooltip="Détail" placement="bottom">
                             <i class="i-Information"> </i>
                           </button>
+                          <!--
                           <button (click)="openPdfToPrint(row)" class="btn btn-outline-warning m-1 btn-sm"
                                   type="button" >
                             <i class="i-File-Download"> </i>
-                          </button>
+                          </button>-->
                         </ng-template>
                       </ngx-datatable-column>
                     </ngx-datatable>
@@ -166,9 +167,11 @@
                         <label >
                           Demande de Prix
                         </label>
-                        <ng-select formControlName="demandePrix" [readonly]="validateForm.value.numReception || detailView"
+                        <ng-select formControlName="demandePrix" [readonly]="validateForm.value.idFpfa || detailView"
                         (ngModelChange)="getInfosOnDpSelected()" >
-                          <ng-option *ngFor="let elem of dpList" [value]="elem.idDemandePrix">{{elem.idDemandePrix}} du {{elem.dateDemandePrix | date: "dd-MM-yyyy"}} ( {{ elem.exercice.codeExercice }} )</ng-option>
+                          <div *ngFor="let elem of dpList">
+                            <ng-option *ngIf="elem.valideDemandePrix" [value]="elem.idDemandePrix">{{elem.idDemandePrix}} du {{elem.dateDemandePrix | date: "dd-MM-yyyy"}} ( {{ elem.exercice.codeExercice }} )</ng-option>
+                          </div>
 
                         </ng-select>
                       </div>
@@ -215,13 +218,13 @@
                   <div class="row">
                     <div class="col-md form-group">
                       <label for="orderNo">N° Générique</label>
-                      <input formControlName="designationFpfa" type="text" class="form-control" 
+                      <input formControlName="designationFpfa" type="text" class="form-control"
                           placeholder="Numéro" [readOnly]="detailView">
 
                     </div>
                     <div class="col-md form-group">
                       <label for="orderNo">Observation</label>
-                      <input formControlName="obserFpfa" type="text" class="form-control" 
+                      <input formControlName="obserFpfa" type="text" class="form-control"
                           placeholder="Numéro" [readOnly]="detailView">
 
                     </div>

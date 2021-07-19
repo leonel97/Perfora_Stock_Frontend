@@ -25,6 +25,10 @@ export class TypeArticleService {
    return this.httpCli.post<TypeArticle>(this.host+'/stock/typeArticle/list', corps);
   }
 
+  addAListTypeArticle(corps: TypeArticle[]){
+    return this.httpCli.post<TypeArticle[]>(this.host+'/stock/typeArticle/list2', corps);
+  }
+
   editATypeArticle(code:String, corps:TypeArticle){
     return this.httpCli.put<TypeArticle>(this.host+'/stock/typeArticle/byCodTypArti/'+code, corps);
   }

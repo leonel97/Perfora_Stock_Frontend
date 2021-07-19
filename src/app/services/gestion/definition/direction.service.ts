@@ -18,6 +18,10 @@ export class DirectionService {
     return this.http.post(`${this.url}/list`, direction);
   }
 
+  addAListDirection(corps: Direction[]){
+    return this.http.post<Direction[]>(`${this.url}/list2`, corps);
+  }
+
   deleteDirection(id: String): Observable<Object> {
     return this.http.delete(`${this.url}/byCodDir/`+ id);
   }

@@ -1,26 +1,27 @@
 <div class="">
     <div class="breadcrumb">
-      <h1>Gestion des Catégories de Fournisseur</h1>
-      <ul>
-        <li><a routerLink="">Définition</a></li>
-        <li>Catégorie de Fournisseur</li>
-      </ul>
+        <h1> Gestion des Unités</h1>
+        <ul>
+            <li><a href="">Definition</a></li>
+            <li>Unité</li>
+        </ul>
     </div>
-    <div class="separator-breadcrumb border-top"></div>
 
+    <div class="separator-breadcrumb border-top"></div>
+    <!--Contenu component magasin-->
     <div class="card mb-4">
       <div class="card-body">
-        <div class="card-title mb-3 border-bottom pb-2">Gestion des Catégories de Fournisseur</div>
+        <div class="card-title mb-3 border-bottom pb-2">Gestion des Unités de Comptage</div>
 
         <ul #nav="ngbNav" [(activeId)]="activeTabsNav" class="nav-tabs" ngbNav>
           <li [ngbNavItem]="1">
-            <a ngbNavLink>Liste des Catégories de Fournisseur</a>
+            <a ngbNavLink>Liste des Unités de Comptage</a>
             <ng-template ngbNavContent>
               <div class="row">
                 <div class="col-md-4">
                   <div class="form-group">
                     <input [formControl]="searchControl" class="form-control form-control-rounded" id="email"
-                           placeholder="Rechercher Catégorie de Fournisseur" type="email">
+                           placeholder="Rechercher Unité" type="email">
                   </div>
                 </div>
                 <div class="col-md-12">
@@ -30,19 +31,23 @@
                       [footerHeight]="50"
                       [headerHeight]="50"
                       [rowHeight]="'auto'"
-                      [messages]="{emptyMessage: 'Aucune donnée à afficher !!!'}"
-                      [rows]="typeFournisseurFiltered"
+                      [rows]="uniteFiltered"
                       [limit]="4"
-                      class="material striped"
+                      class="material fullscreen"
                       style="height: 500px; box-shadow: none; overflow-y:visible">
-                      <ngx-datatable-column name="codeCatFrs">
+                      <ngx-datatable-column name="codeUniter">
                         <ng-template ngx-datatable-header-template>
                           Code
                         </ng-template>
                       </ngx-datatable-column>
-                      <ngx-datatable-column name="libCatFrs">
+                      <ngx-datatable-column name="libUniter">
                         <ng-template ngx-datatable-header-template>
                           Libellé
+                        </ng-template>
+                      </ngx-datatable-column>
+                      <ngx-datatable-column name="poids">
+                        <ng-template ngx-datatable-header-template>
+                          Poids
                         </ng-template>
                       </ngx-datatable-column>
                       <ngx-datatable-column>
@@ -51,11 +56,11 @@
                         </ng-template>
                         <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
                           <!--<strong>{{ row.code }}</strong>-->
-                          <button (click)="makeForm(row)" class="btn btn-primary m-1 btn-sm" ngbTooltip="Modifier" placement="bottom" type="button">
+                          <button (click)="makeForm(row)" class="btn btn-primary m-1 btn-sm" type="button">
                             <i class="i-Pen-5"> </i>
                           </button>
                           <button (click)="confirm(modalConfirm, row)" class="btn btn-outline-danger m-1 btn-sm"
-                                  type="button" ngbTooltip="Supprimer" placement="bottom">
+                                  type="button">
                             <i class="i-Folder-Trash"> </i>
                           </button>
                         </ng-template>
@@ -67,39 +72,55 @@
             </ng-template>
           </li>
           <li [ngbNavItem]="2">
-            <a ngbNavLink>Nouvelle Catégorie de Fournisseur</a>
+            <a ngbNavLink>Nouvelle Unité de Comptage</a>
             <ng-template ngbNavContent>
 
               <div class="mb-2">
                 <form (ngSubmit)="submit()" [formGroup]="validateForm">
                   <div class="row">
-                    <div class="col-md-5 form-group mb-3">
+                    <div class="col-md-4 form-group mb-3">
                       <label for="code">Code <span class="required-field">*</span> </label>
-                      <input class="form-control" formControlName="codeCatFrs" id="codeCatFrs"
+                      <input class="form-control" formControlName="codeUniter" id="codeUniter"
                              placeholder="Entrer le code" type="text" autocomplete="off">
-                      <div *ngIf="validateForm.controls.codeCatFrs.errors &&
-                     (validateForm.controls.codeCatFrs.dirty || validateForm.controls.codeCatFrs.touched)"
+                      <div *ngIf="validateForm.controls.codeUniter.errors &&
+                     (validateForm.controls.codeUniter.dirty || validateForm.controls.codeUniter.touched)"
                            class="error-field">
                         Ce champs est obligatoire !
                       </div>
                     </div>
 
-                    <div class="col-md-7 form-group mb-3">
+                    <div class="col-md-4 form-group mb-3">
                       <label for="valeur">Libellé <span class="required-field">*</span> </label>
-                      <input class="form-control" formControlName="libCatFrs" id="libCatFrs"
+                      <input class="form-control" formControlName="libUniter" id="libUniter"
                              placeholder="Entrer le libellé" type="text" autocomplete="off">
-                      <div *ngIf="validateForm.controls.libCatFrs.errors &&
-                     (validateForm.controls.libCatFrs.dirty || validateForm.controls.libCatFrs.touched)"
+                      <div *ngIf="validateForm.controls.libUniter.errors &&
+                     (validateForm.controls.libUniter.dirty || validateForm.controls.libUniter.touched)"
                            class="error-field">
                         Ce champs est obligatoire !
                       </div>
                     </div>
 
+                    <div class="col-md-4 form-group mb-3">
+                      <label for="valeur">Poids <span class="required-field">*</span> </label>
+                      <input class="form-control" formControlName="poids" id="poids"
+                             placeholder="Entrer le poids" type="text" autocomplete="off">
+                      <div *ngIf="validateForm.controls.poids.errors &&
+                     (validateForm.controls.poids.dirty || validateForm.controls.poids.touched)"
+                           class="error-field">
+                        Ce champs est obligatoire !
+                      </div>
+                    </div>
+
+                  </div>
+
+
+                  <div class="row">
                     <div class="col-md-12">
                       <btn-loading [loading]="loading" btnClass="btn-save">Enrégistrer</btn-loading>
                       <button (click)="resetForm()" class="btn m-1 ml-2 btn-cancel" type="button"> Annuler</button>
                     </div>
                   </div>
+
                 </form>
               </div>
 
@@ -113,28 +134,30 @@
       </div>
     </div>
 
+
+</div>
+
+
+
+<ng-template #modalConfirm let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-title">Suppression</h4>
+    <button (click)="modal.dismiss('Cross click')" aria-describedby="modal-title" aria-label="Close button"
+            class="close"
+            type="button">
+      <span aria-hidden="true">&times;</span>
+    </button>
   </div>
-
-
-  <ng-template #modalConfirm let-modal>
-    <div class="modal-header">
-      <h4 class="modal-title" id="modal-title">Suppression</h4>
-      <button (click)="modal.dismiss('Cross click')" aria-describedby="modal-title" aria-label="Close button"
-              class="close"
-              type="button">
-        <span aria-hidden="true">&times;</span>
-      </button>
-    </div>
-    <div class="modal-body">
-      <p>
-        <strong>Confirmez-vous la suppression de
-          <span class="text-primary"> {{ typeFournisseur?.libCatFrs }}</span> ?</strong></p>
-    </div>
-    <div class="modal-footer">
-      <button (click)="modal.dismiss('cancel')" class="btn btn-outline-secondary btn-rounded" type="button">Cancel
-      </button>
-      <button (click)="modal.close('Ok')" class="btn btn-danger btn-rounded" ngbAutofocus
-              type="button">Ok
-      </button>
-    </div>
-  </ng-template>
+  <div class="modal-body">
+    <p>
+      <strong>Confirmez-vous la suppression de
+        <span class="text-primary">{{ unite?.codeUniter }} - {{ unite?.libUniter }}</span> ?</strong></p>
+  </div>
+  <div class="modal-footer">
+    <button (click)="modal.dismiss('cancel')" class="btn btn-outline-secondary btn-rounded" type="button">Cancel
+    </button>
+    <button (click)="modal.close('Ok')" class="btn btn-danger btn-rounded" ngbAutofocus
+            type="button">Ok
+    </button>
+  </div>
+</ng-template>

@@ -11,6 +11,7 @@ import { ArticleComponent } from './article/article.component';
 import { CauseAnnomalieComponent } from './cause-annomalie/cause-annomalie.component';
 import { TypeFournisseurComponent } from './type-fournisseur/type-fournisseur.component';
 import { FournisseurComponent } from './fournisseur/fournisseur.component';
+import { UniterComponent } from './uniter/uniter.component';
 
 //const routes: Routes = [];
 let routes: Routes = [
@@ -28,6 +29,7 @@ let routes: Routes = [
       {  path: 'cause-annomalie', component: CauseAnnomalieComponent },
       {  path: 'type-fournisseur', component: TypeFournisseurComponent },
       {  path: 'fournisseur', component: FournisseurComponent },
+      {  path: 'uniter-article', component: UniterComponent },
     ]
   }
 ];

@@ -532,7 +532,7 @@ export class BonTravailComponent  implements OnInit {
     this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', centered: true})
       .result.then((result) => {
       //this.confirmResut = `Closed with: ${result}`;
-      
+
       bondTravail.commande.valide = eta;
 
       this.commandeService.editACommande(bondTravail.commande.numCommande.toString(), bondTravail.commande).subscribe(
@@ -587,7 +587,7 @@ export class BonTravailComponent  implements OnInit {
       ,
     });
     doc.addImage(Utils.logoUrlData, 'jpeg', 10, 5, 25, 25);
-    
+
     doc.setDrawColor(0);
     doc.setFillColor(233 , 242, 248);
     doc.roundedRect(50, 35, 110, 10, 3, 3, 'FD');
@@ -626,6 +626,7 @@ export class BonTravailComponent  implements OnInit {
         lig.push(element2.article.codeArticle);
         lig.push(element2.article.libArticle);
         lig.push(element2.qteLigneCommande);
+        lig.push(element2.uniter.libUniter);
         lig.push(element2.puLigneCommande);
         lig.push(element2.tva);
         let ht = element2.qteLigneCommande*element2.puLigneCommande;
@@ -640,7 +641,7 @@ export class BonTravailComponent  implements OnInit {
     });
     autoTable(doc, {
       theme: 'grid',
-      head: [['Article', 'Désignation', 'Quantité', 'PU', 'TVA(%)', 'Montant']],
+      head: [['Article', 'Désignation', 'Quantité', 'Unité', 'PU', 'TVA(%)', 'Montant']],
       headStyles:{
         fillColor: [41, 128, 185],
         textColor: 255,

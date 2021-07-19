@@ -15,7 +15,7 @@
           <label >Magasin</label>
           <ng-select formControlName="magasin" style="width: 500px;" >
             <ng-option *ngFor="let mag of magasinList" [value]="mag.numMagasin">{{mag.codeMagasin}} - {{mag.libMagasin}}</ng-option>
-              
+
           </ng-select>
         </div>
         <div style="margin: auto;">
@@ -96,6 +96,24 @@
               </ng-template>
               <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
                 {{ row.concernedStocker?.quantiterStocker }}
+              </ng-template>
+            </ngx-datatable-column>
+
+            <ngx-datatable-column>
+              <ng-template ngx-datatable-header-template>
+                CUMP
+              </ng-template>
+              <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                {{ row.concernedStocker?.cmup }}
+              </ng-template>
+            </ngx-datatable-column>
+
+            <ngx-datatable-column>
+              <ng-template ngx-datatable-header-template>
+                Montant
+              </ng-template>
+              <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                {{ row.concernedStocker?.quantiterStocker * row.concernedStocker?.cmup}}
               </ng-template>
             </ngx-datatable-column>
 

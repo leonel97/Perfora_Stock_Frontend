@@ -32,6 +32,9 @@
                       [footerHeight]="50"
                       [headerHeight]="50"
                       [rowHeight]="'auto'"
+                      [scrollbarV]="true"
+                      [scrollbarH]="true"
+                      [messages]="{emptyMessage: 'Aucune ligne'}"
                       [rows]="articleFiltered"
                       [limit]="4"
                       class="material fullscreen"
@@ -171,7 +174,7 @@
                       formControlName="taxeSpecifiqArticle" >
                     </div>
                     <div class="col-md-4 form-group mb-3">
-                      <label for="picker2">Catégorie d'Article</label>
+                      <label for="picker2">Type d'Article</label>
                       <select class="form-control" id="picker2" formControlName="typeArticle">
                           <option [value]="null">Aucun</option>
                           <option *ngFor="let typArt of typeArticleList" [value]="typArt.numTypeArt"

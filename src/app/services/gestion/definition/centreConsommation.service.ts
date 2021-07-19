@@ -18,6 +18,10 @@ export class CentreConsommationService {
     return this.http.post(`${this.url}/list`, centreConsommation);
   }
 
+  addAListCentreConsommation(corps: CentreConsommation[]){
+    return this.http.post<CentreConsommation[]>(`${this.url}/list2`, corps);
+  }
+
   deleteCentreConsommation(id: String): Observable<Object> {
     return this.http.delete(`${this.url}/byCodSev/`+ id);
   }

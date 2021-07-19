@@ -118,27 +118,27 @@
                         <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
                           <!--<strong>{{ row.code }}</strong>-->
                           <button (click)="makeForm(row)" class="btn btn-primary m-1 btn-sm"
-                          type="button" *ngIf="row.valideAppro == false">
+                          type="button" *ngIf="row.valideAppro == false" ngbTooltip="Modifier" placement="bottom">
                             <i class="i-Pen-5"> </i>
                           </button>
                           <button (click)="confirm(modalConfirm, row)" class="btn btn-outline-danger m-1 btn-sm"
-                                  type="button" *ngIf="row.valideAppro == false">
+                                  type="button" *ngIf="row.valideAppro == false" ngbTooltip="Supprimer" placement="bottom">
                             <i class="i-Folder-Trash"> </i>
                           </button>
                           <button (click)="valider(row, true, modalValid)" class="btn btn-outline-success m-1 btn-sm"
-                                  type="button" *ngIf="row.valideAppro == false">
+                                  type="button" *ngIf="row.valideAppro == false" ngbTooltip="Valider" placement="bottom">
                             <i class="i-Yes"> </i>
                           </button>
                           <button (click)="valider(row, false, modalValid)" class="btn btn-outline-warning m-1 btn-sm"
-                                  type="button" *ngIf="row.valideAppro == true">
+                                  type="button" *ngIf="row.valideAppro == true" ngbTooltip="Annuler" placement="bottom">
                             <i class="i-Reload"> </i>
                           </button>
                           <button (click)="openDetail(row)" class="btn btn-outline-warning m-1 btn-sm"
-                                  type="button" >
+                                  type="button" ngbTooltip="Détail" placement="bottom" >
                             <i class="i-Information"> </i>
                           </button>
                           <button (click)="openPdfToPrint(row)" class="btn btn-outline-warning m-1 btn-sm"
-                                  type="button" >
+                                  type="button" ngbTooltip="Imprimer" placement="bottom">
                             <i class="i-File-Download"> </i>
                           </button>
                         </ng-template>
@@ -177,9 +177,9 @@
                         <ng-select formControlName="numDA" [readonly]="validateForm.value.numAppro"
                         (ngModelChange)="getInfosOnDaSelected()" >
                         <div *ngFor="let da of demandeApproList">
-                          <ng-option *ngIf="!isADemApproSitisfaied(da)" [value]="da.numDA">{{da.numDA}} du {{da.dateDA}} ( {{ da.service.codeService }} - {{ da.service.libService }} )</ng-option>
+                          <ng-option *ngIf="!isADemApproSitisfaied(da) && da.valideDA" [value]="da.numDA">{{da.numDA}} du {{da.dateDA}} ( {{ da.service.codeService }} - {{ da.service.libService }} )</ng-option>
                         </div>
-                          
+
                         </ng-select>
                       </div>
                       <div class="col-md-3 form-group mb-3">
@@ -240,7 +240,7 @@
                                         </ng-select>
                                       </td>
                                       <td>
-                                        <input type="number" class="form-control" [(ngModel)] = "lig.ligneAppro.quantiteLigneAppro" 
+                                        <input type="number" class="form-control" [(ngModel)] = "lig.ligneAppro.quantiteLigneAppro"
                                         [ngStyle]="{'background-color': (lig.concernedStocker?.quantiterStocker < lig.ligneAppro.quantiteLigneAppro || lig.concernedLigneDa?.quantiteDemandee < lig.ligneAppro.quantiteLigneAppro || lig.qteRest < lig.ligneAppro.quantiteLigneAppro) ? 'rgb(255, 172, 172)': null}"
                                             placeholder="Quantité" (change)="calculTotaux()" [readOnly]="detailView">
                                       </td>

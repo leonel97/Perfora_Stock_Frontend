@@ -9,6 +9,7 @@ import { debounceTime } from 'rxjs/operators';
 import {jsPDF} from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import * as moment from  'moment';
+import { Utils } from 'src/app/utilitaires/utils';
 
 import { Inventaire } from 'src/app/models/gestion/saisie/inventaire.model';
 import { LigneInventaire } from 'src/app/models/gestion/saisie/ligneInventaire.model';
@@ -54,7 +55,6 @@ export class InventaireComponent implements OnInit {
 
   validateForm: FormGroup;
 
-  generateLine: boolean = false ;
   detailView: boolean = false;
 
   etatVali: boolean = false;
@@ -145,6 +145,7 @@ export class InventaireComponent implements OnInit {
   }
 
   getLignShowOfSelectedMagasin(){
+    this.tempateLigneInventaire = [];
     this.ligneShow = [];
     this.loading = true;
     this.stockerService.getAllStocker().subscribe(
@@ -425,20 +426,201 @@ export class InventaireComponent implements OnInit {
 
   // show all article concerned magasin selected 
   showAllLigneArticleConcernedMagasin(){
-    if(this.generateLine == false){
-      console.log('Num magasin',  this.validateForm.value.magasin.numMagasin);
-      this.getLignShowOfSelectedMagasin();
-      this.generateLine = true;
-    }
-    else{
-      this.loading = true;
-      setTimeout(() => {
-        this.loading = false;
-        this.toastr.error('Ces articles existent déjà.', ' Attention !', {progressBar: true});
-      }, 3000);
-    }
+
+    console.log('Num magasin',  this.validateForm.value.magasin.numMagasin);
+    this.getLignShowOfSelectedMagasin();
 
    
+  }
+
+  //Rapport d'inventaire
+  openPdfToPrint(element: Inventaire){
+
+    const doc = new jsPDF();
+
+    autoTable(doc, {
+      theme: 'plain',
+      margin: { top: 5, left:35, right:9, bottom:100 },
+      columnStyles: {
+        0: { textColor: 'blue', fontStyle: 'bold', halign: 'left' },
+        1: { textColor: 'blue', fontStyle: 'bold', halign: 'right' },
+      },
+      body: [
+        ['PORT AUTONOME DE LOME\n\nTel.: 22.27.47.42/22.27.33.91/22.27.33.92\nFax: (228) 22.27.26.27\nCARTE N° 950113V',
+        'REPUBLIQUE TOGOLAISE\n\nTravail-Liberté-Patrie       ']
+      ]
+      ,
+    });
+    doc.addImage(Utils.logoUrlData, 'jpeg', 10, 5, 25, 25);
+    
+
+    doc.setDrawColor(0);
+    doc.setFillColor(233 , 242, 248);
+    doc.roundedRect(50, 35, 90, 10, 3, 3, 'FD');
+    doc.setFontSize(20);
+    doc.text('INVENTAIRE', 70, 43);
+
+    autoTable(doc, {
+      theme: 'plain',
+      startY:50,
+      margin: { top: 0 },
+      columnStyles: {
+        0: { textColor: 0, fontStyle: 'bold', halign: 'center' },
+      },
+      body: [
+        ['Inventaire N° '+element.numInv+' du '+moment(element.dateInv).format('DD/MM/YYYY')]
+      ]
+      ,
+    });
+
+    autoTable(doc, {
+      theme: 'plain',
+      startY:60,
+      margin: { right: 100 },
+      columnStyles: {
+        0: { textColor: 0, fontStyle: 'bold', halign: 'left' },
+        1: { textColor: 0, halign: 'left' },
+      },
+      body: [
+        ['Exercice :', ''+element.exercice.codeExercice],
+        ['Magasin :', element.magasin.codeMagasin+' - '+element.magasin.libMagasin],
+        ['Inventaire :', element.numInv.toString()]
+      ]
+      ,
+    });
+
+    autoTable(doc, {
+      theme: 'plain',
+      startY:60,
+      margin: { left: 100 },
+      columnStyles: {
+        0: { textColor: 0, fontStyle: 'bold', halign: 'left' },
+        1: { textColor: 0, halign: 'left' },
+      },
+      body: [
+       // ['Observation :', ''+(element.descrInv ? element.descrInv : '')],
+        ['Observation :', ''+(element.descrInv ? element.descrInv : '')],
+        
+      ]
+      ,
+    });
+
+    let lignes = [];
+
+    this.ligneInventaireList.forEach(element2 => {
+      if(element2.inventaire.numInv == element.numInv){
+        let lig = [];
+        lig.push(element2.article.codeArticle);
+        lig.push(element2.article.libArticle);
+        lig.push(element2.stockTheoriq);
+        lig.push(element2.stockreel);
+        lig.push(element2.pu);
+        lig.push(element2.stockTheoriq - element2.stockreel);
+        lig.push((element2.stockTheoriq*element2.pu) - (element2.stockreel*element2.pu));
+        //let ht = element2.quantiteLigneReception*element2.ligneCommande.puLigneCommande;
+        //lig.push(ht*(1+(element2.ligneCommande.tva/100)));
+        lignes.push(lig);
+
+       /* totalHT+= ht;
+        totalTVA+= ht*(element2.ligneCommande.tva/100);
+        totalTTC+= ht*(1+(element2.ligneCommande.tva/100));*/
+      }
+
+    });
+
+    autoTable(doc, {
+      theme: 'grid',
+      head: [['Article', 'Désignation', 'Stock Théo.', 'Stock Réel', 'PU', 'Ecart Qté', ' Ecart Montant']],
+      headStyles:{
+        fillColor: [41, 128, 185],
+        textColor: 255,
+        fontStyle: 'bold' ,
+    },
+      margin: { top: 100 },
+      body: lignes
+      ,
+    });
+
+
+    doc.output('dataurlnewwindow');
+
+  }
+
+  // Fiche inventaire en fonction du choix
+  ficheInventaire(etatChoice: boolean){
+
+    const doc = new jsPDF();
+
+    autoTable(doc, {
+      theme: 'plain',
+      margin: { top: 5, left:35, right:9, bottom:100 },
+      columnStyles: {
+        0: { textColor: 'blue', fontStyle: 'bold', halign: 'left' },
+        1: { textColor: 'blue', fontStyle: 'bold', halign: 'right' },
+      },
+      body: [
+        ['PORT AUTONOME DE LOME\n\nTel.: 22.27.47.42/22.27.33.91/22.27.33.92\nFax: (228) 22.27.26.27\nCARTE N° 950113V',
+        'REPUBLIQUE TOGOLAISE\n\nTravail-Liberté-Patrie       ']
+      ]
+      ,
+    });
+    doc.addImage(Utils.logoUrlData, 'jpeg', 10, 5, 25, 25);
+    
+
+    doc.setDrawColor(0);
+    doc.setFillColor(233 , 242, 248);
+    doc.roundedRect(50, 35, 110, 10, 3, 3, 'FD');
+    doc.setFontSize(20);
+    doc.text('FICHE INVENTAIRE', 70, 43);
+
+    autoTable(doc, {
+      theme: 'plain',
+      startY:50,
+      margin: { top: 0 },
+      columnStyles: {
+        0: { textColor: 0, fontStyle: 'bold', halign: 'center' },
+      },
+      body: [
+        ['Fiche Inventaire du '+moment(this.validateForm.value.dateInv).format('DD/MM/YYYY')]
+      ]
+      ,
+    });
+
+    autoTable(doc, {
+      theme: 'plain',
+      startY:60,
+      margin: { right: 100 },
+      columnStyles: {
+        0: { textColor: 0, fontStyle: 'bold', halign: 'left' },
+        1: { textColor: 0, halign: 'left' },
+      },
+      body: [
+        ['Exercice :', ''+this.exerciceService.selectedExo.codeExercice],
+        ['Magasin :', this.validateForm.value.magasin.codeMagasin+' - '+this.validateForm.value.magasin.libMagasin],
+       // ['Inventaire :', element.numInv.toString()]
+      ]
+      ,
+    });
+
+    autoTable(doc, {
+      theme: 'plain',
+      startY:60,
+      margin: { left: 100 },
+      columnStyles: {
+        0: { textColor: 0, fontStyle: 'bold', halign: 'left' },
+        1: { textColor: 0, halign: 'left' },
+      },
+      body: [
+       // ['Observation :', ''+(element.descrInv ? element.descrInv : '')],
+        ['Observation :', this.validateForm.value.descrInv ?  this.validateForm.value.descrInv : ''],
+        
+      ]
+      ,
+    });
+
+
+
+    doc.output('dataurlnewwindow');
 
   }
 

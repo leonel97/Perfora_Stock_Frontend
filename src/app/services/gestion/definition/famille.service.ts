@@ -25,6 +25,10 @@ export class FamilleService {
     return this.httpCli.post<Famille>(this.host+'/stock/famille/list', corps);
   }
 
+  addAListFamille(corps:Famille[]){
+    return this.httpCli.post<Famille[]>(this.host+'/stock/famille/list2', corps);
+  }
+
   editAFamille(code:String, corps: Famille){
     return this.httpCli.put<Famille>(this.host+'/stock/famille/byCodFam/'+code,corps)
   }

@@ -23,6 +23,7 @@ import { ArticleComponent } from './article/article.component';
 import { CauseAnnomalieComponent } from './cause-annomalie/cause-annomalie.component';
 import { TypeFournisseurComponent } from './type-fournisseur/type-fournisseur.component';
 import { FournisseurComponent } from './fournisseur/fournisseur.component';
+import { UniterComponent } from './uniter/uniter.component';
 
 
 @NgModule({
@@ -37,7 +38,8 @@ import { FournisseurComponent } from './fournisseur/fournisseur.component';
     ArticleComponent,
     CauseAnnomalieComponent,
     TypeFournisseurComponent,
-    FournisseurComponent
+    FournisseurComponent,
+    UniterComponent
   ],
   imports: [
     CommonModule,

@@ -630,7 +630,7 @@ export class DemandePrixComponent implements OnInit {
     this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', centered: true})
       .result.then((result) => {
       //this.confirmResut = `Closed with: ${result}`;
-      
+
       demandePrix.valideDemandePrix = eta;
 
       this.demandePrixService.editDemandePrix(demandePrix.idDemandePrix.toString(), demandePrix).subscribe(
@@ -841,7 +841,7 @@ export class DemandePrixComponent implements OnInit {
       ,
     });
     doc.addImage(Utils.logoUrlData, 'jpeg', 10, 5, 25, 25);
-    
+
     doc.setDrawColor(0);
     doc.setFillColor(233 , 242, 248);
     doc.roundedRect(50, 35, 110, 10, 3, 3, 'FD');
@@ -879,6 +879,7 @@ export class DemandePrixComponent implements OnInit {
       lig.push(element.article.codeArticle);
       lig.push(element.article.libArticle);
       lig.push(element.qteLigneCommande);
+      lig.push(element.uniter.libUniter);
       lig.push(element.puLigneCommande);
       lig.push(element.tva);
       let ht = element.qteLigneCommande*element.puLigneCommande;
@@ -892,7 +893,7 @@ export class DemandePrixComponent implements OnInit {
     });
     autoTable(doc, {
       theme: 'grid',
-      head: [['Article', 'Désignation', 'Quantité', 'PU', 'TVA(%)', 'Montant']],
+      head: [['Article', 'Désignation', 'Quantité', 'Unité', 'PU', 'TVA(%)', 'Montant']],
       headStyles:{
         fillColor: [41, 128, 185],
         textColor: 255,
@@ -994,7 +995,7 @@ export class DemandePrixComponent implements OnInit {
     });
 
     listFrs.forEach((element3, ind) => {
-      
+
       autoTable(doc, {
         theme: 'plain',
         margin: { top: 5, left:35, right:9, bottom:100 },
@@ -1009,7 +1010,7 @@ export class DemandePrixComponent implements OnInit {
         ,
       });
       doc.addImage(Utils.logoUrlData, 'jpeg', 10, 5, 25, 25);
-  
+
       doc.setDrawColor(0);
       doc.setFillColor(233 , 242, 248);
       doc.roundedRect(50, 35, 110, 10, 3, 3, 'FD');
@@ -1031,9 +1032,9 @@ export class DemandePrixComponent implements OnInit {
         ]
         ,
       });
-  
+
       autoTable(doc, {
-        
+
         theme: 'plain',
         margin: { top: 20 },
         columnStyles: {
@@ -1044,7 +1045,7 @@ export class DemandePrixComponent implements OnInit {
         ]
         ,
       });
-  
+
       autoTable(doc, {
         startY: 100,
         theme: 'grid',
@@ -1058,10 +1059,10 @@ export class DemandePrixComponent implements OnInit {
         body: lignes
         ,
       });
-  
-  
-      
-  
+
+
+
+
       autoTable(doc, {
         theme: 'plain',
         margin: { top: 100 },
@@ -1076,7 +1077,7 @@ export class DemandePrixComponent implements OnInit {
         ]
         ,
       });
-  
+
 
       autoTable(doc, {
         theme: 'plain',
@@ -1103,8 +1104,8 @@ export class DemandePrixComponent implements OnInit {
       }
 
     });
-    
-    
+
+
     doc.output('dataurlnewwindow');
 
   }

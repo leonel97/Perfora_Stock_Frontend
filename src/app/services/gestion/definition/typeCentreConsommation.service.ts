@@ -18,6 +18,10 @@ export class TypeCentreConsommationService {
     return this.http.post(`${this.url}/list`, typecentreconsommation);
   }
 
+  addAListTypeCentreConsommation(corps: TypeCentreConsommation[]){
+    return this.http.post<TypeCentreConsommation[]>(`${this.url}/list2`, corps);
+  }
+
   deleteTypecentreConsommation(id: String): Observable<Object> {
     return this.http.delete(`${this.url}/byCodTypSer/`+ id);
   }

@@ -7,11 +7,11 @@
       </ul>
     </div>
     <div class="separator-breadcrumb border-top"></div>
-  
+
     <div class="card mb-4">
       <div class="card-body">
         <div class="card-title mb-3 border-bottom pb-2">Gestion des Fournisseurs</div>
-  
+
         <ul #nav="ngbNav" [(activeId)]="activeTabsNav" class="nav-tabs" ngbNav>
           <li [ngbNavItem]="1">
             <a ngbNavLink>Liste des Fournisseurs</a>
@@ -40,7 +40,7 @@
                           Code
                         </ng-template>
                         <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
-                            {{ row.codeFrs }} 
+                            {{ row.codeFrs }}
                         </ng-template>
                       </ngx-datatable-column>
                       <ngx-datatable-column>
@@ -48,7 +48,7 @@
                           Identité
                         </ng-template>
                         <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
-                            {{ row.identiteFrs }} 
+                            {{ row.identiteFrs }}
                         </ng-template>
                       </ngx-datatable-column>
                       <ngx-datatable-column>
@@ -56,7 +56,7 @@
                           N° Compte Bancaire
                         </ng-template>
                         <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
-                            {{ row.description }} 
+                            {{ row.description }}
                         </ng-template>
                       </ngx-datatable-column>
                       <ngx-datatable-column>
@@ -64,7 +64,7 @@
                           Catégorie Fournisseur
                         </ng-template>
                         <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
-                            {{ row.categorieFrs.libCatFrs }} 
+                            {{ row.categorieFrs.libCatFrs }}
                         </ng-template>
                       </ngx-datatable-column>
                       <ngx-datatable-column>
@@ -73,11 +73,11 @@
                         </ng-template>
                         <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
                           <!--<strong>{{ row.code }}</strong>-->
-                          <button (click)="makeForm(row)" class="btn btn-primary m-1 btn-sm" type="button">
+                          <button (click)="makeForm(row)" class="btn btn-primary m-1 btn-sm" ngbTooltip="Modifier" placement="bottom" type="button">
                             <i class="i-Pen-5"> </i>
                           </button>
                           <button (click)="confirm(modalConfirm, row)" class="btn btn-outline-danger m-1 btn-sm"
-                                  type="button">
+                                  type="button" ngbTooltip="Supprimer" placement="bottom">
                             <i class="i-Folder-Trash"> </i>
                           </button>
                         </ng-template>
@@ -91,7 +91,7 @@
           <li [ngbNavItem]="2">
             <a ngbNavLink>Nouveau Fournisseur</a>
             <ng-template ngbNavContent>
-  
+
               <div class="mb-2">
                 <form (ngSubmit)="submit()" [formGroup]="validateForm">
                   <div class="row">
@@ -105,7 +105,7 @@
                         Ce champs est obligatoire !
                       </div>
                     </div>
-  
+
                     <div class="col-md-5 form-group mb-3">
                       <label for="valeur">Identité <span class="required-field">*</span> </label>
                       <input class="form-control" formControlName="identiteFrs" id="identiteFrs"
@@ -142,7 +142,7 @@
                         Ce champs est obligatoire !
                       </div>
                     </div>
-  
+
                     <div class="col-md-5 form-group mb-3">
                       <label for="valeur">Régistre de commerce <span class="required-field">*</span> </label>
                       <input class="form-control" formControlName="regComFrs" id="regComFrs"
@@ -178,7 +178,7 @@
                       <input class="form-control" formControlName="description" id="description"
                              placeholder="Entrer le N° du Compte Bancire" type="text" autocomplete="off">
                     </div>
-  
+
                     <div class="col-md-1 form-group mb-1">
                       <label for="agreerFrs">Agrée </label>
                       <label class="checkbox checkbox-outline-light">
@@ -194,7 +194,7 @@
                         <input class="form-control" formControlName="numAgrementFrs" id="numAgrementFrs"
                                placeholder="Entrer le numéro d'agrément" type="text" autocomplete="off" [readOnly]="!confirmed.checked">
                     </div>
-  
+
                     <div class="col-md-12">
                       <btn-loading [loading]="loading" btnClass="btn-save">Enrégistrer</btn-loading>
                       <button (click)="resetForm()" class="btn m-1 ml-2 btn-cancel" type="button"> Annuler</button>
@@ -202,20 +202,20 @@
                   </div>
                 </form>
               </div>
-  
+
             </ng-template>
           </li>
-  
+
         </ul>
-  
+
         <div [ngbNavOutlet]="nav" class="mt-2"></div>
-  
+
       </div>
     </div>
-  
+
   </div>
-  
-  
+
+
   <ng-template #modalConfirm let-modal>
     <div class="modal-header">
       <h4 class="modal-title" id="modal-title">Suppression</h4>
@@ -238,4 +238,3 @@
       </button>
     </div>
   </ng-template>
-  

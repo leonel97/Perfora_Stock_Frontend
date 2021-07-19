@@ -106,6 +106,10 @@
                               type="button"  ngbTooltip="Détail" placement="bottom">
                               <i class="i-Information"> </i>
                             </button>
+                            <button (click)="openPdfToPrint(row)" class="btn btn-outline-warning m-1 btn-sm"
+                                  type="button" ngbTooltip="Rapport" placement="bottom" >
+                            <i class="i-File-Download"> </i>
+                          </button>
                             <!--button (click)="valider(row, false)" class="btn btn-outline-warning m-1 btn-sm"
                                     type="button" *ngIf="row.valideInve == true">
                               <i class="i-Reload"> </i>
@@ -137,8 +141,8 @@
                     <div #myDrop2="ngbDropdown" class="d-inline-block" ngbDropdown >
                         <button (focus)="myDrop2.open()" class="btn btn-primary mr-2" id="dropdownDecision"  [disabled]="!(validateForm.value.magasin && validateForm.value.dateInv)" ngbDropdownAnchor> Fiche d'inventaire</button>
                         <div aria-labelledby="dropdownManual" ngbDropdownMenu>
-                            <button  ngbDropdownItem> Sans Stock Théorique</button>
-                            <button  ngbDropdownItem> Avec Stock Théorique</button>
+                            <button  ngbDropdownItem (click)="ficheInventaire(false)"> Sans Stock Théorique</button>
+                            <button  ngbDropdownItem (click)="ficheInventaire(true)"> Avec Stock Théorique</button>
                         </div>
                    </div>
                     <button class="btn btn-outline-secondary mr-3" (click)="resetForm()"><span *ngIf="!detailView">Annuler</span> <span *ngIf="detailView">Fermer</span></button>

@@ -527,13 +527,13 @@ export class LettreCommandeComponent implements OnInit {
 
   valider(lettreCommande: LettreCommande, eta: boolean, content){
 
-    
+
     this.etatVali = eta;
 
     this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', centered: true})
       .result.then((result) => {
       //this.confirmResut = `Closed with: ${result}`;
-      
+
     lettreCommande.commande.valide = eta;
 
     this.commandeService.editACommande(lettreCommande.commande.numCommande.toString(), lettreCommande.commande).subscribe(
@@ -611,7 +611,7 @@ export class LettreCommandeComponent implements OnInit {
       ]
       ,
     });
-    
+
     //doc.setFontSize(14);
     //doc.text('Lettre de Commande N° '+element.numLettreComm+' | AP/ST', 95, 65);
     doc.setFontSize(18);
@@ -660,12 +660,13 @@ export class LettreCommandeComponent implements OnInit {
     let lignes = [];
 
     this.ligneCommandeList.forEach(element2 => {
-      
+
       if(element2.numCommande.numCommande == element.commande.numCommande){
         let lig = [];
         lig.push(element2.article.codeArticle);
         lig.push(element2.article.libArticle);
         lig.push(element2.qteLigneCommande);
+        lig.push(element2.uniter.libUniter);
         lig.push(element2.puLigneCommande);
         lig.push(element2.tva);
         let ht = element2.qteLigneCommande*element2.puLigneCommande;
@@ -681,7 +682,7 @@ export class LettreCommandeComponent implements OnInit {
 
     autoTable(doc, {
       theme: 'grid',
-      head: [['Article', 'Désignation', 'Quantité', 'PU', 'TVA(%)', 'Montant']],
+      head: [['Article', 'Désignation', 'Quantité', 'Unité', 'PU', 'TVA(%)', 'Montant']],
       headStyles:{
         fillColor: [41, 128, 185],
         textColor: 255,
@@ -726,7 +727,7 @@ export class LettreCommandeComponent implements OnInit {
       margin: { top: 0 },
       columnStyles: {
         0: { textColor: 0, fontStyle: 'bold', halign: 'left' },
-        
+
       },
       body: [
         ['Veuillez agréer, Monsieur le Directeur, l\'expression de nos salutations distinguées.']
@@ -739,7 +740,7 @@ export class LettreCommandeComponent implements OnInit {
       margin: { top: 0 },
       columnStyles: {
         0: { textColor: 0, fontStyle: 'bold', halign: 'center' },
-        
+
       },
       body: [
         ['Le Directeur Général\n\n\n\n\n\n\n\nContre-Amiral Fogan K. ADEGNON']
