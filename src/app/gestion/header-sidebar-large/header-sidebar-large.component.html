@@ -39,7 +39,7 @@
           <button class="dropdown-item" routerLink="/gestion/definition/magasin" >Magasin</button>
           <button class="dropdown-item" routerLink="/gestion/definition/famille-article" >Famille Article</button>
           <button class="dropdown-item" routerLink="/gestion/definition/type-article" >Catégorie Article</button>
-          <button class="dropdown-item" routerLink="/gestion/definition/uniter-article" >Uniter Article</button>
+          <button class="dropdown-item" routerLink="/gestion/definition/uniter-article" >Unité de Comptage</button>
           <button class="dropdown-item" routerLink="/gestion/definition/article" >Article</button>
           <button class="dropdown-item" routerLink="/gestion/definition/cause-annomalie" >Cause & Anomalie</button>
           <button class="dropdown-item" routerLink="/gestion/definition/type-fournisseur" >Catégorie de Fournisseur</button>
@@ -110,32 +110,34 @@
         Rapports
       </button>
       <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-          <button class="dropdown-item" >Articles Par familles</button>
+          <button class="dropdown-item" routerLink="/gestion/rapport/article-famille" >Articles Par familles</button>
           <div class="dropright dropdown-submenu">
               <button class="dropdown-item dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
               aria-expanded="false" href="#">Commandes ou engagements</button>
               <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                <button class="dropdown-item" >Journaux</button>
-                <button class="dropdown-item" >Par fournisseur</button>
-                  <button class="dropdown-item" >Par article</button>
+                <!--button class="dropdown-item" >Journaux</button-->
+                <button class="dropdown-item" routerLink="/gestion/rapport/eng-com-article" >Par fournisseur</button>
+                <button class="dropdown-item" routerLink="/gestion/rapport/eng-com-frs" >Par article</button>
               </div>
           </div>
           <div class="dropright dropdown-submenu">
             <button class="dropdown-item dropdown-toggle" data-toggle="dropdown"
-            aria-haspopup="true" aria-expanded="false" href="#">Entrée d'Achat</button>
+            aria-haspopup="true" aria-expanded="false" href="#">Achat</button>
             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                <button class="dropdown-item" >Journaux</button>
-                <button class="dropdown-item" >Par fournisseur</button>
-                <button class="dropdown-item" >Par article</button>
+                <!--button class="dropdown-item" >Journaux</button>
+                <button class="dropdown-item" >Par fournisseur</button-->
+                <button class="dropdown-item" >Liste Frs consultés</button>
             </div>
         </div>
         <div class="dropright dropdown-submenu">
           <button class="dropdown-item dropdown-toggle" data-toggle="dropdown"
-          aria-haspopup="true" aria-expanded="false" href="#">Demande de Besoin</button>
+          aria-haspopup="true" aria-expanded="false" href="#">Consommation Interne</button>
           <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-              <button class="dropdown-item" >Journaux</button>
-              <button class="dropdown-item" >Par fournisseur</button>
-              <button class="dropdown-item" >Par article</button>
+              <button class="dropdown-item" >Liste des Centre de Conso.</button>
+              <button class="dropdown-item" >Demandes encours</button>
+              <button class="dropdown-item" >Demandes servies</button>
+              <button class="dropdown-item" >Consommation par Centre</button>
+              <button class="dropdown-item" >Conso. par Centre et Article</button>
           </div>
         </div>
         <div class="dropright dropdown-submenu">
@@ -159,8 +161,11 @@
           <button class="dropdown-item dropdown-toggle" data-toggle="dropdown"
           aria-haspopup="true" aria-expanded="false" href="#">Stock</button>
           <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-              <button class="dropdown-item" >Par fournisseur</button>
-              <button class="dropdown-item" >Par article</button>
+              <button class="dropdown-item" >Article par magasin</button>
+              <button class="dropdown-item" >Entrées d'Article</button>
+              <button class="dropdown-item" >Etat du Stock</button>
+              <button class="dropdown-item" >Evolution du Stock</button>
+              <button class="dropdown-item" >Fiche de Stock</button>
           </div>
         </div>
       </div>
