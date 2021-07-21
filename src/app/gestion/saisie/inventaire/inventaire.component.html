@@ -222,10 +222,10 @@
                                           {{ ligInventaire.pu  }}
                                         </td>
                                         <td>
-                                          {{ligInventaire.stockTheoriq - ligInventaire.stockreel}}
+                                          {{ligInventaire.stockreel - ligInventaire.stockTheoriq}}
                                         </td>
                                         <td>
-                                          {{(ligInventaire.stockTheoriq*ligInventaire.pu) - (ligInventaire.stockreel*ligInventaire.pu)}}
+                                          {{ (ligInventaire.stockreel*ligInventaire.pu) - (ligInventaire.stockTheoriq*ligInventaire.pu) }}
                                         </td>
                                         <td>
                                           <input type="text" class="form-control" [(ngModel)] = "ligInventaire.observation"

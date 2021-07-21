@@ -134,7 +134,7 @@ export class InventaireComponent implements OnInit {
       (data) => {
         this.ligneInventaireList = data;
         this.ligneInventaireFiltered = [...this.ligneInventaireList.sort((a, b) => a.idLigneInv.toString().localeCompare(b.idLigneInv.toString().valueOf()))];
-        console.log('All innventaire', this.ligneInventaireList);
+        console.log('All innventaire lines', this.ligneInventaireList);
         
       },
       (error: HttpErrorResponse) => {
@@ -171,7 +171,6 @@ export class InventaireComponent implements OnInit {
           this.loading = false;
 
           console.log(this.ligneShowFiltered);
-          console.log('ligne Inventaire', this.tempateLigneInventaire);
           
 
         }
@@ -515,8 +514,8 @@ export class InventaireComponent implements OnInit {
         lig.push(element2.stockTheoriq);
         lig.push(element2.stockreel);
         lig.push(element2.pu);
-        lig.push(element2.stockTheoriq - element2.stockreel);
-        lig.push((element2.stockTheoriq*element2.pu) - (element2.stockreel*element2.pu));
+        lig.push(element2.stockreel - element2.stockTheoriq );
+        lig.push( (element2.stockreel*element2.pu) - (element2.stockTheoriq*element2.pu) );
         //let ht = element2.quantiteLigneReception*element2.ligneCommande.puLigneCommande;
         //lig.push(ht*(1+(element2.ligneCommande.tva/100)));
         lignes.push(lig);
@@ -615,6 +614,23 @@ export class InventaireComponent implements OnInit {
         ['Observation :', this.validateForm.value.descrInv ?  this.validateForm.value.descrInv : ''],
         
       ]
+      ,
+    });
+
+   // this.tempateLigneInventaire.forEach()
+
+
+    autoTable(doc, {
+      theme: 'grid',
+      head: [['Article', 'Désignation', 'Stock Théo.', 'Stock Réel', 'PU', 'Ecart Qté', ' Ecart Montant']],
+      headStyles:{
+        fillColor: [41, 128, 185],
+        textColor: 255,
+        fontStyle: 'bold' ,
+    },
+      margin: { top: 100 },
+      //body: lignes
+      body: []
       ,
     });
 
