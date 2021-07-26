@@ -205,11 +205,20 @@
                                       >
                                       <th scope="row">{{i + 1}}</th>
                                       <td>
+                                        <!--
                                         <ng-select [(ngModel)]="lig.selectedArticl" (ngModelChange)="getUniterOfSelectArt(i)"
                                         (click)="onArticleSelectClicked(i)" style="min-width: 180px;">
                                           <ng-option *ngFor="let art of lig.listArticle" [value]="art.numArticle"
                                            >{{art.codeArticle}} - {{art.libArticle}}</ng-option>
                                         </ng-select>
+                                        -->
+                                        <select class="form-control" [(ngModel)]="lig.selectedArticl" (ngModelChange)="getUniterOfSelectArt(i)"
+                                         style="min-width: 180px;">
+                                            <option *ngFor="let art of lig.listArticle" [value]="art.numArticle"
+                                            >{{art.codeArticle}} - {{art.libArticle}}</option>
+
+                                        </select>
+
                                       </td>
                                       <td>
                                         <input type="number" class="form-control" [(ngModel)] = "lig.lignesDemandePrix.qteLigneDemandePrix"
