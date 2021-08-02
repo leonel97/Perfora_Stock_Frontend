@@ -1,5 +1,5 @@
 export class UserGroup {
-  id: number;
-  name: string;
-  description: string;
+  numGroupUser: number;
+  idGroupUser: string;
+  libGroupUser: string;
 }

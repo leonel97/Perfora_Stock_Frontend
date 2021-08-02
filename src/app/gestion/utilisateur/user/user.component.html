@@ -21,7 +21,7 @@
               <div class="col-md-4">
                 <div class="form-group">
                   <input [formControl]="searchControl" class="form-control form-control-rounded" id="email"
-                         placeholder="Search Products" type="text">
+                         placeholder="Rechercher Utilisateur" type="text">
                 </div>
               </div>
               <div class="col-md-12">
@@ -31,6 +31,7 @@
                     [footerHeight]="50"
                     [headerHeight]="50"
                     [rowHeight]="60"
+                    [messages]="{emptyMessage: 'Aucune donnée à afficher !!!'}"
                     [rows]="userFiltered"
                     [scrollbarV]="true"
                     class="material fullscreen"
@@ -75,10 +76,11 @@
                 <div class="row">
 
                   <div class="col-md-6 form-group mb-3">
-                    <label for="civiliteId">Corps de l'utilisateur</label>
+                    <label for="civiliteId">Civilité de l'utilisateur</label>
                     <select class="form-control" id="civiliteId" formControlName="civiliteId">
                       <option [ngValue]="null">-- Civilité -- </option>
-                      <option *ngFor="let civilite of civiliteList" [value]="civilite.id">{{civilite.libelle}}</option>
+                      <!--option *ngFor="let civilite of civiliteList" [value]="civilite.id">{{civilite.libelle}}</option-->
+                      <option *ngFor="let civilite of civiliteList" [value]="civilite.id">{{civilite.codeCivilite}} - {{civilite.libCivilite}}</option>
                     </select>
                   </div>
 
@@ -129,7 +131,8 @@
                       <option *ngFor="let corps of corpsList" [value]="corps.id">{{corps.libelle}}</option>
                     </select>-->
                     <ng-select formControlName="corpsId" id="corpsId" placeholder="-- sélectionner --">
-                      <ng-option *ngFor="let corps of corpsList" [value]="corps.id">{{corps.libelle}}</ng-option>
+                      <!--ng-option *ngFor="let corps of corpsList" [value]="corps.id">{{corps.libelle}}</ng-option-->
+                      <ng-option *ngFor="let profession of professionList" [value]="profession.numProfession">{{profession.codeProfession}} - {{profession.libProfession}}</ng-option>
                     </ng-select>
                   </div>
 
@@ -140,7 +143,8 @@
                       <option *ngFor="let fonction of fonctionList" [value]="fonction.id">{{fonction.libelle}}</option>
                     </select>-->
                     <ng-select formControlName="fonctionId" id="fonctionId" placeholder="-- sélectionner --">
-                      <ng-option *ngFor="let fonction of fonctionList" [value]="fonction.id">{{fonction.libelle}}</ng-option>
+                      <!--ng-option *ngFor="let fonction of fonctionList" [value]="fonction.id">{{fonction.libelle}}</ng-option-->
+                      <ng-option *ngFor="let fonction of fonctionList" [value]="fonction.id">{{fonction.codeFonction}} - {{fonction.libFonction}}</ng-option>
                     </ng-select>
                   </div>
                 </div>
@@ -153,7 +157,8 @@
                       <option *ngFor="let serviceJuridique of serviceList" [value]="serviceJuridique.id">{{serviceJuridique.libelle}}</option>
                     </select>-->
                     <ng-select formControlName="servicesId" id="servicesId" placeholder="-- sélectionner --" multiple="multiple">
-                      <ng-option *ngFor="let serviceJuridique of serviceList" [value]="serviceJuridique.id">{{serviceJuridique.libelle}}</ng-option>
+                      <!--ng-option *ngFor="let serviceJuridique of serviceList" [value]="serviceJuridique.id">{{serviceJuridique.libelle}}</ng-option-->
+                      <ng-option *ngFor="let service of centreConsommationList" [value]="service.numService">{{service.codeService}} - {{service.libService}}</ng-option>
                     </ng-select>
                   </div>
                   <div class="col-md-6 form-group mb-3">
@@ -163,7 +168,7 @@
                       <option *ngFor="let userGroup of userGroupList" [value]="userGroup.id">{{userGroup.name}}</option>
                     </select>-->
                     <ng-select formControlName="groupesId" id="groupesId" placeholder="-- sélectionner --" multiple="multiple">
-                      <ng-option *ngFor="let userGroup of userGroupList" [value]="userGroup.id">{{userGroup.name}}</ng-option>
+                      <ng-option *ngFor="let userGroup of userGroupList" [value]="userGroup.numGroupUser">{{userGroup.idGroupUser}} - {{userGroup.libGroupUser}}</ng-option>
                     </ng-select>
                   </div>
                 </div>

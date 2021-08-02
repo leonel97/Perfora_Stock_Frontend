@@ -29,6 +29,7 @@ import autoTable from 'jspdf-autotable';
 import * as moment from  'moment';
 import { Utils } from 'src/app/utilitaires/utils';
 import { NumberToLetter } from 'convertir-nombre-lettre';
+import { InventaireService } from 'src/app/services/gestion/saisie/inventaire.service';
 
 
 export interface modelLigneAppro{
@@ -78,6 +79,8 @@ export class ServirBesoinComponent  implements OnInit {
   activeTabsNav;
   //end
 
+  inventaireEnCours: boolean = true;
+
   constructor(
     private approService: ApprovisionnementService,
     private ligneApproService: LigneApproService,
@@ -88,6 +91,7 @@ export class ServirBesoinComponent  implements OnInit {
     private demandeApproService: DemandeApproService,
     private exerciceService: ExerciceService,
     private stockerService: StockerService,
+    private inventaireService: InventaireService,
     private fb: FormBuilder,
     private router: Router,
     private toastr: ToastrService,
@@ -122,8 +126,31 @@ export class ServirBesoinComponent  implements OnInit {
       this.getAllLigneDemandeAppro();
       this.getAllMagasin();
       this.getAllStocker();
+      this.getAllInventaire();
 
   }
+
+  
+  getAllInventaire(){
+    this.inventaireService.getAllInventaire().subscribe(
+      (data) => {
+        let finded = false;
+        for (const element of data) {
+          if(element.valideInve == false){
+            finded = true;
+          }
+        }
+
+        this.inventaireEnCours = finded;
+
+      },
+      (error: HttpErrorResponse) => {
+        console.log('Echec status ==> ' + error.status);
+      }
+    );
+
+  }
+
 
   getAllStocker(){
     this.stockerService.getAllStocker().subscribe(
@@ -287,6 +314,9 @@ export class ServirBesoinComponent  implements OnInit {
           });
         }
       }
+
+      this.getInfosOnDaSelected();
+      this.getInfosOnMagasinSelected();
 
       this.calculTotaux();
 
@@ -653,55 +683,65 @@ export class ServirBesoinComponent  implements OnInit {
 
   valider(appro: Approvisionnement, eta: boolean, content){
 
-    this.etatVali = eta;
+    if(this.inventaireEnCours){
+      this.toastr.error('Impossible d\'éffectuer l\'action car un Inventaire est en cours !', 'Erreur !', { timeOut: 5000 });
+      
+    }
+    else{
 
-    this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', centered: true})
-    .result.then((result) => {
-    //this.confirmResut = `Closed with: ${result}`;
-    
-      appro.valideAppro = eta;
+      this.etatVali = eta;
 
-      this.approService.editAAppro3(appro.numAppro, appro).subscribe(
-        (data) => {
+      this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', centered: true})
+      .result.then((result) => {
+      //this.confirmResut = `Closed with: ${result}`;
+      
+        appro.valideAppro = eta;
+  
+        this.approService.editAAppro3(appro.numAppro, appro).subscribe(
+          (data) => {
+  
+            const i = this.approList.findIndex(l => l.numAppro == data.numAppro);
+                if (i > -1) {
+                  this.approList[i] = data;
+                  this.approFiltered = [...this.approList.sort((a, b) => a.numAppro.localeCompare(b.numAppro.valueOf()))];
+                }
+  
+                if(data.valideAppro == appro.valideAppro){
+                  let msg: String = 'Validation'
+                  if(eta == false) msg = 'Annulation';
+                  this.toastr.success(msg+' effectuée avec succès.', 'Success', { timeOut: 5000 });
+                } else {
+                  let msg: String = 'Erreur lors de la Sortie de l\'Article du Magasin, Il n\'est peut être pas disponible dans ce magasin.'
+                  if(eta == false) msg = 'Erreur lors du Retour de l\'Article dans le Magasin Annulation';
+                  this.toastr.error(msg.valueOf(), 'Erreur !', { timeOut: 5000 });
+                }
+  
+                this.getAllArticle();
+                this.getAllUniter();
+                this.getAllLigneAppro();
+                this.getAllDemandeAppro();
+                this.getAllLigneDemandeAppro();
+                this.getAllMagasin();
+                this.getAllStocker();
+  
+  
+          },
+          (error: HttpErrorResponse) => {
+            console.log('Echec status ==> ' + error.status);
+            this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000 });
+  
+          }
+        );
+  
+  
+  
+      }, (reason) => {
+        console.log(`Dismissed with: ${reason}`);
+      });
+  
 
-          const i = this.approList.findIndex(l => l.numAppro == data.numAppro);
-              if (i > -1) {
-                this.approList[i] = data;
-                this.approFiltered = [...this.approList.sort((a, b) => a.numAppro.localeCompare(b.numAppro.valueOf()))];
-              }
+    }
 
-              if(data.valideAppro == appro.valideAppro){
-                let msg: String = 'Validation'
-                if(eta == false) msg = 'Annulation';
-                this.toastr.success(msg+' effectuée avec succès.', 'Success', { timeOut: 5000 });
-              } else {
-                let msg: String = 'Erreur lors de la Sortie de l\'Article du Magasin, Il n\'est peut être pas disponible dans ce magasin.'
-                if(eta == false) msg = 'Erreur lors du Retour de l\'Article dans le Magasin Annulation';
-                this.toastr.error(msg.valueOf(), 'Erreur !', { timeOut: 5000 });
-              }
-
-              this.getAllArticle();
-              this.getAllUniter();
-              this.getAllLigneAppro();
-              this.getAllDemandeAppro();
-              this.getAllLigneDemandeAppro();
-              this.getAllMagasin();
-              this.getAllStocker();
-
-
-        },
-        (error: HttpErrorResponse) => {
-          console.log('Echec status ==> ' + error.status);
-          this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000 });
-
-        }
-      );
-
-
-
-    }, (reason) => {
-      console.log(`Dismissed with: ${reason}`);
-    });
 
 
   }

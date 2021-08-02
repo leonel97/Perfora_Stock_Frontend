@@ -1,5 +1,5 @@
 export class Civilite {
-  id: number;
-  code: string;
-  libelle: string;
+  numCivilite: number;
+  codeCivilite: string;
+  libCivilite: string;
 }

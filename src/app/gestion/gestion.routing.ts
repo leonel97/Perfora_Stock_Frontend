@@ -36,6 +36,10 @@ let routes: Routes = [
         loadChildren: () => import('./rapport/rapport.module').then(ra => ra.RapportModule)
       },
       {
+        path: 'comptabilisation',
+        loadChildren: () => import('./comptabilisation/comptabilisation.module').then(comp => comp.ComptabilisationModule)
+      },
+      {
         path: 'accueil',
         component: AccueilComponent
       }

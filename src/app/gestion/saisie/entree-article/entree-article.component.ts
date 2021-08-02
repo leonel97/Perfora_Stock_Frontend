@@ -43,6 +43,7 @@ import autoTable from 'jspdf-autotable';
 import * as moment from  'moment';
 import { Utils } from 'src/app/utilitaires/utils';
 import { NumberToLetter } from 'convertir-nombre-lettre';
+import { InventaireService } from 'src/app/services/gestion/saisie/inventaire.service';
 
 
 export interface modelLigneRecept{
@@ -98,6 +99,8 @@ export class EntreeArticleComponent  implements OnInit {
   activeTabsNav;
   //end
 
+  inventaireEnCours: boolean = true;
+
   constructor(
     private receptionService: ReceptionService,
     private ligneReceptService: LigneReceptionService,
@@ -115,10 +118,11 @@ export class EntreeArticleComponent  implements OnInit {
     private fpfaService: FactureProFormAchaService,
     private exerciceService: ExerciceService,
     private stockerService: StockerService,
+    private inventaireService: InventaireService,
     private fb: FormBuilder,
     private router: Router,
     private toastr: ToastrService,
-    private modalService: NgbModal
+    private modalService: NgbModal,
   ) {
   }
 
@@ -155,6 +159,27 @@ export class EntreeArticleComponent  implements OnInit {
       this.getAllDemandePrix();
       this.getAllFactureProFormAcha();
       this.getAllConsulterFrsForDp();
+      this.getAllInventaire();
+
+  }
+
+  getAllInventaire(){
+    this.inventaireService.getAllInventaire().subscribe(
+      (data) => {
+        let finded = false;
+        for (const element of data) {
+          if(element.valideInve == false){
+            finded = true;
+          }
+        }
+
+        this.inventaireEnCours = finded;
+
+      },
+      (error: HttpErrorResponse) => {
+        console.log('Echec status ==> ' + error.status);
+      }
+    );
 
   }
 
@@ -931,63 +956,69 @@ export class EntreeArticleComponent  implements OnInit {
 
   valider(reception: Reception, eta: boolean, content){
 
+    if(this.inventaireEnCours){
+      this.toastr.error('Impossible d\'éffectuer l\'action car un Inventaire est en cours !', 'Erreur !', { timeOut: 5000 });
+      
+    }
+    else{
+
+      this.etatVali = eta;
+
+      this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', centered: true})
+        .result.then((result) => {
+        //this.confirmResut = `Closed with: ${result}`;
+        reception.valideRecep = eta;
+
+        this.receptionService.editAReception3(reception.numReception, reception).subscribe(
+          (data) => {
     
-    this.etatVali = eta;
-
-    this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', centered: true})
-      .result.then((result) => {
-      //this.confirmResut = `Closed with: ${result}`;
-      reception.valideRecep = eta;
-
-      this.receptionService.editAReception3(reception.numReception, reception).subscribe(
-        (data) => {
-  
-          const i = this.receptionList.findIndex(l => l.numReception == data.numReception);
-              if (i > -1) {
-                this.receptionList[i] = data;
-                this.receptionFiltered = [...this.receptionList.sort((a, b) => a.numReception.localeCompare(b.numReception.valueOf()))];
-              }
-  
-              this.getAllLigneReception();
-              this.getAllArticle();
-              this.getAllUniter();
-              this.getAllMagasin();
-              this.getAllStocker();
-              this.getAllAppelOffre();
-              this.getAllBondTravail();
-              this.getAllCommandeAchat();
-              this.getAllLettreCommande();
-              this.getAllLigneCommande();
-              this.getAllDemandePrix();
-              this.getAllFactureProFormAcha();
-              this.getAllConsulterFrsForDp();
-  
-              if(data.valideRecep == reception.valideRecep){
-                let msg: String = 'Validation'
-                if(eta == false) msg = 'Annulation';
-                this.toastr.success(msg+' effectuée avec succès.', 'Success', { timeOut: 5000 });
-              } else {
-                let msg: String = 'Erreur lors de l\'entrée de l\'Article dans le Magasin.'
-                if(eta == false) msg = 'Erreur lors du Retour de l\'Article dans le Magasin Annulation';
-                this.toastr.error(msg.valueOf(), 'Erreur !', { timeOut: 5000 });
-              }
-  
-  
-        },
-        (error: HttpErrorResponse) => {
-          console.log('Echec status ==> ' + error.status);
-          this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000 });
-  
-        }
-      );
-  
+            const i = this.receptionList.findIndex(l => l.numReception == data.numReception);
+                if (i > -1) {
+                  this.receptionList[i] = data;
+                  this.receptionFiltered = [...this.receptionList.sort((a, b) => a.numReception.localeCompare(b.numReception.valueOf()))];
+                }
+    
+                this.getAllLigneReception();
+                this.getAllArticle();
+                this.getAllUniter();
+                this.getAllMagasin();
+                this.getAllStocker();
+                this.getAllAppelOffre();
+                this.getAllBondTravail();
+                this.getAllCommandeAchat();
+                this.getAllLettreCommande();
+                this.getAllLigneCommande();
+                this.getAllDemandePrix();
+                this.getAllFactureProFormAcha();
+                this.getAllConsulterFrsForDp();
+    
+                if(data.valideRecep == reception.valideRecep){
+                  let msg: String = 'Validation'
+                  if(eta == false) msg = 'Annulation';
+                  this.toastr.success(msg+' effectuée avec succès.', 'Success', { timeOut: 5000 });
+                } else {
+                  let msg: String = 'Erreur lors de l\'entrée de l\'Article dans le Magasin.'
+                  if(eta == false) msg = 'Erreur lors du Retour de l\'Article dans le Magasin Annulation';
+                  this.toastr.error(msg.valueOf(), 'Erreur !', { timeOut: 5000 });
+                }
+    
+    
+          },
+          (error: HttpErrorResponse) => {
+            console.log('Echec status ==> ' + error.status);
+            this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000 });
+    
+          }
+        );
+    
 
 
-    }, (reason) => {
-      console.log(`Dismissed with: ${reason}`);
-    });
+      }, (reason) => {
+        console.log(`Dismissed with: ${reason}`);
+      });
 
 
+    }
 
   }
 

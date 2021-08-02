@@ -8,24 +8,26 @@ import { environment } from '../../../../environments/environment';
   providedIn: 'root'
 })
 export class ProfessionService {
+
+  host: string = environment.backend2 +'/commune/profession';
   url: string = environment.backend + '/professions';
 
   constructor(private http: HttpClient) { }
 
   createProfession(profession: Profession): Observable<Object> {
-    return this.http.post(`${this.url}`, profession);
+    return this.http.post(`${this.host}/list`, profession);
   }
 
   deleteProfession(id: number): Observable<Object> {
-    return this.http.delete(`${this.url}/${id}`);
+    return this.http.delete(`${this.host}/byCodPro/${id}`);
   }
 
-  updateProfession(profession: Profession): Observable<Object> {
-    return this.http.put(`${this.url}`, profession);
+  updateProfession(id: string, profession: Profession): Observable<Object> {
+    return this.http.put(`${this.host}/byCodPro/${id}`, profession);
   }
 
   list(): Observable<Object> {
-    return this.http.get(`${this.url}/?page=0&size=10000000`);
+    return this.http.get(`${this.host}/list`);
   }
 
 }

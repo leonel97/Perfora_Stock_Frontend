@@ -83,13 +83,14 @@ export class UserGroupComponent implements OnInit {
 
   makeForm(userGroup: UserGroup): void {
     this.validateForm = this.fb.group({
-      id: [userGroup != null ? userGroup.id : null],
-      name: [userGroup != null ? userGroup.name : null,
+      numGroupUser: [userGroup != null ? userGroup.numGroupUser : null],
+      idGroupUser: [userGroup != null ? userGroup.idGroupUser : null,
         [Validators.required]],
-      description: [userGroup != null ? userGroup.description : null],
+        libGroupUser: [userGroup != null ? userGroup.libGroupUser : null,
+          [Validators.required]],
     });
     //cette condition permet de basculer vers la tab contenant le formulaire lors d'une modification
-    if (userGroup?.id !=null){
+    if (userGroup?.numGroupUser !=null){
       this.activeTabsNav = 2;
     }
   }
@@ -117,10 +118,10 @@ export class UserGroupComponent implements OnInit {
       }, 3000);
     } else {
       const formData = this.validateForm.value;
-      if (formData.id == null) {
+      if (formData.numGroupUser == null) {
         this.enregistrerUserGroup(formData);
       } else {
-        this.modifierUserGroup(formData);
+        this.modifierUserGroup(formData.numGroupUser, formData);
       }
     }
   }
@@ -150,11 +151,11 @@ export class UserGroupComponent implements OnInit {
       });
   }
 
-  modifierUserGroup(userGroup: UserGroup): void {
-    this.userGroupService.updateUserGroup(userGroup).subscribe(
+  modifierUserGroup(id: string, userGroup: UserGroup): void {
+    this.userGroupService.updateUserGroup(id, userGroup).subscribe(
       (data: any) => {
         console.log(data);
-        const i = this.userGroupList.findIndex(l => l.id == data.id);
+        const i = this.userGroupList.findIndex(l => l.numGroupUser == data.numGroupUser);
         if (i > -1) {
           this.userGroupList[i] = data;
           this.userGroupFiltered = [...this.userGroupList];
@@ -183,10 +184,10 @@ export class UserGroupComponent implements OnInit {
     this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', centered: true})
       .result.then((result) => {
       //this.confirmResut = `Closed with: ${result}`;
-      this.userGroupService.deleteUserGroup(userGroup?.id).subscribe(
+      this.userGroupService.deleteUserGroup(userGroup?.numGroupUser).subscribe(
         (data: any) => {
           console.log(data);
-          const i = this.userGroupList.findIndex(l => l.id == userGroup.id);
+          const i = this.userGroupList.findIndex(l => l.numGroupUser == userGroup.numGroupUser);
           if (i > -1) {
             this.userGroupList.splice(i, 1);
             this.userGroupFiltered = [...this.userGroupList];

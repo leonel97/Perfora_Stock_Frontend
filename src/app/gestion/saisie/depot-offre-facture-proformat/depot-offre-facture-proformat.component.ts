@@ -244,6 +244,7 @@ export class DepotOffreFactureProformatComponent implements OnInit {
     });
     //cette condition permet de basculer vers la tab contenant le formulaire lors d'une modification
     if (fpfa?.idFpfa !=null){
+      this.getInfosOnDpSelected();   
       this.ligneShow = [];
 
       if(this.detailView == true) this.detailView = false;

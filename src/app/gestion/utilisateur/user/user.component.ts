@@ -15,6 +15,10 @@ import {Fonction} from "../../../models/gestion/parametrage/fonction";
 import {FonctionService} from "../../../services/gestion/parametrage/fonction.service";
 import {Civilite} from "../../../models/gestion/parametrage/civilite";
 import {CiviliteService} from "../../../services/gestion/parametrage/civilite.service";
+import {CentreConsommation} from "../../../models/gestion/definition/centreConsommation";
+import {CentreConsommationService} from "../../../services/gestion/definition/centreConsommation.service";
+import {Profession} from "../../../models/gestion/parametrage/profession";
+import {ProfessionService} from "../../../services/gestion/parametrage/profession.service";
 
 @Component({
   selector: 'app-user',
@@ -28,11 +32,15 @@ export class UserComponent implements OnInit {
   userList: User[] = [];
   userGroupList: UserGroup[] = [];
   corpsList: CorpsJuridique[] = [];
+ professionList: Profession[] = [];
   civiliteList: Civilite[] = [];
   fonctionList: Fonction[] = [];
   //serviceList: ServiceJuridique[] = [];
   loading: boolean;
   user: User = null;
+
+  
+  centreConsommationList: CentreConsommation[] = [];
 
   //pour les tabs navs
   activeTabsNav;
@@ -42,7 +50,8 @@ export class UserComponent implements OnInit {
     private corpsJuridiqueService: CorpsJuridiqueService,
     private civiliteService: CiviliteService,
     private fonctionService: FonctionService,
-    //private serviceJuridiqueService: ServiceJuridiqueService,
+    private centreConsommationService: CentreConsommationService,
+    private professionService: ProfessionService,
     private userService: UserService,
     private fb: FormBuilder,
     private router: Router,
@@ -62,6 +71,29 @@ export class UserComponent implements OnInit {
       (error: HttpErrorResponse) => {
         console.log('Echec atatus ==> '+error.status);
       });
+
+      //profession 
+
+      this.professionService.list().subscribe(
+        (data: any) => {
+          this.professionList = [...data];
+          //this.userFiltered = this.userList;
+          //console.log(this.userList);
+        },
+        (error: HttpErrorResponse) => {
+          console.log('Echec atatus ==> '+error.status);
+        });
+
+      // centre de consommation
+      this.centreConsommationService.list().subscribe(
+        (data: any) => {
+          this.centreConsommationList = [...data];
+         // this.centreConsommationFiltered = this.centreConsommationList.sort((a, b) => a.codeService.localeCompare(b.codeService));
+          console.log(this.centreConsommationList);
+        },
+        (error: HttpErrorResponse) => {
+          console.log('Echec atatus ==> ' + error.status);
+        });
 
     this.userGroupService.list().subscribe(
       (data: any) => {

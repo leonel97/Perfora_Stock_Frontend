@@ -21,19 +21,20 @@
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <input [formControl]="searchControl" class="form-control form-control-rounded" id="model" placeholder="Rechercher modèle" type="text">
+                                    <input [formControl]="searchControl" class="form-control form-control-rounded" id="model" placeholder="Rechercher Profession" type="text" autocomplete="off">
                                 </div>
                             </div>
                             <div class="col-md-12">
                                 <div class="o-hidden">
-                                    <ngx-datatable [columnMode]="'force'" [footerHeight]="50" [headerHeight]="50" [rowHeight]="60"
-                                                   [rows]="professionFiltered" [scrollbarV]="true" class="material fullscreen" style="height: 500px; box-shadow: none">
-                                        <ngx-datatable-column [width]="200" name="code">
+                                    <ngx-datatable [columnMode]="'force'" [footerHeight]="50" [headerHeight]="50" [rowHeight]="60" 
+                                    [messages]="{emptyMessage: 'Aucune donnée à afficher !!!'}"
+                                    [rows]="professionFiltered" class="material fullscreen" style="height: 500px; box-shadow: none; overflow-y:visible">
+                                        <ngx-datatable-column  name="codeProfession">
                                             <ng-template ngx-datatable-header-template>
                                                 Code
                                             </ng-template>
                                         </ngx-datatable-column>
-                                        <ngx-datatable-column name="libelle">
+                                        <ngx-datatable-column name="libProfession">
                                             <ng-template ngx-datatable-header-template>
                                                 Libellé
                                             </ng-template>
@@ -44,10 +45,10 @@
                                             </ng-template>
                                             <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
                                                 <!--<strong>{{ row.code }}</strong>-->
-                                                <button (click)="makeForm(row)" class="btn btn-primary m-1" type="button">
+                                                <button (click)="makeForm(row)" class="btn btn-primary m-1" type="button"  ngbTooltip="Modifier" placement="bottom">
                             <i class="i-Pen-5"> </i>
                           </button>
-                                                <button (click)="confirm(modalConfirm, row)" class="btn btn-outline-danger m-1" type="button">
+                                                <button (click)="confirm(modalConfirm, row)" class="btn btn-outline-danger m-1" type="button"  ngbTooltip="Supprimer" placement="bottom">
                             <i class="i-Folder-Trash"> </i>
                           </button>
                                             </ng-template>
@@ -59,17 +60,17 @@
                     </ng-template>
                 </li>
                 <li [ngbNavItem]="2">
-                    <a ngbNavLink>Nouvelle profession</a>
+                    <a ngbNavLink><span *ngIf="! validateForm.value.numProfession">Nouvelle</span><span *ngIf="validateForm.value.numProfession" span>Modifier</span> profession</a>
                     <ng-template ngbNavContent>
 
                         <div class="mb-2">
                             <form (ngSubmit)="submit()" [formGroup]="validateForm">
                                 <div class="row">
                                     <div class="col-md-5 form-group mb-3">
-                                        <label for="code">Code<span class="required-field">*</span> </label>
-                                        <input class="form-control" formControlName="code" id="code" placeholder="Entrer le code" type="text">
-                                        <div *ngIf="validateForm.controls.code.errors &&
-                     (validateForm.controls.code.dirty || validateForm.controls.code.touched)" class="error-field">
+                                        <label for="codeProfession">Code<span class="required-field">*</span> </label>
+                                        <input class="form-control" formControlName="codeProfession" id="codeProfession" placeholder="Entrer le code" type="text" autocomplete="off">
+                                        <div *ngIf="validateForm.controls.codeProfession.errors &&
+                     (validateForm.controls.codeProfession.dirty || validateForm.controls.codeProfession.touched)" class="error-field">
                                             Ce champ est obligatoire !
                                         </div>
                                     </div>
@@ -77,10 +78,10 @@
 
 
                                     <div class="col-md-5 form-group mb-3">
-                                        <label for="libelle">Libellé <span class="required-field">*</span> </label>
-                                        <input class="form-control" formControlName="libelle" id="libelle" placeholder="Entrer le libellé" type="text">
-                                        <div *ngIf="validateForm.controls.libelle.errors &&
-                                        (validateForm.controls.libelle.dirty || validateForm.controls.libelle.touched)" class="error-field">
+                                        <label for="libProfession">Libellé <span class="required-field">*</span> </label>
+                                        <input class="form-control" formControlName="libProfession" id="libProfession" placeholder="Entrer le libellé" type="text" autocomplete="off">
+                                        <div *ngIf="validateForm.controls.libProfession.errors &&
+                                        (validateForm.controls.libProfession.dirty || validateForm.controls.libProfession.touched)" class="error-field">
                                             Ce champ est obligatoire !
                                         </div>
                                     </div>
@@ -115,12 +116,12 @@
     <div class="modal-body">
         <p>
             <strong>Confirmez-vous la suppression de
-          <span class="text-primary"> {{ profession?.libelle }}</span> ?</strong></p>
+          <span class="text-primary"> {{ profession?.libProfession }}</span> ?</strong></p>
     </div>
     <div class="modal-footer">
-        <button (click)="modal.dismiss('cancel')" class="btn btn-outline-secondary btn-rounded" type="button">Cancel
+        <button (click)="modal.dismiss('cancel')" class="btn btn-outline-secondary btn-rounded" type="button">Annuler
       </button>
-        <button (click)="modal.close('Ok')" class="btn btn-danger btn-rounded" ngbAutofocus type="button">Ok
+        <button (click)="modal.close('Ok')" class="btn btn-danger btn-rounded" ngbAutofocus type="button">Valider
       </button>
     </div>
 </ng-template>

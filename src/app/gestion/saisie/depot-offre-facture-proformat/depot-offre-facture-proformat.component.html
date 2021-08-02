@@ -170,7 +170,7 @@
                         <ng-select formControlName="demandePrix" [readonly]="validateForm.value.idFpfa || detailView"
                         (ngModelChange)="getInfosOnDpSelected()" >
                           <div *ngFor="let elem of dpList">
-                            <ng-option *ngIf="elem.valideDemandePrix" [value]="elem.idDemandePrix">{{elem.idDemandePrix}} du {{elem.dateDemandePrix | date: "dd-MM-yyyy"}} ( {{ elem.exercice.codeExercice }} )</ng-option>
+                            <ng-option *ngIf="!elem.valideDemandePrix" [value]="elem.idDemandePrix">{{elem.idDemandePrix}} du {{elem.dateDemandePrix | date: "dd-MM-yyyy"}} ( {{ elem.exercice.codeExercice }} )</ng-option>
                           </div>
 
                         </ng-select>

@@ -1,5 +1,5 @@
 export class Fonction{
-  code: string;
-  id: number;
-  libelle: string;
+  codeFonction: string;
+  numFonction: number;
+  libFonction: string;
 }

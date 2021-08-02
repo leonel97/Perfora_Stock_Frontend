@@ -21,7 +21,7 @@
               <div class="col-md-4">
                 <div class="form-group">
                   <input [formControl]="searchControl" class="form-control form-control-rounded" id="email"
-                         placeholder="Search Products" type="email">
+                         placeholder="Rechercher Groupe Utilisateur" type="email" autocomplete="off">
                 </div>
               </div>
               <div class="col-md-12">
@@ -31,13 +31,19 @@
                     [footerHeight]="50"
                     [headerHeight]="50"
                     [rowHeight]="60"
+                    [messages]="{emptyMessage: 'Aucune donnée à afficher !!!'}"
                     [rows]="userGroupFiltered"
-                    [scrollbarV]="true"
                     class="material fullscreen"
-                    style="height: 500px; box-shadow: none">
-                    <ngx-datatable-column [width]="300" name="name">
+                    style="height: 500px; box-shadow: none; overflow-y:visible">
+                    <ngx-datatable-column name="idGroupUser">
                       <ng-template ngx-datatable-header-template>
-                        Nom
+                        Code
+                      </ng-template>
+                    </ngx-datatable-column>
+
+                    <ngx-datatable-column name="libGroupUser">
+                      <ng-template ngx-datatable-header-template>
+                        Libellé
                       </ng-template>
                     </ngx-datatable-column>
                     <ngx-datatable-column>
@@ -46,11 +52,11 @@
                       </ng-template>
                       <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
                         <!--<strong>{{ row.code }}</strong>-->
-                        <button (click)="makeForm(row)" class="btn btn-primary m-1" type="button">
+                        <button (click)="makeForm(row)" class="btn btn-primary m-1" type="button" ngbTooltip="Modifier" placement="bottom">
                           <i class="i-Pen-5"> </i>
                         </button>
                         <button (click)="confirm(modalConfirm, row)" class="btn btn-outline-danger m-1"
-                                type="button">
+                                type="button" ngbTooltip="Supprimer" placement="bottom">
                           <i class="i-Folder-Trash"> </i>
                         </button>
                       </ng-template>
@@ -62,7 +68,7 @@
           </ng-template>
         </li>
         <li [ngbNavItem]="2">
-          <a ngbNavLink>Nouveau groupe utilisateur</a>
+          <a ngbNavLink><span *ngIf="! validateForm.value.numGroupUser">Nouveau</span><span *ngIf="validateForm.value.numGroupUser" span>Modifier</span> groupe utilisateur</a>
           <ng-template ngbNavContent>
 
             <div class="mb-2">
@@ -70,23 +76,23 @@
                 <div class="row">
 
                   <div class="col-md-12 form-group mb-3">
-                    <label for="name">Nom <span class="required-field">*</span> </label>
-                    <input class="form-control" formControlName="name" id="name"
-                           placeholder="Entrer le nom" type="text">
-                    <div *ngIf="validateForm.controls.name.errors &&
-                   (validateForm.controls.name.dirty || validateForm.controls.name.touched)"
+                    <label for="idGroupUser">Code <span class="required-field">*</span> </label>
+                    <input class="form-control" formControlName="idGroupUser" id="idGroupUser"
+                           placeholder="Entrer le code" type="text" autocomplete="off">
+                    <div *ngIf="validateForm.controls.idGroupUser.errors &&
+                   (validateForm.controls.idGroupUser.dirty || validateForm.controls.idGroupUser.touched)"
                          class="error-field">
                       Ce champs est obligatoire !
                     </div>
                   </div>
 
                   <div class="col-md-12 form-group mb-3">
-                    <label for="description">Description</label>
-                    <textarea class="form-control" aria-label="With textarea" id="description" formControlName="description" placeholder="Entrer la description"></textarea>
-
+                    <label for="libGroupUser">Libellé <span class="required-field">*</span></label>
+                    <input class="form-control" id="libGroupUser" formControlName="libGroupUser"
+                     placeholder="Entrer le libellé" type="text" autocomplete="off">
                     <div class="error-field"
-                         *ngIf="validateForm.controls.description.errors &&
-                   (validateForm.controls.description.dirty || validateForm.controls.description.touched)">
+                         *ngIf="validateForm.controls.libGroupUser.errors &&
+                   (validateForm.controls.libGroupUser.dirty || validateForm.controls.libGroupUser.touched)">
                       Ce champs est obligatoire !
                     </div>
                   </div>
@@ -124,13 +130,12 @@
   <div class="modal-body">
     <p>
       <strong>Confirmez-vous la suppression de
-        <span class="text-primary"> {{ userGroup?.name }}</span> ?</strong></p>
+        <span class="text-primary"> {{ userGroup?.libGroupUser }}</span> ?</strong></p>
   </div>
   <div class="modal-footer">
-    <button (click)="modal.dismiss('cancel')" class="btn btn-outline-secondary btn-rounded" type="button">Cancel
+    <button (click)="modal.dismiss('cancel')" class="btn btn-outline-secondary btn-rounded" type="button">Annuler
     </button>
-    <button (click)="modal.close('Ok')" class="btn btn-danger btn-rounded" ngbAutofocus
-            type="button">Ok
+    <button (click)="modal.close('Ok')" class="btn btn-danger btn-rounded" ngbAutofocus type="button">Valider
     </button>
   </div>
 </ng-template>

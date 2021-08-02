@@ -79,14 +79,14 @@ export class CiviliteComponent implements OnInit {
 
   makeForm(civilite: Civilite): void {
     this.validateForm = this.fb.group({
-      id: [civilite != null ? civilite.id: null],
-      libelle: [civilite != null ? civilite.libelle: null,
+      numCivilite: [civilite != null ? civilite.numCivilite: null],
+      libCivilite: [civilite != null ? civilite.libCivilite: null,
         [Validators.required]],
-      code: [civilite != null ? civilite.code: null,
+      codeCivilite: [civilite != null ? civilite.codeCivilite: null,
         [Validators.required]],
     });
     //cette condition permet de basculer vers la tab contenant le formulaire lors d'une modification
-    if (civilite?.id !=null){
+    if (civilite?.numCivilite !=null){
       this.activeTabsNav = 2;
     }
   }
@@ -114,10 +114,10 @@ export class CiviliteComponent implements OnInit {
       }, 3000);
     } else  {
       const formData = this.validateForm.value;
-      if(formData.id == null) {
+      if(formData.numCivilite == null) {
         this.enregistrerCivilite(formData);
       } else {
-        this.modifierCivilite(formData);
+        this.modifierCivilite(formData.numCivilite, formData);
       }
     }
   }
@@ -130,10 +130,10 @@ export class CiviliteComponent implements OnInit {
         this.civiliteFiltered = [...this.civiliteList];
         this.resetForm();
         this.loading = true;
-        /*setTimeout(() => {
+        setTimeout(() => {
           this.loading = false;
           this.toastr.success('Enregistrement effectué avec succès.', 'Success!', {progressBar: true});
-        }, 3000);*/
+        }, 3000);
         //basculer vers la tab contenant la liste apres enregistrement
         this.activeTabsNav = 1;
       },
@@ -147,20 +147,22 @@ export class CiviliteComponent implements OnInit {
       });
   }
 
-  modifierCivilite(civilite: Civilite): void {
-    this.civiliteService.updateCivilite(civilite).subscribe(
+  modifierCivilite(id: string, civilite: Civilite): void {
+    this.civiliteService.updateCivilite(id, civilite).subscribe(
       (data: any) => {
         console.log(data);
-        const i = this.civiliteList.findIndex(l => l.id == data.id);
+        const i = this.civiliteList.findIndex(l => l.numCivilite == data.numCivilite);
         if(i > -1) {
           this.civiliteList[i]= data;
           this.civiliteFiltered = [...this.civiliteList];
         }
         this.loading = true;
         setTimeout(() => {
+          this.toastr.success('Modification effectué avec succès.', 'Success!', {progressBar: true});
           this.loading = false;
-          this.toastr.success('Enregistrement effectué avec succès.', 'Success!', {progressBar: true});
         }, 3000);
+         //basculer vers la tab contenant la liste apres enregistrement
+         this.activeTabsNav = 1;
         this.resetForm();
       },
       (error: HttpErrorResponse) => {
@@ -178,10 +180,10 @@ export class CiviliteComponent implements OnInit {
     this.modalService.open(content, { ariaLabelledBy: 'modal-basic-title', centered: true })
       .result.then((result) => {
       //this.confirmResut = `Closed with: ${result}`;
-      this.civiliteService.deleteCivilite(civilite?.id).subscribe(
+      this.civiliteService.deleteCivilite(civilite?.numCivilite).subscribe(
         (data: any) => {
           console.log(data);
-          const i = this.civiliteList.findIndex(l => l.id == civilite.id);
+          const i = this.civiliteList.findIndex(l => l.numCivilite == civilite.numCivilite);
           if(i > -1) {
             this.civiliteList.splice(i, 1);
             this.civiliteFiltered = [...this.civiliteList];
@@ -189,6 +191,7 @@ export class CiviliteComponent implements OnInit {
           setTimeout(() => {
             this.toastr.success('Suppression effectuée avec succès.', 'Success!', {progressBar: true});
           }, 3000);
+          
           this.resetForm();
         },
         (error: HttpErrorResponse) => {

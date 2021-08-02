@@ -98,8 +98,8 @@
         Comptabilisation
       </button>
       <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-          <button class="dropdown-item" >Imputation des articles et Configuration des journaux</button>
-          <button class="dropdown-item">Génération des écritures comptables</button>
+          <button class="dropdown-item" routerLink="/gestion/comptabilisation/imputation-article">Imputation des articles et Configuration des journaux</button>
+          <button class="dropdown-item" routerLink="/gestion/comptabilisation/ecriture-comptable">Génération des écritures comptables</button>
       </div>
   </div>
 
@@ -120,6 +120,22 @@
         
       </div>
   </div>
+
+  <!--Menu Paramétrage-->
+  <div class="btn-group dropright dropdown-submenu">
+    <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      Paramétrage
+    </button>
+    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+        <button class="dropdown-item"  routerLink="/gestion/utilisateur/user" >Utilisateurs</button>
+        <button class="dropdown-item" routerLink="/gestion/utilisateur/user-group">Groupes Utilisateurs</button>
+        <button class="dropdown-item" routerLink="/gestion/parametrage/civilite">Civilité</button>
+        <button class="dropdown-item" routerLink="/gestion/parametrage/profession">Profession </button>
+        <button class="dropdown-item" routerLink="/gestion/parametrage/fonction">Fonction </button>
+    </div>
+</div>
+
+
 
   <div style="margin: auto"></div>
 

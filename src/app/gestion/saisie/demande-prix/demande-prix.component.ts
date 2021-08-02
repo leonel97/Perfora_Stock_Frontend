@@ -44,6 +44,7 @@ export interface modelLigneDemandePrix{
   listUniter: Uniter[];
   selectedArticl: number;
   selectedUniter: number;
+  artii?:Article;
 
 }
 
@@ -63,6 +64,10 @@ export interface selectedCurrentFrsInt{
 export class DemandePrixComponent implements OnInit {
 
   searchControl: FormControl = new FormControl();
+  //--------Pour les articles-----------
+  searchControlArticle: FormControl = new FormControl();
+  articleFiltered;
+
   demandePrixFiltered;
 
   validateForm: FormGroup;
@@ -125,6 +130,8 @@ export class DemandePrixComponent implements OnInit {
         console.log('Echec status ==> ' + error.status);
       });
 
+    
+
     this.makeForm(null);
 
     this.searchControl.valueChanges
@@ -132,6 +139,12 @@ export class DemandePrixComponent implements OnInit {
       .subscribe(value => {
         this.filerData(value);
       });
+
+    this.searchControlArticle.valueChanges
+    .pipe(debounceTime(200))
+    .subscribe(value => {
+      this.filerDataArticle(value);
+    });
 
       this.getAllArticle();
       this.getAllUniter();
@@ -157,6 +170,7 @@ export class DemandePrixComponent implements OnInit {
     this.articleService.getAllArticle().subscribe(
       (data) => {
         this.articleList = data;
+        this.articleFiltered = data;
       },
       (error: HttpErrorResponse) => {
         console.log('Echec status ==> ' + error.status);
@@ -258,6 +272,30 @@ export class DemandePrixComponent implements OnInit {
     this.demandePrixFiltered = rows;
   }
 
+  filerDataArticle(val) {
+    if (val) {
+      val = val.toLowerCase();
+    } else {
+      return this.articleFiltered = [...this.articleList.sort((a, b) => a.codeArticle.localeCompare(b.codeArticle.valueOf()))];
+    }
+
+    const columns = Object.keys(this.articleList[0]);
+    if (!columns.length) {
+      return;
+    }
+
+    const rows = this.articleList.filter(function (d) {
+      for (let i = 0; i <= columns.length; i++) {
+        const column = columns[i];
+        // console.log(d[column]);
+        if (d[column] && d[column].toString().toLowerCase().indexOf(val) > -1) {
+          return true;
+        }
+      }
+    });
+    this.articleFiltered = rows;
+  }
+
   makeForm(demandePrix: DemandePrix): void {
     this.validateForm = this.fb.group({
       idDemandePrix: [demandePrix != null ? demandePrix.idDemandePrix: null],
@@ -281,6 +319,8 @@ export class DemandePrixComponent implements OnInit {
             listUniter: this.getUniterOfAArticle(ligDp.article.numArticle),
             selectedArticl: ligDp.article.numArticle,
             selectedUniter: ligDp.uniter ? ligDp.uniter.numUniter : null,
+            artii: ligDp.article,
+
           });
         }
       }
@@ -387,6 +427,7 @@ export class DemandePrixComponent implements OnInit {
         this.enregistrerDemandePrix(dp, lignesDp, frsConsulters);
       } else {
         this.modifieDemandePrix(formData.idDemandePrix,dp, lignesDp, frsConsulters);
+        console.log(lignesDp);
       }
     }
   }
@@ -509,6 +550,21 @@ export class DemandePrixComponent implements OnInit {
     });
   }
 
+  showModalSelectArticle(content){
+
+    this.modalService.open(content,
+      {ariaLabelledBy: 'modal-basic-title', centered: true, scrollable: true, size:'lg'})
+      .result.then((result) => {
+      //this.confirmResut = `Closed with: ${result}`;
+
+
+    }, (reason) => {
+      console.log(`Dismissed with: ${reason}`);
+      //this.selectedCurrentFrsInter = [];
+    });
+
+  }
+
   getNotUsedArticle(): Article[]{
     let tab: Article[] = [];
     this.articleList.forEach(element => {
@@ -621,6 +677,33 @@ export class DemandePrixComponent implements OnInit {
 
     return tot;
 
+  }
+
+  addLignByDialog(article:Article){
+
+    if(this.ligneShow.find((l) => l.selectedArticl == article.numArticle)){
+      const ind = this.ligneShow.findIndex((l) => l.selectedArticl == article.numArticle);
+      if(ind > -1){
+        this.ligneShow.splice(ind, 1);
+      }      
+    }
+    else{
+      this.pushALigneComAcha();
+      this.ligneShow[this.ligneShow.length-1].artii = article;
+      this.ligneShow[this.ligneShow.length-1].selectedArticl = article.numArticle;
+      this.getUniterOfSelectArt(this.ligneShow.length-1);
+    }
+    
+
+  }
+
+  isArticleAlreadySelected(article:Article):boolean{
+    for(const lig of this.ligneShow){
+      if(lig.selectedArticl == article.numArticle){
+        return true;
+      }
+    }
+    return false;
   }
 
   valider(demandePrix: DemandePrix, eta: boolean, content){
@@ -855,7 +938,7 @@ export class DemandePrixComponent implements OnInit {
         0: { textColor: 0, fontStyle: 'bold', halign: 'center' },
       },
       body: [
-        ['Bond de Commande faisant Référence à la Demande de Prix N° '+fpfa.demandePrix.idDemandePrix+' du '+moment(fpfa.demandePrix.dateDemandePrix).format('DD/MM/YYYY')]
+        ['ACH-ERQ-11-PAL13\n\nBond de Commande faisant Référence à la Demande de Prix N° '+fpfa.demandePrix.idDemandePrix+' du '+moment(fpfa.demandePrix.dateDemandePrix).format('DD/MM/YYYY')]
       ]
       ,
     });

@@ -20,7 +20,7 @@
               <div class="col-md-4">
                 <div class="form-group">
                   <input [formControl]="searchControl" class="form-control form-control-rounded" id="email"
-                         placeholder="Rechercher civilite" type="email">
+                         placeholder="Rechercher civilité" type="email" autocomplete="off">
                 </div>
               </div>
               <div class="col-md-12">
@@ -30,16 +30,16 @@
                     [footerHeight]="50"
                     [headerHeight]="50"
                     [rowHeight]="60"
+                    [messages]="{emptyMessage: 'Aucune donnée à afficher !!!'}"
                     [rows]="civiliteFiltered"
-                    [scrollbarV]="true"
                     class="material fullscreen"
-                    style="height: 500px; box-shadow: none">
-                    <ngx-datatable-column [width]="300" name="code">
+                    style="height: 500px; box-shadow: none; overflow-y:visible">
+                    <ngx-datatable-column name="codeCivilite">
                       <ng-template ngx-datatable-header-template>
                         Code
                       </ng-template>
                     </ngx-datatable-column>
-                    <ngx-datatable-column name="libelle">
+                    <ngx-datatable-column name="libCivilite">
                       <ng-template ngx-datatable-header-template>
                         Libellé
                       </ng-template>
@@ -50,11 +50,11 @@
                       </ng-template>
                       <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
                         <!--<strong>{{ row.code }}</strong>-->
-                        <button (click)="makeForm(row)" class="btn btn-primary m-1" type="button">
+                        <button (click)="makeForm(row)" class="btn btn-primary m-1" type="button" ngbTooltip="Modifier" placement="bottom">
                           <i class="i-Pen-5"> </i>
                         </button>
                         <button (click)="confirm(modalConfirm, row)" class="btn btn-outline-danger m-1"
-                                type="button">
+                                type="button" ngbTooltip="Supprimer" placement="bottom">
                           <i class="i-Folder-Trash"> </i>
                         </button>
                       </ng-template>
@@ -66,29 +66,29 @@
           </ng-template>
         </li>
         <li [ngbNavItem]="2">
-          <a ngbNavLink>Nouvelle civilité</a>
+          <a ngbNavLink><span *ngIf="! validateForm.value.numCivilite">Nouvelle</span><span *ngIf="validateForm.value.numCivilite" span>Modifier</span> civilité</a>
           <ng-template ngbNavContent>
 
             <div class="mb-2">
               <form (ngSubmit)="submit()" [formGroup]="validateForm">
                 <div class="row">
                   <div class="col-md-5 form-group mb-3">
-                    <label for="code">Code <span class="required-field">*</span> </label>
-                    <input class="form-control" formControlName="code" id="code"
-                           placeholder="Entrer le code" type="text">
-                    <div *ngIf="validateForm.controls.code.errors &&
-                   (validateForm.controls.code.dirty || validateForm.controls.code.touched)"
+                    <label for="codeCivilite">Code <span class="required-field">*</span> </label>
+                    <input class="form-control" formControlName="codeCivilite" id="codeCivilite"
+                           placeholder="Entrer le code" type="text" autocomplete="off">
+                    <div *ngIf="validateForm.controls.codeCivilite.errors &&
+                   (validateForm.controls.codeCivilite.dirty || validateForm.controls.codeCivilite.touched)"
                          class="error-field">
                       Ce champs est obligatoire !
                     </div>
                   </div>
 
                   <div class="col-md-7 form-group mb-3">
-                    <label for="libelle">Libellé <span class="required-field">*</span> </label>
-                    <input class="form-control" formControlName="libelle" id="libelle"
-                           placeholder="Entrer le libellé" type="text">
-                    <div *ngIf="validateForm.controls.libelle.errors &&
-                   (validateForm.controls.libelle.dirty || validateForm.controls.libelle.touched)"
+                    <label for="libCivilite">Libellé <span class="required-field">*</span> </label>
+                    <input class="form-control" formControlName="libCivilite" id="libCivilite"
+                           placeholder="Entrer le libellé" type="text" autocomplete="off">
+                    <div *ngIf="validateForm.controls.libCivilite.errors &&
+                   (validateForm.controls.libCivilite.dirty || validateForm.controls.libCivilite.touched)"
                          class="error-field">
                       Ce champs est obligatoire !
                     </div>
@@ -127,13 +127,13 @@
   <div class="modal-body">
     <p>
       <strong>Confirmez-vous la suppression de
-        <span class="text-primary"> {{ civilite?.libelle }}</span> ?</strong></p>
+        <span class="text-primary"> {{ civilite?.libCivilite }}</span> ?</strong></p>
   </div>
   <div class="modal-footer">
-    <button (click)="modal.dismiss('cancel')" class="btn btn-outline-secondary btn-rounded" type="button">Cancel
+    <button (click)="modal.dismiss('cancel')" class="btn btn-outline-secondary btn-rounded" type="button">Annuler
     </button>
     <button (click)="modal.close('Ok')" class="btn btn-danger btn-rounded" ngbAutofocus
-            type="button">Ok
+            type="button">Valider
     </button>
   </div>
 </ng-template>

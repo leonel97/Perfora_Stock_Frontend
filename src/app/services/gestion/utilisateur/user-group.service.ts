@@ -9,24 +9,25 @@ import {Observable} from "rxjs";
 })
 export class UserGroupService {
 
+  host: string = environment.backend2 +'/commune/gro';
   url: string = environment.backend + '/groupes';
 
   constructor(private http: HttpClient) { }
 
   createUserGroup(userGroup: UserGroup): Observable<Object> {
-    return this.http.post(`${this.url}`, userGroup);
+    return this.http.post(`${this.host}/list`, userGroup);
   }
 
   deleteUserGroup(id: number): Observable<Object> {
-    return this.http.delete(`${this.url}/${id}`);
+    return this.http.delete(`${this.host}/byid/${id}`);
   }
 
-  updateUserGroup(userGroup: UserGroup): Observable<Object> {
-    return this.http.put(`${this.url}`, userGroup);
+  updateUserGroup(id : String, userGroup: UserGroup): Observable<Object> {
+    return this.http.put(`${this.host}/byid/${id}`, userGroup);
   }
 
   list(): Observable<Object> {
-    return this.http.get(`${this.url}/?page=0&size=10000000`);
+    return this.http.get(`${this.host}/list`);
   }
 
 }

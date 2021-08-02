@@ -210,11 +210,14 @@
                                       >
                                       <th scope="row">{{i + 1}}</th>
                                       <td>
+                                        {{lig.artii?.codeArticle}} - {{lig.artii?.libArticle}}
+                                        <!--
                                         <ng-select [(ngModel)]="lig.selectedArticl" (ngModelChange)="getUniterOfSelectArt(i)"
                                         (click)="onArticleSelectClicked(i)" style="min-width: 180px;">
                                           <ng-option *ngFor="let art of lig.listArticle" [value]="art.numArticle"
                                            >{{art.codeArticle}} - {{art.libArticle}}</ng-option>
                                         </ng-select>
+                                        -->
                                       </td>
                                       <td>
                                           <input type="number" class="form-control" [(ngModel)] = "lig.lignesCommande.puLigneCommande"
@@ -246,7 +249,7 @@
                                   </tr>
                               </tbody>
                           </table>
-                          <button class="btn btn-primary float-right mb-4" (click)="pushALigneComAcha()">Ajouter une ligne</button>
+                          <button class="btn btn-primary float-right mb-4" (click)="showModalSelectArticle(modalSelectArticle)">Ajouter une ligne</button>
                       </div>
 
                       <div class="col-md-12">
@@ -324,4 +327,108 @@
   </div>
 </ng-template>
 
+
+<ng-template #modalSelectArticle let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-title">Articles</h4>
+    <button (click)="modal.dismiss('Cross click')" aria-describedby="modal-title" aria-label="Close button"
+            class="close"
+            type="button">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="row">
+      <div class="col-md-4">
+        <div class="form-group">
+          <input [formControl]="searchControlArticle" class="form-control form-control-rounded" id="email"
+                 placeholder="Rechercher Article" type="email">
+        </div>
+      </div>
+      
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="o-hidden">
+          <ngx-datatable
+            [columnMode]="'standard'"
+            [selectionType]="'checkbox'"
+            [footerHeight]="50"
+            [headerHeight]="50"
+            [rowHeight]="'auto'"
+            [messages]="{emptyMessage: 'Aucune ligne'}"
+            [rows]="articleFiltered"
+            [limit]="4"
+            [scrollbarH]="true"
+            class="material"
+            style="box-shadow: none; overflow-y:visible">
+            <ngx-datatable-column [width]="75">
+              <ng-template ngx-datatable-header-template>
+                Choisir ?
+              </ng-template>
+              <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                <!--<strong>{{ row.code }}</strong>-->
+                  
+                  <label class="checkbox checkbox-success">
+                    <input type="checkbox" [checked]="isArticleAlreadySelected(row)" (click)="addLignByDialog(row)">
+                    <span class="checkmark"></span>
+                  </label>
+                
+                
+              </ng-template>
+            </ngx-datatable-column>
+            <ngx-datatable-column name="codeArticle" [width]="100">
+              <ng-template ngx-datatable-header-template>
+                Code
+              </ng-template>
+            </ngx-datatable-column>
+
+            <ngx-datatable-column name="libArticle" [width]="250">
+              <ng-template ngx-datatable-header-template>
+                Libellé
+              </ng-template>
+            </ngx-datatable-column>
+
+            <ngx-datatable-column [width]="150">
+              <ng-template ngx-datatable-header-template>
+                Famille
+              </ng-template>
+              <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                <div *ngIf="row.famille">
+                  {{ row.famille.codeFamille }} - {{ row.famille.libFamille }}
+                </div>
+                <div *ngIf="!row.famille">
+                  Aucun
+                </div>
+
+              </ng-template>
+            </ngx-datatable-column>
+
+            <ngx-datatable-column [width]="150">
+              <ng-template ngx-datatable-header-template>
+                Type
+              </ng-template>
+              <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                <div *ngIf="row.typeArticle">
+                  {{ row.typeArticle.codeTypeArt }} - {{ row.typeArticle.libTypeArt }}
+                </div>
+                <div *ngIf="!row.typeArticle">
+                  Aucun
+                </div>
+
+              </ng-template>
+            </ngx-datatable-column>
+
+
+          </ngx-datatable>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button (click)="modal.dismiss('cancel')" class="btn btn-success btn-rounded" ngbAutofocus
+            type="button">Fermer
+    </button>
+  </div>
+</ng-template>
 

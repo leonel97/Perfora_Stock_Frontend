@@ -81,15 +81,15 @@ export class ProfessionComponent implements OnInit {
 
   makeForm(profession: Profession): void {
     this.validateForm = this.fb.group({
-      id: [profession != null ? profession.id: null],
-      libelle: [profession != null ? profession.libelle: null,
+      numProfession: [profession != null ? profession.numProfession: null],
+      libProfession: [profession != null ? profession.libProfession: null,
         [Validators.required]],
-      code: [profession != null ? profession.code: null,
+        codeProfession: [profession != null ? profession.codeProfession: null,
         [Validators.required]],
     });
 
     //cette condition permet de basculer vers la tab contenant le formulaire lors d'une modification
-    if (profession?.id !=null){
+    if (profession?.numProfession !=null){
       this.activeTabsNav = 2;
     }
   }
@@ -117,10 +117,10 @@ export class ProfessionComponent implements OnInit {
       }, 3000);
     } else  {
       const formData = this.validateForm.value;
-      if(formData.id == null) {
+      if(formData.numProfession == null) {
         this.enregistrerProfession(formData);
       } else {
-        this.modifierProfession(formData);
+        this.modifierProfession(formData.numProfession, formData);
       }
     }
   }
@@ -149,11 +149,11 @@ export class ProfessionComponent implements OnInit {
       });
   }
 
-  modifierProfession(profession: Profession): void {
-    this.professionService.updateProfession(profession).subscribe(
+  modifierProfession(id: string, profession: Profession): void {
+    this.professionService.updateProfession(id, profession).subscribe(
       (data: any) => {
         console.log(data);
-        const i = this.professionList.findIndex(p => p.id == data.id);
+        const i = this.professionList.findIndex(p => p.numProfession == data.numProfession);
         if(i > -1) {
           this.professionList[i]= data;
           this.professionFiltered = [...this.professionList];
@@ -161,7 +161,7 @@ export class ProfessionComponent implements OnInit {
         this.loading = true;
         setTimeout(() => {
           this.loading = false;
-          this.toastr.success('Enregistrement effectué avec succès.', 'Success!', {progressBar: true});
+          this.toastr.success('Modification effectué avec succès.', 'Success!', {progressBar: true});
         }, 3000);
         this.resetForm();
         this.activeTabsNav = 1;
@@ -181,10 +181,10 @@ export class ProfessionComponent implements OnInit {
     this.modalService.open(content, { ariaLabelledBy: 'modal-basic-title', centered: true })
       .result.then((result) => {
       //this.confirmResut = `Closed with: ${result}`;
-      this.professionService.deleteProfession(profession?.id).subscribe(
+      this.professionService.deleteProfession(profession?.numProfession).subscribe(
         (data: any) => {
           console.log(data);
-          const i = this.professionList.findIndex(l => l.id == profession.id);
+          const i = this.professionList.findIndex(l => l.numProfession == profession.numProfession);
           if(i > -1) {
             this.professionList.splice(i, 1);
             this.professionFiltered = [...this.professionList];

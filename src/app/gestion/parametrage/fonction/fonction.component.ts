@@ -1,7 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
-import {NatureJuridique} from "../../../models/gestion/parametrage/nature-juridique";
-import {NatureJuridiqueService} from "../../../services/gestion/parametrage/nature-juridique.service";
 import {Router} from "@angular/router";
 import {ToastrService} from "ngx-toastr";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
@@ -9,7 +7,6 @@ import {Fonction} from "../../../models/gestion/parametrage/fonction";
 import {FonctionService} from "../../../services/gestion/parametrage/fonction.service";
 import {HttpErrorResponse} from "@angular/common/http";
 import {debounceTime} from "rxjs/operators";
-import {LangueJuridique} from "../../../models/gestion/parametrage/langue-juridique";
 
 @Component({
   selector: 'app-fonction',
@@ -86,14 +83,14 @@ export class FonctionComponent implements OnInit {
 
   makeForm(fonction: Fonction): void {
     this.validateForm = this.fb.group({
-      id: [fonction != null ? fonction.id: null],
-      libelle: [fonction != null ? fonction.libelle: null,
+      numFonction: [fonction != null ? fonction.numFonction: null],
+      libFonction: [fonction != null ? fonction.libFonction: null,
         [Validators.required]],
-      code: [fonction != null ? fonction.code: null,
+        codeFonction: [fonction != null ? fonction.codeFonction: null,
         [Validators.required]],
     });
     //cette condition permet de basculer vers la tab contenant le formulaire lors d'une modification
-    if (fonction?.id !=null){
+    if (fonction?.numFonction !=null){
       this.activeTabsNav = 2;
     }
   }
@@ -121,10 +118,10 @@ export class FonctionComponent implements OnInit {
       }, 3000);
     } else  {
       const formData = this.validateForm.value;
-      if(formData.id == null) {
+      if(formData.numFonction == null) {
         this.enregistrerLangueJuridique(formData);
       } else {
-        this.modifierLangueJuridique(formData);
+        this.modifierLangueJuridique(formData.numFonction, formData);
       }
     }
   }
@@ -153,11 +150,11 @@ export class FonctionComponent implements OnInit {
       });
   }
 
-  modifierLangueJuridique(fonction: Fonction): void {
-    this.fonctionService.updateFonction(fonction).subscribe(
+  modifierLangueJuridique(id: string, fonction: Fonction): void {
+    this.fonctionService.updateFonction(id, fonction).subscribe(
       (data: any) => {
         console.log(data);
-        const i = this.fonctionList.findIndex(l => l.id == data.id);
+        const i = this.fonctionList.findIndex(l => l.numFonction == data.numFonction);
         if(i > -1) {
           this.fonctionList[i]= data;
           this.fonctionFiltered = [...this.fonctionList];
@@ -165,7 +162,7 @@ export class FonctionComponent implements OnInit {
         this.loading = true;
         setTimeout(() => {
           this.loading = false;
-          this.toastr.success('Enregistrement effectué avec succès.', 'Success!', {progressBar: true});
+          this.toastr.success('Modification effectué avec succès.', 'Success!', {progressBar: true});
         }, 3000);
         this.resetForm();
         this.activeTabsNav = 1;
@@ -185,10 +182,10 @@ export class FonctionComponent implements OnInit {
     this.modalService.open(content, { ariaLabelledBy: 'modal-basic-title', centered: true })
       .result.then((result) => {
       //this.confirmResut = `Closed with: ${result}`;
-      this.fonctionService.deleteFonction(fonction?.id).subscribe(
+      this.fonctionService.deleteFonction(fonction?.numFonction).subscribe(
         (data: any) => {
           console.log(data);
-          const i = this.fonctionList.findIndex(l => l.id == fonction.id);
+          const i = this.fonctionList.findIndex(l => l.numFonction == fonction.numFonction);
           if(i > -1) {
             this.fonctionList.splice(i, 1);
             this.fonctionFiltered = [...this.fonctionList];
