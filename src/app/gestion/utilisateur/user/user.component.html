@@ -21,7 +21,7 @@
               <div class="col-md-4">
                 <div class="form-group">
                   <input [formControl]="searchControl" class="form-control form-control-rounded" id="email"
-                         placeholder="Rechercher Utilisateur" type="text">
+                         placeholder="Rechercher Utilisateur" type="text" autocomplete="off">
                 </div>
               </div>
               <div class="col-md-12">
@@ -33,15 +33,14 @@
                     [rowHeight]="60"
                     [messages]="{emptyMessage: 'Aucune donnée à afficher !!!'}"
                     [rows]="userFiltered"
-                    [scrollbarV]="true"
                     class="material fullscreen"
                     style="height: 500px; box-shadow: none">
-                    <ngx-datatable-column [width]="300" name="lastName">
+                    <ngx-datatable-column name="nomUtilisateur">
                       <ng-template ngx-datatable-header-template>
                         Nom
                       </ng-template>
                     </ngx-datatable-column>
-                    <ngx-datatable-column name="firstName">
+                    <ngx-datatable-column name="prenomUtilisateur">
                       <ng-template ngx-datatable-header-template>
                         Prénoms
                       </ng-template>
@@ -68,7 +67,7 @@
           </ng-template>
         </li>
         <li [ngbNavItem]="2">
-          <a ngbNavLink>Nouvel utilisateur</a>
+          <a ngbNavLink><span *ngIf="! validateForm.value.idUtilisateur">Nouvel</span><span *ngIf="validateForm.value.idUtilisateur" span>Modifier</span> utilisateur</a>
           <ng-template ngbNavContent>
 
             <div class="mb-2">
@@ -76,99 +75,98 @@
                 <div class="row">
 
                   <div class="col-md-6 form-group mb-3">
-                    <label for="civiliteId">Civilité de l'utilisateur</label>
-                    <select class="form-control" id="civiliteId" formControlName="civiliteId">
-                      <option [ngValue]="null">-- Civilité -- </option>
-                      <!--option *ngFor="let civilite of civiliteList" [value]="civilite.id">{{civilite.libelle}}</option-->
-                      <option *ngFor="let civilite of civiliteList" [value]="civilite.id">{{civilite.codeCivilite}} - {{civilite.libCivilite}}</option>
-                    </select>
-                  </div>
 
-                  <div class="col-md-6 form-group mb-3">
-                    <label for="email">E-mail</label>
-                    <input type="text" class="form-control" id="email"
-                           placeholder="Entrer l'E-mail de l'utilisateur"  formControlName="email">
-                    <div class="error-field"
-                         *ngIf="validateForm.controls.email.errors &&
-                   (validateForm.controls.email.dirty || validateForm.controls.email.touched)">
-                      Ce champs est obligatoire !
-                    </div>
-                  </div>
-
-                </div>
-
-                <div class="row">
-
-                  <div class="col-md-6 form-group mb-3">
-                    <label for="lastName">Nom</label>
-                    <input type="text" class="form-control" id="lastName"
-                           placeholder="Entrer le nom de l'utilisateur"  formControlName="lastName">
-                    <div class="error-field"
-                         *ngIf="validateForm.controls.lastName.errors &&
-                   (validateForm.controls.lastName.dirty || validateForm.controls.lastName.touched)">
-                      Ce champs est obligatoire !
-                    </div>
-                  </div>
-
-                  <div class="col-md-6 form-group mb-3">
-                    <label for="firstName">Prénom</label>
-                    <input type="text" class="form-control" id="firstName"
-                           placeholder="Entrer le prénom de l'utilisateur"  formControlName="firstName">
-                    <div class="error-field"
-                         *ngIf="validateForm.controls.firstName.errors &&
-                   (validateForm.controls.firstName.dirty || validateForm.controls.firstName.touched)">
-                      Ce champs est obligatoire !
-                    </div>
-                  </div>
-
-                </div>
-
-                <div class="row">
-                  <div class="col-md-6 form-group mb-3">
-                    <label for="corpsId">Corps de l'utilisateur</label>
-                    <!--<select class="form-control" id="corpsId" formControlName="corpsId" [compareWith]="compareFn">
-                      <option [ngValue]="null">&#45;&#45; corps &#45;&#45; </option>
-                      <option *ngFor="let corps of corpsList" [value]="corps.id">{{corps.libelle}}</option>
-                    </select>-->
-                    <ng-select formControlName="corpsId" id="corpsId" placeholder="-- sélectionner --">
-                      <!--ng-option *ngFor="let corps of corpsList" [value]="corps.id">{{corps.libelle}}</ng-option-->
-                      <ng-option *ngFor="let profession of professionList" [value]="profession.numProfession">{{profession.codeProfession}} - {{profession.libProfession}}</ng-option>
-                    </ng-select>
-                  </div>
-
-                  <div class="col-md-6 form-group mb-3">
-                    <label for="fonctionId">Fonction de l'utilisateur</label>
+                    <label for="fonction">Civilité de l'utilisateur</label>
                     <!--<select class="form-control" id="fonctionId" formControlName="fonctionId">
                       <option [ngValue]="null">&#45;&#45; fonction &#45;&#45; </option>
                       <option *ngFor="let fonction of fonctionList" [value]="fonction.id">{{fonction.libelle}}</option>
                     </select>-->
-                    <ng-select formControlName="fonctionId" id="fonctionId" placeholder="-- sélectionner --">
+                    <ng-select bindLabel="libCivilite" formControlName="civilite" id="civilite" placeholder="-- sélectionner --">
+                      <!--option *ngFor="let civilite of civiliteList" [value]="civilite.id">{{civilite.libelle}}</option-->
+                      <ng-option *ngFor="let civilite of civiliteList" [value]="civilite">{{civilite.codeCivilite}} - {{civilite.libCivilite}}</ng-option>
+                    </ng-select>
+                  </div>
+
+                  <div class="col-md-6 form-group mb-3">
+                    <label for="login">E-mail</label>
+                    <input type="text" class="form-control" id="login"
+                           placeholder="Entrer l'E-mail de l'utilisateur"  formControlName="login">
+                  </div>
+
+                </div>
+
+                <div class="row">
+
+                  <div class="col-md-6 form-group mb-3">
+                    <label for="nomUtilisateur">Nom</label>
+                    <input type="text" class="form-control" id="nomUtilisateur"
+                           placeholder="Entrer le nom de l'utilisateur"  formControlName="nomUtilisateur">
+                    <div class="error-field"
+                         *ngIf="validateForm.controls.nomUtilisateur.errors &&
+                   (validateForm.controls.nomUtilisateur.dirty || validateForm.controls.nomUtilisateur.touched)">
+                      Ce champs est obligatoire !
+                    </div>
+                  </div>
+
+                  <div class="col-md-6 form-group mb-3">
+                    <label for="prenomUtilisateur">Prénom</label>
+                    <input type="text" class="form-control" id="prenomUtilisateur"
+                           placeholder="Entrer le prénom de l'utilisateur"  formControlName="prenomUtilisateur">
+                    <div class="error-field"
+                         *ngIf="validateForm.controls.prenomUtilisateur.errors &&
+                   (validateForm.controls.prenomUtilisateur.dirty || validateForm.controls.prenomUtilisateur.touched)">
+                      Ce champs est obligatoire !
+                    </div>
+                  </div>
+
+                </div>
+
+                <div class="row">
+                  <div class="col-md-6 form-group mb-3">
+                    <label for="profession">Corps de l'utilisateur</label>
+                    <!--<select class="form-control" id="corpsId" formControlName="corpsId" [compareWith]="compareFn">
+                      <option [ngValue]="null">&#45;&#45; corps &#45;&#45; </option>
+                      <option *ngFor="let corps of corpsList" [value]="corps.id">{{corps.libelle}}</option>
+                    </select>-->
+                    <ng-select bindLabel="libProfession" formControlName="profession" id="profession" placeholder="-- sélectionner --">
+                      <!--ng-option *ngFor="let corps of corpsList" [value]="corps.id">{{corps.libelle}}</ng-option-->
+                      <ng-option *ngFor="let profession of professionList" [value]="profession">{{profession.codeProfession}} - {{profession.libProfession}}</ng-option>
+                    </ng-select>
+                  </div>
+
+                  <div class="col-md-6 form-group mb-3">
+                    <label for="fonction">Fonction de l'utilisateur</label>
+                    <!--<select class="form-control" id="fonctionId" formControlName="fonctionId">
+                      <option [ngValue]="null">&#45;&#45; fonction &#45;&#45; </option>
+                      <option *ngFor="let fonction of fonctionList" [value]="fonction.id">{{fonction.libelle}}</option>
+                    </select>-->
+                    <ng-select bindLabel="libFonction"  formControlName="fonction" id="fonction" placeholder="-- sélectionner --">
                       <!--ng-option *ngFor="let fonction of fonctionList" [value]="fonction.id">{{fonction.libelle}}</ng-option-->
-                      <ng-option *ngFor="let fonction of fonctionList" [value]="fonction.id">{{fonction.codeFonction}} - {{fonction.libFonction}}</ng-option>
+                      <ng-option *ngFor="let fonction of fonctionList" [value]="fonction">{{fonction.codeFonction}} - {{fonction.libFonction}}</ng-option>
                     </ng-select>
                   </div>
                 </div>
 
                 <div class="row">
                   <div class="col-md-6 form-group mb-3">
-                    <label for="servicesId">Service de l'utilisateur</label>
+                    <label for="service">Service de l'utilisateur</label>
                     <!--<select class="form-control" id="servicesId" formControlName="servicesId" multiple="multiple">
                       <option [ngValue]="null">&#45;&#45; Service &#45;&#45; </option>
                       <option *ngFor="let serviceJuridique of serviceList" [value]="serviceJuridique.id">{{serviceJuridique.libelle}}</option>
                     </select>-->
-                    <ng-select formControlName="servicesId" id="servicesId" placeholder="-- sélectionner --" multiple="multiple">
+                    <ng-select bindLabel="libService" formControlName="service" id="service" placeholder="-- sélectionner --">
                       <!--ng-option *ngFor="let serviceJuridique of serviceList" [value]="serviceJuridique.id">{{serviceJuridique.libelle}}</ng-option-->
-                      <ng-option *ngFor="let service of centreConsommationList" [value]="service.numService">{{service.codeService}} - {{service.libService}}</ng-option>
+                      <ng-option *ngFor="let service of centreConsommationList" [value]="service">{{service.codeService}} - {{service.libService}}</ng-option>
                     </ng-select>
                   </div>
                   <div class="col-md-6 form-group mb-3">
-                    <label for="groupesId">Groupe utilisateur</label>
+                    <label for="groupUser">Groupe utilisateur</label>
                     <!--<select class="form-control" id="groupesId" formControlName="groupesId" multiple="multiple">
                       <option [ngValue]="null">&#45;&#45; groupe &#45;&#45; </option>
                       <option *ngFor="let userGroup of userGroupList" [value]="userGroup.id">{{userGroup.name}}</option>
                     </select>-->
-                    <ng-select formControlName="groupesId" id="groupesId" placeholder="-- sélectionner --" multiple="multiple">
-                      <ng-option *ngFor="let userGroup of userGroupList" [value]="userGroup.numGroupUser">{{userGroup.idGroupUser}} - {{userGroup.libGroupUser}}</ng-option>
+                    <ng-select bindLabel="libGroupUser" formControlName="groupUser" id="groupUser" placeholder="-- sélectionner --">
+                      <ng-option *ngFor="let userGroup of userGroupList" [value]="userGroup">{{userGroup.idGroupUser}} - {{userGroup.libGroupUser}}</ng-option>
                     </ng-select>
                   </div>
                 </div>
@@ -186,19 +184,19 @@
                     </div>
                   </div>
 
-                  <div class="col-md-4 form-group mb-3">
-                    <label for="password">Mot de passe</label>
-                    <input type="password" class="form-control" id="password"
-                           placeholder="Entrer le mot de passe de l'utilisateur"  formControlName="password">
-                    <div class="error-field"
-                         *ngIf="validateForm.controls.password.errors &&
-                   (validateForm.controls.password.dirty || validateForm.controls.password.touched)">
+                  <div class="col-md-4 form-group mb-3" *ngIf=" !validateForm.value.idUtilisateur">
+                    <label for="motDePass">Mot de passe</label>
+                    <input type="motDePass" class="form-control" id="motDePass"
+                           placeholder="Entrer le mot de passe de l'utilisateur"  formControlName="motDePass">
+                    <!--div class="error-field"
+                         *ngIf="validateForm.controls.motDePass.errors &&
+                   (validateForm.controls.motDePass.dirty || validateForm.controls.motDePass.touched)">
                       Ce champs est obligatoire !
-                    </div>
+                    </div-->
                   </div>
 
-                  <div class="col-md-4 form-group mb-3">
-                    <label for="password_confirmation">Mot de passe</label>
+                  <div class="col-md-4 form-group mb-3" *ngIf=" !validateForm.value.idUtilisateur">
+                    <label for="password_confirmation">Mot de passe (Confirmation)</label>
                     <input type="password" class="form-control" id="password_confirmation"
                            placeholder="Confirmer le mot de passe"  formControlName="password_confirmation">
                   </div>
@@ -237,14 +235,14 @@
   </div>
   <div class="modal-body">
     <p>
-      <strong>Confirmez-vous la suppression de
-        <span class="text-primary"> {{ user?.lastName }}</span> ?</strong></p>
+      <strong>Confirmez-vous le retrait de
+        <span class="text-primary"> {{ user?.nomUtilisateur }}  {{ user?.prenomUtilisateur }}</span> ?</strong></p>
   </div>
   <div class="modal-footer">
-    <button (click)="modal.dismiss('cancel')" class="btn btn-outline-secondary btn-rounded" type="button">Cancel
+    <button (click)="modal.dismiss('cancel')" class="btn btn-outline-secondary btn-rounded" type="button">Annuler
     </button>
     <button (click)="modal.close('Ok')" class="btn btn-danger btn-rounded" ngbAutofocus
-            type="button">Ok
+            type="button">Valider
     </button>
   </div>
 </ng-template>

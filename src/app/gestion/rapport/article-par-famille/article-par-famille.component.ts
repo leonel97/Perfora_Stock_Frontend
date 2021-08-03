@@ -290,7 +290,8 @@ export class ArticleParFamilleComponent implements OnInit {
 
 
         this.loading = false;
-        doc.output('dataurlnewwindow');
+       //doc.output('dataurlnewwindow');
+        doc.save('fichier');
 
 
 

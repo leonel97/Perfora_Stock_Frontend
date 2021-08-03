@@ -9,24 +9,27 @@ import {Observable} from "rxjs";
 })
 export class UserService {
 
-  url: string = environment.backend + '/users';
+  
+  host: string = environment.backend2 +'/commune/user';
+
+  //url: string = environment.backend + '/users';
 
   constructor(private http: HttpClient) { }
 
   createUser(user: User): Observable<Object> {
-    return this.http.post(`${this.url}`, user);
+    return this.http.post(`${this.host}/list`, user);
   }
 
   deleteUser(id: number): Observable<Object> {
-    return this.http.delete(`${this.url}/${id}`);
+    return this.http.delete(`${this.host}/byCodUser/${id}`);
   }
 
-  updateUser(user: User): Observable<Object> {
-    return this.http.put(`${this.url}`, user);
+  updateUser(idUser: string, user: User): Observable<Object> {
+    return this.http.put(`${this.host}/byCodUser/${idUser}`, user);
   }
 
   list(): Observable<Object> {
-    return this.http.get(`${this.url}/?page=0&size=10000000`);
+    return this.http.get(`${this.host}/list`);
   }
 
 }

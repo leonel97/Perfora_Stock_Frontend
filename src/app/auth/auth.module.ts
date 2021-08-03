@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { AuthComponent } from './auth.component';
 import { LoginComponent } from './login/login.component';
 import { ForgotPasswordComponent } from './forgot-password/forgot-password.component';
+import { ChangePasswordComponent } from './change-password/change-password.component';
 import {AuthRoutingModule} from "./auth.routing";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
@@ -11,7 +12,7 @@ import {RouterModule} from "@angular/router";
 
 
 @NgModule({
-  declarations: [AuthComponent, LoginComponent, ForgotPasswordComponent],
+  declarations: [AuthComponent, LoginComponent, ForgotPasswordComponent, ChangePasswordComponent],
   imports: [
     CommonModule,
     AuthRoutingModule,

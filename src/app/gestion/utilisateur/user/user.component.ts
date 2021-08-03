@@ -32,7 +32,7 @@ export class UserComponent implements OnInit {
   userList: User[] = [];
   userGroupList: UserGroup[] = [];
   corpsList: CorpsJuridique[] = [];
- professionList: Profession[] = [];
+  professionList: Profession[] = [];
   civiliteList: Civilite[] = [];
   fonctionList: Fonction[] = [];
   //serviceList: ServiceJuridique[] = [];
@@ -103,14 +103,6 @@ export class UserComponent implements OnInit {
         console.log('Echec chargement des types - atatus ==> ' + error.status);
       });
 
-    this.corpsJuridiqueService.list().subscribe(
-      (data: any) => {
-        this.corpsList = data;
-      },
-      (error: HttpErrorResponse) => {
-        console.log('Echec chargement des corps juridiques -  status ==> ' + error.status);
-      });
-
     this.civiliteService.list().subscribe(
       (data: any) => {
         this.civiliteList = data;
@@ -170,30 +162,30 @@ export class UserComponent implements OnInit {
 
   makeForm(user: User): void {
     this.validateForm = this.fb.group({
-      id: [user != null ? user.id: null],
-      firstName: [user != null ? user.firstName: null,
+      idUtilisateur: [user != null ? user.idUtilisateur: null],
+      nomUtilisateur: [user != null ? user.nomUtilisateur: null,
         [Validators.required]],
-      lastName: [user != null ? user.lastName: null,
+        prenomUtilisateur: [user != null ? user.prenomUtilisateur: null,
         [Validators.required]],
-      civiliteId: [user != null ? user.civiliteId: null,
+        civilite: [user != null ? user.civilite: null,
         [Validators.required]],
-      email: [user != null ? user.email: null,
-        [Validators.required]],
-      corpsId: [user != null ? user.corpsId: null],
-      fonctionId: [user != null ? user.fonctionId: null],
-      servicesId: [user != null ? user.servicesId: null],
-      groupesId: [user != null ? user.groupesId: null],
-      authorities: [user != null ? user.authorities: null],
+      profession: [user != null ? user.profession: null],
+      fonction: [user != null ? user.fonction: null],
+      service: [user != null ? user.service: null],
+      groupUser: [user != null ? user.groupUser: null],
+      activeUtilisateur: [user != null ? user.activeUtilisateur: false],
+      askMdp1erLance: [user != null ? user.askMdp1erLance: true],
+      //authorities: [user != null ? user.authorities: null],
       login: [user != null ? user.login: null,
         [Validators.required]],
-      password: [user != null ? user.password: null,
+        motDePass: [user != null ? user.motDePass: null,
         [Validators.required]],
-      password_confirmation: [user != null ? user.password: null,
+      password_confirmation: [user != null ? user.motDePass: null,
         [Validators.required]],
     });
 
     //cette condition permet de basculer vers la tab contenant le formulaire lors d'une modification
-    if (user?.id !=null){
+    if (user?.idUtilisateur !=null){
       this.activeTabsNav = 2;
     }
 
@@ -229,7 +221,7 @@ export class UserComponent implements OnInit {
         this.validateForm.get('userGroupCode').setValue(userGroup.code);
       }*/
       const authorities = ['ROLE_USER'];
-      this.validateForm.get('authorities').setValue(authorities);
+      //this.validateForm.get('authorities').setValue(authorities);
 
       const formData = this.validateForm.value;
       console.log('Objet avant enregistrement');
@@ -237,7 +229,7 @@ export class UserComponent implements OnInit {
       if(formData.id == null) {
         this.enregistrerUser(formData);
       } else {
-        this.modifierUser(formData);
+        this.modifierUser(formData.idUtilisateur, formData);
       }
     }
   }
@@ -267,11 +259,11 @@ export class UserComponent implements OnInit {
       });
   }
 
-  modifierUser(user: User): void {
-    this.userService.updateUser(user).subscribe(
+  modifierUser(idUser: string, user: User): void {
+    this.userService.updateUser(idUser,user).subscribe(
       (data: any) => {
         console.log(data);
-        const i = this.userList.findIndex(l => l.id == data.id);
+        const i = this.userList.findIndex(l => l.idUtilisateur == data.idUtilisateur);
         if(i > -1) {
           this.userList[i]= data;
           this.userFiltered = [...this.userList];
@@ -279,7 +271,7 @@ export class UserComponent implements OnInit {
         this.loading = true;
         setTimeout(() => {
           this.loading = false;
-          this.toastr.success('Enregistrement effectué avec succès.', 'Success!', {progressBar: true});
+          this.toastr.success('Modification effectué avec succès.', 'Success!', {progressBar: true});
         }, 3000);
         this.resetForm();
       },
@@ -301,7 +293,7 @@ export class UserComponent implements OnInit {
       this.userService.deleteUser(user?.id).subscribe(
         (data: any) => {
           console.log(data);
-          const i = this.userList.findIndex(l => l.id == user.id);
+          const i = this.userList.findIndex(l => l.idUtilisateur == user.idUtilisateur);
           if(i > -1) {
             this.userList.splice(i, 1);
             this.userFiltered = [...this.userList];

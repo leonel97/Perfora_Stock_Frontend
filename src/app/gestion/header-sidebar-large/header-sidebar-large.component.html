@@ -181,14 +181,14 @@
     </div>
 
     <div ngbDropdown [placement]="'bottom-right'" class="user col align-self-end">
-        <img src="./assets/images/faces/1.jpg" id="userDropdown" ngbDropdownToggle alt="">
+        <img src="./assets/images/faces/iconHommeNoir.jpg" id="userDropdown" ngbDropdownToggle alt="">
 
         <div ngbDropdownMenu aria-labelledby="userDropdown" class="header-account-dropdown">
             <!--div class="dropdown-header">
                 <i class="i-Lock-User mr-1"></i> Timothy Carlson
             </div-->
             <button class="dropdown-item">Information du compte</button>
-            <button class="dropdown-item" >Changer mon mot de passe</button>
+            <button class="dropdown-item" routerLink="/change-password" >Changer mon mot de passe</button>
             <button class="dropdown-item" (click)="signout()">Déconnexion</button>
         </div>
     </div>

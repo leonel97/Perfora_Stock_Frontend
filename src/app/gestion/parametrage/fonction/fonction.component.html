@@ -74,7 +74,7 @@
                         <form [formGroup]="validateForm" (ngSubmit)="submit()">
                             <div class="row">
                               <div class="col-md-12 form-group mb-3">
-                                <label for="codeFonction">Code</label>
+                                <label for="codeFonction">Code <span class="required-field">*</span></label>
                                 <input type="text" class="form-control" id="codeFonction"
                                        placeholder="Entrer le code" formControlName="codeFonction" autocomplete="off">
                                 <div class="error-field"
@@ -85,7 +85,7 @@
                               </div>
                 
                               <div class="col-md-12 form-group mb-3">
-                                <label for="libFonction">Libellé</label>
+                                <label for="libFonction">Libellé <span class="required-field">*</span></label>
                                 <input type="text" class="form-control" id="libFonction"
                                        placeholder="Entrer le libellé"  formControlName="libFonction" autocomplete="off">
                                 <div class="error-field"
