@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
+import { element } from 'protractor';
 import { Article } from 'src/app/models/gestion/definition/article.model';
 import { CentreConsommation } from 'src/app/models/gestion/definition/centreConsommation';
 import { Direction } from 'src/app/models/gestion/definition/direction';
@@ -33,12 +34,14 @@ import * as xlsx from 'xlsx';
 export class ImportationComponent implements OnInit {
 
   loading: boolean = false;
+  loading2: boolean = false;
   file: File;
   arrayBuffer:any;
   feuille:any;
   eventt:any;
   trigerred:boolean = false;
   repport1FormsGroup: FormGroup;
+  elemExport:number = 0;
 
   constructor(private formBulder:FormBuilder, private toastr: ToastrService,
     private modalService: NgbModal, private directionService: DirectionService,
@@ -108,7 +111,14 @@ export class ImportationComponent implements OnInit {
   }
 
   onRep1GenerateClicked(){
+    
+    if(!this.file) {
+      
+      this.toastr.error('Fichier non Charger ', 'Importation', { timeOut: 5000 });
+      return null;
+    }
 
+    this.loading = true;
     if(this.repport1FormsGroup.value['rep1Element'] == 0){
 
       let inde:number = 0;
@@ -152,6 +162,7 @@ export class ImportationComponent implements OnInit {
         else {
           console.log('Erreur à la ligne '+inde+'Code ou libellé de Unité invalide');
           this.toastr.error('Erreur à la ligne '+(inde)+' Code ou libellé de Direction invalide', 'Importation de Direction');
+          this.loading = false;
           return;
         }
 
@@ -163,11 +174,12 @@ export class ImportationComponent implements OnInit {
 
           console.log('Fin de lImportation, Importation réuissir');
           this.toastr.success('Importation éffectuée avec Succès', 'Importation de Direction'); 
-
+          this.loading = false;
         },
         (erreur) => {
           console.log('Erreur lors de lAjout des ligne ', erreur);
           this.toastr.error('Erreur lors de l\'Ajout des Directions\n Code : '+erreur.status+' | '+erreur.statusText, 'Importation de Direction');
+          this.loading = false;
           return 1;
 
         }
@@ -218,6 +230,7 @@ export class ImportationComponent implements OnInit {
         else {
           console.log('Erreur à la ligne '+inde+'Code ou libellé de Unité invalide');
           this.toastr.error('Erreur à la ligne '+(inde)+' Code ou libellé de Type de Centre invalide', 'Importation de Type de Centre');
+          this.loading = false;
           return;
         }
 
@@ -229,11 +242,13 @@ export class ImportationComponent implements OnInit {
 
           console.log('Fin de lImportation, Importation réuissir');
           this.toastr.success('Importation éffectuée avec Succès', 'Importation de Type de Centre');
+          this.loading = false;
 
         },
         (erreur) => {
           console.log('Erreur lors de lAjout des ligne ', erreur);
-          this.toastr.error('Erreur lors de l\'Ajout des Types de Centre de Co/989nsommation\n Code : '+erreur.status+' | '+erreur.statusText, 'Importation de Type de Centre');
+          this.toastr.error('Erreur lors de l\'Ajout des Types de Centre de Consommation\n Code : '+erreur.status+' | '+erreur.statusText, 'Importation de Type de Centre');
+          this.loading = false;
           return 1;
         }
       );
@@ -273,6 +288,7 @@ export class ImportationComponent implements OnInit {
                         if(!finded1){
                           console.log('Le code de Type de Centre à la ligne '+inde+' nExiste pas. Importation interrompu.');
                           this.toastr.error('Le code de Type Centre à la ligne '+inde+' n\'Existe pas. Importation interrompu.', 'Importation de Centre de Consommation');
+                          this.loading = false;
                           return;
                         }
 
@@ -349,6 +365,7 @@ export class ImportationComponent implements OnInit {
                     else {
                       console.log('Erreur à la ligne '+inde+'invalidité dUne information');
                       this.toastr.error('Erreur à la ligne '+inde+'. Invalidité d\'Une information', 'Importation de Centre de Consommation');
+                      this.loading = false;
                       return;
                     }
 
@@ -361,12 +378,13 @@ export class ImportationComponent implements OnInit {
 
                     console.log('Fin de lImportation, Importation réuissir');
                     this.toastr.success('Importation éffectuée avec Succès', 'Importation de Centre de Consommation');
-                  
+                    this.loading = false;
 
                   },
                   (erreur) => {
                     console.log('Erreur lors de lAjout des ligne ', erreur);
                     this.toastr.error('Erreur lors de l\'Ajout des Centres de Consommation\n Code : '+erreur.status+' | '+erreur.statusText, 'Importation de Centre de Consommation');
+                    this.loading = false;
                     return 1;
                   }
                 );
@@ -376,7 +394,7 @@ export class ImportationComponent implements OnInit {
                 (error: HttpErrorResponse) => {
                   console.log('Echec atatus ==> ' + error.status);
                   this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000 });
-
+                  this.loading = false;
                 }
               );
 
@@ -384,7 +402,7 @@ export class ImportationComponent implements OnInit {
             (error: HttpErrorResponse) => {
               console.log('Echec atatus ==> ' + error.status);
               this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000 });
-
+              this.loading = false;
             }
           );
 
@@ -392,7 +410,7 @@ export class ImportationComponent implements OnInit {
         (error: HttpErrorResponse) => {
           console.log('Echec atatus ==> ' + error.status);
           this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000 });
-
+          this.loading = false;
         }
       );
     }
@@ -435,6 +453,7 @@ export class ImportationComponent implements OnInit {
         else {
           console.log('Erreur à la ligne '+inde+'Code ou libellé de Unité invalide');
           this.toastr.error('Erreur à la ligne '+(inde)+' Code ou libellé de Magasin invalide', 'Importation de Magasin');
+          this.loading = false;
           return;
         }
 
@@ -446,12 +465,13 @@ export class ImportationComponent implements OnInit {
 
           console.log('Fin de lImportation, Importation réuissir');
           this.toastr.success('Importation éffectuée avec Succès', 'Importation de Magasin');
-          
+          this.loading = false;
 
         },
         (erreur) => {
           console.log('Erreur lors de lAjout des ligne ', erreur);
           this.toastr.error('Erreur lors de l\'Ajout des Magasins\n Code : '+erreur.status+' | '+erreur.statusText, 'Importation de Magasin');
+          this.loading = false;
           return 1;
         }
       );
@@ -462,85 +482,113 @@ export class ImportationComponent implements OnInit {
       this.familleService.getAllFamille().subscribe(
         (data1) => {
 
-          let inde:number = 0;
-          let listToSave: Famille[] = [];
-          for(const element of this.feuille) {
-            inde++;
-            if(element[0] != undefined && element[1] != undefined){
-    
-              let superFa: Famille = null;
-              if(element[2]){
-                for(const element1 of data1) {
-                  if(element1.codeFamille == element[2]){
-                    superFa = element1;
-    
-                    break;
+          this.magasinService.getAllMagasin().subscribe(
+            (data2) => {
+
+              let inde:number = 0;
+              let listToSave: Famille[] = [];
+              for(const element of this.feuille) {
+                inde++;
+                if(element[0] != undefined && element[1] != undefined){
+        
+                  let superFa: Famille = null;
+                  if(element[2]){
+                    for(const element1 of data1) {
+                      if(element1.codeFamille == element[2]){
+                        superFa = element1;
+        
+                        break;
+                      }
+                    }
                   }
+
+                  let magas: Magasin = null;
+                  if(element[3]){
+                    for(const element1 of data2) {
+                      if(element1.codeMagasin == element[3]){
+                        magas = element1;
+        
+                        break;
+                      }
+                    }
+                  }
+        
+                  let famille = new Famille(element[0], element[1], superFa, magas);
+        
+                  listToSave.push(famille);
+        
+                  /*
+                  (function(i, familleService, toastr, nbrLigne){
+                    familleService.addAFamille(famille).subscribe(
+                      (data) => {
+                        if(data == null){
+                          console.log('le code de la ligne '+i+' existe déjà');
+                          //this.toastr.error('le code de la ligne '+inde+' existe déjà', 'Importation d\'unité');
+                        }
+        
+                        if(i == nbrLigne){
+                          console.log('Fin de lImportation, Importation réuissir');
+                          toastr.success('Importation éffectuée avec Succès', 'Importation de Famille d\'Article');
+                        }
+        
+                      },
+                      (erreur) => {
+                        console.log('Erreur lors de lAjout de la ligne '+i, erreur);
+                        toastr.error('Erreur lors de l\'Ajout de la ligne '+(i)+'\n Code : '+erreur.status+' | '+erreur.statusText, 'Importation de Famille d\'Article');
+                        return 1;
+                      }
+                    );
+        
+                  })(inde, this.familleService, this.toastr, this.feuille.length);
+                  */
+        
+        
+        
+        
                 }
+                else {
+                  console.log('Erreur à la ligne '+inde+'Code ou libellé de Unité invalide');
+                  this.toastr.error('Erreur à la ligne '+(inde)+' Code ou libellé de Famille invalide', 'Importation de Famille d\'Article');
+                  this.loading = false;
+                  return;
+                }
+        
+        
               }
-    
-              let famille = new Famille(element[0], element[1], superFa, null);
-    
-              listToSave.push(famille);
-    
-              /*
-              (function(i, familleService, toastr, nbrLigne){
-                familleService.addAFamille(famille).subscribe(
-                  (data) => {
-                    if(data == null){
-                      console.log('le code de la ligne '+i+' existe déjà');
-                      //this.toastr.error('le code de la ligne '+inde+' existe déjà', 'Importation d\'unité');
-                    }
-    
-                    if(i == nbrLigne){
-                      console.log('Fin de lImportation, Importation réuissir');
-                      toastr.success('Importation éffectuée avec Succès', 'Importation de Famille d\'Article');
-                    }
-    
-                  },
-                  (erreur) => {
-                    console.log('Erreur lors de lAjout de la ligne '+i, erreur);
-                    toastr.error('Erreur lors de l\'Ajout de la ligne '+(i)+'\n Code : '+erreur.status+' | '+erreur.statusText, 'Importation de Famille d\'Article');
-                    return 1;
-                  }
-                );
-    
-              })(inde, this.familleService, this.toastr, this.feuille.length);
-              */
-    
-    
-    
-    
-            }
-            else {
-              console.log('Erreur à la ligne '+inde+'Code ou libellé de Unité invalide');
-              this.toastr.error('Erreur à la ligne '+(inde)+' Code ou libellé de Famille invalide', 'Importation de Famille d\'Article');
-              return;
-            }
-    
-    
-          }
-    
-          this.familleService.addAListFamille(listToSave).subscribe(
-            (data) => {
-             
-              console.log('Fin de lImportation, Importation réuissir');
-              this.toastr.success('Importation éffectuée avec Succès', 'Importation de Famille d\'Article');
-            
+        
+              this.familleService.addAListFamille(listToSave).subscribe(
+                (data) => {
+                
+                  console.log('Fin de lImportation, Importation réuissir');
+                  this.toastr.success('Importation éffectuée avec Succès', 'Importation de Famille d\'Article');
+                  this.loading = false;
+
+                },
+                (erreur) => {
+                  console.log('Erreur lors de lAjout des lignes ', erreur);
+                  this.toastr.error('Erreur lors de l\'Ajout des Articles \n Code : '+erreur.status+' | '+erreur.statusText, 'Importation de Famille d\'Article');
+                  this.loading = false;
+                  return 1;
+                }
+              );
+        
+
+
             },
-            (erreur) => {
-              console.log('Erreur lors de lAjout des lignes ', erreur);
-              this.toastr.error('Erreur lors de l\'Ajout des Articles \n Code : '+erreur.status+' | '+erreur.statusText, 'Importation de Famille d\'Article');
-              return 1;
+            (error: HttpErrorResponse) => {
+              console.log('Echec atatus ==> ' + error.status);
+              this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000 });
+              this.loading = false;
             }
           );
-    
+
+          
 
         },
         (error: HttpErrorResponse) => {
           console.log('Echec atatus ==> ' + error.status);
           this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000 });
-
+          this.loading = false;
         }
       );
 
@@ -585,6 +633,7 @@ export class ImportationComponent implements OnInit {
         else {
           console.log('Erreur à la ligne '+inde+'Code ou libellé de Unité invalide');
           this.toastr.error('Erreur à la ligne '+(inde)+' Code ou libellé de Type d\'Article invalide', 'Importation de Type d\'Article');
+          this.loading = false;
           return;
         }
 
@@ -596,12 +645,13 @@ export class ImportationComponent implements OnInit {
 
           console.log('Fin de lImportation, Importation réuissir');
           this.toastr.success('Importation éffectuée avec Succès', 'Importation de Type d\'Article');
-          
+          this.loading = false;
 
         },
         (erreur) => {
           console.log('Erreur lors de lAjout des ligne ', erreur);
           this.toastr.error('Erreur lors de l\'Ajout des Types d\'Article\n Code : '+erreur.status+' | '+erreur.statusText, 'Importation de Type d\'Article');
+          this.loading = false;
           return 1;
         }
       );
@@ -636,6 +686,7 @@ export class ImportationComponent implements OnInit {
                       if(!finded1){
                         console.log('Le code de Famille à la ligne '+inde+' nExiste pas. Importation interrompu.');
                         this.toastr.error('Le code de Famille à la ligne '+inde+' n\'Existe pas. Importation interrompu.', 'Importation d\'Article');
+                        this.loading = false;
                         return;
                       }
 
@@ -682,6 +733,7 @@ export class ImportationComponent implements OnInit {
                   else {
                     console.log('Erreur à la ligne '+inde+'invalidité dUne information');
                     this.toastr.error('Erreur à la ligne '+inde+'. Invalidité d\'Une information', 'Importation d\'Article');
+                    this.loading = false;
                     return;
                   }
 
@@ -693,12 +745,13 @@ export class ImportationComponent implements OnInit {
 
                   console.log('Fin de lImportation, Importation réuissir');
                   this.toastr.success('Importation éffectuée avec Succès', 'Importation d\'Article');
-
+                  this.loading = false;
 
                 },
                 (erreur) => {
                   console.log('Erreur lors de lAjout des ligne ', erreur);
                   this.toastr.error('Erreur lors de l\'Ajout des Articles\n Code : '+erreur.status+' | '+erreur.statusText, 'Importation d\'Article');
+                  this.loading = false;
                   return 1;
                 }
               );
@@ -708,12 +761,14 @@ export class ImportationComponent implements OnInit {
             (erreur) => {
               console.log('Erreur lors de la récupération des Unités', erreur);
               this.toastr.error('Erreur lors de la récupération des Unités'+'\n Code : '+erreur.status+' | '+erreur.statusText, 'Importation d\'Article');
+              this.loading = false;
             }
           );
         },
         (erreur) => {
           console.log('Erreur lors de la récupération des familles', erreur);
           this.toastr.error('Erreur lors de la récupération des familles'+'\n Code : '+erreur.status+' | '+erreur.statusText, 'Importation d\'Article');
+          this.loading = false;
         }
       );
 
@@ -762,6 +817,7 @@ export class ImportationComponent implements OnInit {
         else {
           console.log('Erreur à la ligne '+inde+'Code ou libellé de Unité invalide');
           this.toastr.error('Erreur à la ligne '+(inde)+' Code ou libellé de Type d\'Article invalide', 'Importation de Type de Fournisseur');
+          this.loading = false;
           return;
         }
 
@@ -773,11 +829,13 @@ export class ImportationComponent implements OnInit {
 
           console.log('Fin de lImportation, Importation réuissir');
           this.toastr.success('Importation éffectuée avec Succès', 'Importation de Type de Fournisseur');
-        
+          this.loading = false;
+
         },
         (erreur) => {
           console.log('Erreur lors de lAjout des lignes ', erreur);
           this.toastr.error('Erreur lors de l\'Ajout des Types de Fournisseur\n Code : '+erreur.status+' | '+erreur.statusText, 'Importation de Type de Fournisseur');
+          this.loading = false;
           return 1;
         }
       );
@@ -809,6 +867,7 @@ export class ImportationComponent implements OnInit {
                   if(!finded2){
                     console.log('Le code de Catégorie de Fournisseur à la ligne '+inde+' nExiste pas. Importation interrompu.');
                     this.toastr.error('Le code de Catégorie de Fournisseur à la ligne '+inde+' n\'Existe pas. Importation interrompu.', 'Importation de Fournisseur');
+                    this.loading = false;
                     return;
                   }
 
@@ -853,6 +912,7 @@ export class ImportationComponent implements OnInit {
               else {
                 console.log('Erreur à la ligne '+inde+'invalidité dUne information');
                 this.toastr.error('Erreur à la ligne '+inde+'. Invalidité d\'Une information', 'Importation de Fournisseur');
+                this.loading = false;
                 return;
               }
 
@@ -864,12 +924,13 @@ export class ImportationComponent implements OnInit {
 
               console.log('Fin de lImportation, Importation réuissir');
               this.toastr.success('Importation éffectuée avec Succès', 'Importation de Fournisseur');
-            
+              this.loading = false;
 
             },
             (erreur) => {
               console.log('Erreur lors de lAjout des ligne ', erreur);
               this.toastr.error('Erreur lors de l\'Ajout des Fournisseurs \n Code : '+erreur.status+' | '+erreur.statusText, 'Importation de Fournisseur');
+              this.loading = false;
               return 1;
             }
           );
@@ -879,6 +940,7 @@ export class ImportationComponent implements OnInit {
         (erreur) => {
           console.log('Erreur lors de la récupération des Unités', erreur);
           this.toastr.error('Erreur lors de la récupération des Catégories de Fournisseur'+'\n Code : '+erreur.status+' | '+erreur.statusText, 'Importation de Fournisseur');
+          this.loading = false;
         }
       );
 
@@ -900,6 +962,7 @@ export class ImportationComponent implements OnInit {
         else {
           console.log('Erreur à la ligne '+inde+'Code ou libellé de Unité invalide');
           this.toastr.error('Erreur à la ligne '+(inde)+' Code ou libellé de Magasin invalide', 'Importation de Magasin');
+          this.loading = false;
           return;
         }
 
@@ -910,11 +973,12 @@ export class ImportationComponent implements OnInit {
 
           console.log('Fin de lImportation, Importation réuissir');
           this.toastr.success('Importation éffectuée avec Succès', 'Importation de Magasin');
-          
+          this.loading = false;
         },
         (erreur) => {
           console.log('Erreur lors de lAjout des ligne ', erreur);
           this.toastr.error('Erreur lors de l\'Ajout des Uniters\n Code : '+erreur.status+' | '+erreur.statusText, 'Importation de Magasin');
+          this.loading = false;
           return 1;
         }
       );
@@ -930,6 +994,109 @@ export class ImportationComponent implements OnInit {
       }, (reason) => {
       console.log(`Dismissed with: ${reason}`);
     });
+  }
+
+  exporterToExcel(){
+    this.loading2 = true;
+    if(this.elemExport == 4){
+      let mag1: String[] = '210 211 212 213 214 215 216 217 218 219 220 222 223 225 226 227 228 231 233 235 240 241 242 243 244 245 246 247 248 249 250 251 252 253 254 255 256 257 258 259 260 261 262 263 264 265 266 271 272 273 274 275 276 277 278 279 280 281 282 283 284 285 286 287 288 289 290 292 293 294 295 296 297 299 310 311 312 313 314 315 316 317 318 319 320 321 362 363 364 366 390 391 392 393 394 395 396 421 531 532 551 552 553 555 557 565 566 568 608 611 612 613 614 618 631'.split(' ');
+      let mag2: String[] = '411 413 415 416 417 420 422 424 425 428 430 431 432 433 434 437 438 439 540 541 542 543 544 545 546 547 548 549 550 554 556 558 559 560 561 562 563 564 566 567 811 812 821 822 823 824 825 826 827 828 831 832 833 834 835 836 837 838 842 844 845 846 847 852 854 856 859 861 862 864 867 872 875 877 881 882 884 885 886 888 891 892 893 894 895 911 912 913 914 915 916 917 918 921 922 933 935 939 951 961 416'.split(' ');
+      let mag3: String[] = '521 522'.split(' ');
+
+      //Commencement
+      this.familleService.getAllFamille().subscribe(
+        (data) => {
+
+          let codeMag:String = '';
+
+
+          let lignes = [];
+          data.forEach(element => {
+            if(mag1.find((l) => l == element.codeFamille)){
+              codeMag = '001';
+            } 
+            else if(mag2.find((l) => l == element.codeFamille)){
+              codeMag = '002';
+            }
+            else if(mag3.find((l) => l == element.codeFamille)){
+              codeMag = '003';
+            }
+
+            let lig = [];
+            lig.push(element.codeFamille);
+            lig.push(element.libFamille);
+            lig.push(element.superFamille ? element.superFamille.codeFamille:'');
+            lig.push(codeMag);
+
+            lignes.push(lig);
+          });
+
+          this.genererExcel('exportationFamille.xlsx', "Familles", lignes);
+          this.loading2 = false;
+
+        },
+        (error: HttpErrorResponse) => {
+          console.log('Echec status ==> ' + error.status);
+        }
+      );
+
+
+    }
+    
+
+    
+
+  }
+
+  s2ab(s) { 
+    var buf = new ArrayBuffer(s.length); //convert s to arrayBuffer
+    var view = new Uint8Array(buf);  //create uint8array as viewer
+    for (var i=0; i<s.length; i++) view[i] = s.charCodeAt(i) & 0xFF; //convert to octet
+    return buf;    
+  }
+
+  download(data, filename, type) {
+    var file = new Blob([data], {type: type});
+    if (window.navigator.msSaveOrOpenBlob) // IE10+
+        window.navigator.msSaveOrOpenBlob(file, filename);
+    else { // Others
+        var a = document.createElement("a"),
+                url = URL.createObjectURL(file);
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(function() {
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);  
+        }, 0); 
+    }
+  }
+
+  genererExcel(nomClasseur, nomFeuille, donnees: any[][]){
+    var wb = xlsx.utils.book_new();
+
+    wb.Props = {
+      Title: "Exportation Perfora Stock",
+      Subject: "Exportation",
+      Author: "Perfora Stock PAL",
+      CreatedDate: new Date(Date.now())
+    };
+
+    wb.SheetNames.push(nomFeuille);
+
+    var ws_data = donnees;
+
+    var ws = xlsx.utils.aoa_to_sheet(ws_data);
+
+    wb.Sheets[nomFeuille] = ws;
+
+    var wbout = xlsx.write(wb, {bookType:'xlsx',  type: 'binary'});
+
+    //this.download(new Blob([this.s2ab(wbout)],{type:"application/octet-stream"}), 'test.xlsx');
+    this.download(this.s2ab(wbout),nomClasseur, "application/octet-stream");
+
+
   }
 
 }

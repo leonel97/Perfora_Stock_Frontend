@@ -40,8 +40,11 @@
 
 
                 <div class="col-md-12">
-
+                  <!--
                   <button class="btn m-1 ml-2 btn-save" type="submit" [disabled]="!this.file"> Importer</button>
+                  -->
+                  
+                  <btn-loading btnClass="btn-primary"  ngbAutofocus [loading]="loading">Importer</btn-loading>
                   <button class="btn m-1 ml-2 btn-cancel" type="button" [disabled]="!this.file"
                   (click)="showFileContent(modalLong)"> Afficher</button>
                 </div>
@@ -52,24 +55,33 @@
       </ngb-panel>
       <ngb-panel>
         <ng-template ngbPanelTitle>
-          <span>&#9733; <b>Fancy</b> title &#9733;</span>
+          <span>Exportations</span>
         </ng-template>
         <ng-template ngbPanelContent>
           <div [@animate]="{value:'*',params:{y:'20px',opacity:'0',delay:'0ms', duration: '400ms'}}">
-            Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf
-            moon
-            officia
-            aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf
-            moon
-            tempor,
-            sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim
-            keffiyeh
-            helvetica,
-            craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo.
-            Leggings
-            occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them
-            accusamus
-            labore sustainable VHS.
+            <div class="row" style="min-height: 300px;">
+              <div class="col-md-5 form-group mb-3">
+                <label >Eléments</label>
+                <ng-select tabindex="0" [(ngModel)] = "elemExport">
+                  <ng-option [value]="0">Directions</ng-option>
+                  <ng-option [value]="1">Types de Centre de Consommation</ng-option>
+                  <ng-option [value]="2">Centres de Consommation</ng-option>
+                  <ng-option [value]="3">Magasins</ng-option>
+                  <ng-option [value]="4">Familles d'Article</ng-option>
+                  <ng-option [value]="5">Types d'Article</ng-option>
+                  <ng-option [value]="6">Articles</ng-option>
+                  <ng-option [value]="7">Types de Fournisseur</ng-option>
+                  <ng-option [value]="8">Fournisseurs</ng-option>
+                  <ng-option [value]="9">Unités de Comptage</ng-option>
+                </ng-select>
+              </div>
+
+
+              <div class="col-md-12">
+
+                <btn-loading (click)="exporterToExcel()" btnClass="btn-primary"  ngbAutofocus [loading]="loading2">Exporter</btn-loading>
+              </div>
+            </div>
           </div>
         </ng-template>
       </ngb-panel>
@@ -229,6 +241,7 @@
           <th>Code</th>
           <th>Libellé</th>
           <th>Code Super Famille</th>
+          <th>Code Magasin</th>
         </tr>
       </thead>
       <tbody>
@@ -236,7 +249,7 @@
           <td>{{ uniter[0] }}</td>
           <td>{{ uniter[1] }}</td>
           <td>{{ uniter[2] }}</td>
-
+          <td>{{ uniter[3] }}</td>
         </tr>
       </tbody>
       <tfoot>
@@ -244,6 +257,7 @@
           <th>Code</th>
           <th>Libellé</th>
           <th>Code Super Famille</th>
+          <th>Code Magasin</th>
         </tr>
       </tfoot>
     </table>
