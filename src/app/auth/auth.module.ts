@@ -9,6 +9,7 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {SharedModule} from "../shared/shared.module";
 import {RouterModule} from "@angular/router";
+import {ToastrModule, ToastrService} from "ngx-toastr";
 
 
 @NgModule({
@@ -22,5 +23,8 @@ import {RouterModule} from "@angular/router";
     NgbModule,
     RouterModule,
   ],
+  providers: [
+    ToastrService
+  ]
 })
 export class AuthModule { }

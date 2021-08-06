@@ -60,7 +60,7 @@
 
                       <ngx-datatable-column>
                         <ng-template ngx-datatable-header-template>
-                          Code
+                          Année
                         </ng-template>
                         <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
                             {{ row.codeExercice }}
@@ -120,14 +120,14 @@
             </ng-template>
           </li>
           <li [ngbNavItem]="2">
-            <a ngbNavLink>Nouveau Exercice</a>
+            <a ngbNavLink>Nouvel Exercice</a>
             <ng-template ngbNavContent>
   
               <div class="mb-2">
                 <form (ngSubmit)="submit()" [formGroup]="validateForm">
                   <div class="row">
                     <div class="col-md-3 form-group mb-3">
-                      <label for="code">Code <span class="required-field">*</span> </label>
+                      <label for="code">Année <span class="required-field">*</span> </label>
                       <input class="form-control" formControlName="codeExercice" id="codeExercice"
                              placeholder="Entrer le code" type="text" autocomplete="off">
                       <div *ngIf="validateForm.controls.codeExercice.errors &&

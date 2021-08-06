@@ -133,9 +133,9 @@
 
                 <div class="row">
                     <div class="col-md-4 form-group mb-3">
-                      <label for="code">N° IFU <span class="required-field">*</span> </label>
+                      <label for="code"> NIF <span class="required-field">*</span> </label>
                       <input class="form-control" formControlName="numIfuFrs" id="numIfuFrs"
-                             placeholder="Entrer le numéro IFU" type="text" autocomplete="off">
+                             placeholder="Entrer le  NIF" type="text" autocomplete="off">
                       <div *ngIf="validateForm.controls.numIfuFrs.errors &&
                      (validateForm.controls.numIfuFrs.dirty || validateForm.controls.numIfuFrs.touched)"
                            class="error-field">
@@ -234,7 +234,7 @@
       <button (click)="modal.dismiss('cancel')" class="btn btn-outline-secondary btn-rounded" type="button">Annuler
       </button>
       <button (click)="modal.close('Ok')" class="btn btn-danger btn-rounded" ngbAutofocus
-              type="button">Ok
+              type="button">Confirmer
       </button>
     </div>
   </ng-template>

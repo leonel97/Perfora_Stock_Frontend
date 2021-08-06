@@ -598,7 +598,7 @@ export class EntreeArticleComponent  implements OnInit {
   getInfosOnMagasinSelected(){
 
     for(const arti of this.articleList){
-      if(arti.famille.magasin.numMagasin != this.validateForm.value.magasin){
+      if(arti.famille.magasin && arti.famille.magasin.numMagasin != this.validateForm.value.magasin){
         const i = this.articleList.findIndex(l => l.numArticle == arti.numArticle);
         if (i > -1) {
           this.articleList.splice(i, 1);
@@ -606,7 +606,7 @@ export class EntreeArticleComponent  implements OnInit {
       }
     }
 
-    console.log(this.validateForm.value.numComm, this.validateForm.value.magasin);
+    //console.log(this.validateForm.value.numComm, this.validateForm.value.magasin);
 
     this.getAllStocker();
 
@@ -1040,7 +1040,7 @@ export class EntreeArticleComponent  implements OnInit {
 
     for(const ligCom of this.ligneCommandeList){
       if(ligCom.numCommande.numCommande == concernedCommande.numCommande 
-        && ligCom.satisfaite == false && ligCom.article.famille.magasin.numMagasin == this.validateForm.value.magasin){
+        && ligCom.satisfaite == false && ligCom.article.famille.magasin && ligCom.article.famille.magasin.numMagasin == this.validateForm.value.magasin){
 
           tab.push({
             ligneReception: new LigneReception(this.getQteRestanOfALigCom(ligCom), ligCom.puLigneCommande, '', 0, ligCom, null),
@@ -1055,11 +1055,16 @@ export class EntreeArticleComponent  implements OnInit {
           });
 
       }
+      
     }
 
     this.ligneShow = tab;
 
     this.calculTotaux();
+
+    if(this.ligneShow.length < 1){
+      this.toastr.error('Aucune ligne trouvée', 'Erreur !', { timeOut: 5000 });
+    }
 
   }
 

@@ -19,6 +19,8 @@ export class AuthService {
   users: User[] = [];
   url: string = environment.backend + '/authenticate';
 
+  host: string = environment.backend2 +'/commune/user';
+
   private currentUserSubject: BehaviorSubject<User>;
   public currentUser: Observable<User>;
 
@@ -99,5 +101,16 @@ export class AuthService {
     this.store.setItem('currentExerciceFonction',user.currentExerciceFonction);
     return user;
   }
+
+  // Léonel user/byCodUser
+  getAUtilisateurByLoginMdp(user: User): Observable<Object> {
+    return this.http.post<User>(`${this.host}/byLoginMdpUser`, user); 
+  }
+
+  
+  updateUser(idUser: string, user: User): Observable<Object> {
+    return this.http.put(`${this.host}/byCodUser/${idUser}`, user);
+  }
+
 
 }

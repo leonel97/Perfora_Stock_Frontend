@@ -4,19 +4,25 @@
     <div class="col-md-8">
       <div class="p-4">
         <div class="auth-logo text-center mb-4">
-          <img src="assets/images/pal.png" alt="" style="width: 150px;height: 150px;margin-top: 20px;margin-bottom: 20px;">
+          <img src="assets/images/pal.png" alt="" style="width: 120px;height: 150px;margin-top: 5px;margin-bottom: 5px;">
         </div>
         <h1 class="mb-3 text-18 font-weight-bold">S'identifier</h1>
+        <p  class="bg-warning mb-2" style="text-align: center">{{authenticationFailError}}</p>
         <br>
         <form [formGroup]="signinForm" (ngSubmit)="signin()">
           <div class="form-group">
-            <label for="email">Utilisateur</label>
-            <input id="email" class="form-control form-control-rounded" formControlName="email" type="email">
+            <label for="login">Utilisateur</label>
+            <input id="login" class="form-control form-control-rounded" formControlName="login" (ngModelChange)="showConfirmation()" type="text">
           </div>
 
           <div class="form-group">
-            <label for="password">Mot de passe</label>
-            <input id="password" class="form-control form-control-rounded" formControlName="password" type="password">
+            <label for="motDePass">Mot de passe</label>
+            <input id="motDePass" class="form-control form-control-rounded" formControlName="motDePass" type="password" autocomplete="off">
+          </div>
+
+          <div class="form-group" *ngIf="confirmation == true">
+            <label for="password_confirmation">Mot de passe (Confirmation)</label>
+            <input id="password_confirmation" class="form-control form-control-rounded" formControlName="password_confirmation" type="password">
           </div>
           <br>
           <!-- <button class="btn btn-rounded btn-primary btn-block mt-2">Sign In</button> -->

@@ -5,16 +5,18 @@
           Articles Par Magasin
         </a>
         <a class="nav-link" id="v-pills-profile-tab" data-toggle="pill" href="#v-pills-profile" role="tab" aria-controls="v-pills-profile" aria-selected="false">
-          Entrées d'Articles
+          Etat du Stock
         </a>
+        <!--
         <a class="nav-link" id="v-pills-messages-tab" data-toggle="pill" href="#v-pills-messages" role="tab" aria-controls="v-pills-messages" aria-selected="false">
           Etat du Stock
         </a>
-        <a class="nav-link" id="v-pills-settings-tab" data-toggle="pill" href="#v-pills-settings" role="tab" aria-controls="v-pills-settings" aria-selected="false">
-          Evolution du Stock
-        </a>
         <a class="nav-link" id="v-pills-settings2-tab" data-toggle="pill" href="#v-pills-settings2" role="tab" aria-controls="v-pills-settings2" aria-selected="false">
           Fiche de Stock
+        </a>
+        -->
+        <a class="nav-link" id="v-pills-settings-tab" data-toggle="pill" href="#v-pills-settings" role="tab" aria-controls="v-pills-settings" aria-selected="false">
+          Evolution du Stock
         </a>
         <a class="nav-link" id="v-pills-settings3-tab" data-toggle="pill" href="#v-pills-settings3" role="tab" aria-controls="v-pills-settings3" aria-selected="false">
           Mouvement d'un Article
@@ -86,11 +88,146 @@
             </div>
           </div>
         </div>
-        <div class="tab-pane fade" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab"> 2 Placeholder content for the tab panel. This one relates to the messages tab. You got the finest architecture. Passport stamps, she's cosmopolitan. Fine, fresh, fierce, we got it on lock. Never planned that one day I'd be losing you. She eats your heart out. Your kiss is cosmic, every move is magic. I mean the ones, I mean like she's the one. Greetings loved ones let's take a journey. Just own the night like the 4th of July! But you'd rather get wasted.</div>
+        <div class="tab-pane fade" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab"> 
+          <!--Contenu Onglet 2-->
+          <div style="display: flex; align-items: center; justify-content: center;">
+            <div class="card mb-4" style="margin: auto; min-width: 60%; ">
+              <div class="card-body">
+                <form [formGroup]="validateForm2" (ngSubmit)="submit2()">
+                  <div class="card-title mb-3 border-bottom pb-2">Articles Par Magasin</div>
+                  <div class="row">
+                    <div class="col-md form-group mb-3">
+                      <label >Magasin</label>
+                      <ng-select formControlName="magasin">
+                        <ng-option [value]="-1">Tous</ng-option>
+                        <ng-option *ngFor="let serv of magasinList" [value]="serv.numMagasin">{{serv.codeMagasin}} - {{serv.libMagasin}}</ng-option>
+                      </ng-select>
+                    </div>
+
+                  </div>
+                  <div class="row">
+                    <div class="col-md-6 form-group mb-3">
+                      <label for="date">Date<span class="required-field">*</span> </label>
+                      <input class="form-control" formControlName="date" id="date"
+                            placeholder="Entrer le code" type="date" autocomplete="off">
+                      <div *ngIf="validateForm2.controls.date.errors &&
+                    (validateForm2.controls.date.dirty || validateForm2.controls.date.touched)"
+                          class="error-field">
+                        Ce champs est obligatoire !
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="row">
+                    <div class="col-md-12">
+                      <btn-loading btnClass="btn-primary" ngbAutofocus [loading]="loading2">Générer</btn-loading>
+                      <button (click)="resetForm2()" class="btn m-1 ml-2 btn-cancel" type="button"> Annuler</button>
+                    </div>
+                  </div>
+                </form>
+
+
+
+              </div>
+            </div>
+          </div>
+        </div>
         <div class="tab-pane fade" id="v-pills-messages" role="tabpanel" aria-labelledby="v-pills-messages-tab"> 3 Placeholder content for the tab panel. This one relates to the messages tab. You got the finest architecture. Passport stamps, she's cosmopolitan. Fine, fresh, fierce, we got it on lock. Never planned that one day I'd be losing you. She eats your heart out. Your kiss is cosmic, every move is magic. I mean the ones, I mean like she's the one. Greetings loved ones let's take a journey. Just own the night like the 4th of July! But you'd rather get wasted.</div>
-        <div class="tab-pane fade" id="v-pills-settings" role="tabpanel" aria-labelledby="v-pills-settings-tab"> 4 Placeholder content for the tab panel. This one relates to the messages tab. You got the finest architecture. Passport stamps, she's cosmopolitan. Fine, fresh, fierce, we got it on lock. Never planned that one day I'd be losing you. She eats your heart out. Your kiss is cosmic, every move is magic. I mean the ones, I mean like she's the one. Greetings loved ones let's take a journey. Just own the night like the 4th of July! But you'd rather get wasted.</div>
+        <div class="tab-pane fade" id="v-pills-settings" role="tabpanel" aria-labelledby="v-pills-settings-tab"> 
+          <!--Contenu Onglet 4-->
+
+
+        </div>
         <div class="tab-pane fade" id="v-pills-settings2" role="tabpanel" aria-labelledby="v-pills-settings2-tab"> 5 Placeholder content for the tab panel. This one relates to the messages tab. You got the finest architecture. Passport stamps, she's cosmopolitan. Fine, fresh, fierce, we got it on lock. Never planned that one day I'd be losing you. She eats your heart out. Your kiss is cosmic, every move is magic. I mean the ones, I mean like she's the one. Greetings loved ones let's take a journey. Just own the night like the 4th of July! But you'd rather get wasted.</div>
-        <div class="tab-pane fade" id="v-pills-settings3" role="tabpanel" aria-labelledby="v-pills-settings3-tab"> 6 Placeholder content for the tab panel. This one relates to the messages tab. You got the finest architecture. Passport stamps, she's cosmopolitan. Fine, fresh, fierce, we got it on lock. Never planned that one day I'd be losing you. She eats your heart out. Your kiss is cosmic, every move is magic. I mean the ones, I mean like she's the one. Greetings loved ones let's take a journey. Just own the night like the 4th of July! But you'd rather get wasted.</div>
+        <div class="tab-pane fade" id="v-pills-settings3" role="tabpanel" aria-labelledby="v-pills-settings3-tab"> 
+          <!--Contenu Onglet 6-->
+          <div class="row">
+            <div class="col-md-4">
+              <div class="form-group">
+                <input [formControl]="searchControlArticle" class="form-control form-control-rounded" id="email"
+                       placeholder="Rechercher Article" type="email">
+              </div>
+            </div>
+            
+          </div>
+          <div class="row">
+            <div class="col-md-12">
+              <div class="o-hidden">
+                <ngx-datatable
+                  [columnMode]="'force'"
+                  [footerHeight]="50"
+                  [headerHeight]="50"
+                  [rowHeight]="'auto'"
+                  [messages]="{emptyMessage: 'Aucune ligne'}"
+                  [rows]="articleFiltered"
+                  [limit]="4"
+                  class="material fullscreen"
+                  style="height: 500px; box-shadow: none; overflow-y:visible">
+                  <ngx-datatable-column name="codeArticle">
+                    <ng-template ngx-datatable-header-template>
+                      Code
+                    </ng-template>
+                  </ngx-datatable-column>
+                  <ngx-datatable-column name="libArticle">
+                    <ng-template ngx-datatable-header-template>
+                      Libellé
+                    </ng-template>
+                  </ngx-datatable-column>
+
+                  <ngx-datatable-column>
+                    <ng-template ngx-datatable-header-template>
+                      Famille
+                    </ng-template>
+                    <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                      <div *ngIf="row.famille">
+                        {{ row.famille.codeFamille }} - {{ row.famille.libFamille }}
+                      </div>
+                      <div *ngIf="!row.famille">
+                        Aucun
+                      </div>
+
+                    </ng-template>
+                  </ngx-datatable-column>
+
+                  <ngx-datatable-column>
+                    <ng-template ngx-datatable-header-template>
+                      Type
+                    </ng-template>
+                    <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                      <div *ngIf="row.typeArticle">
+                        {{ row.typeArticle.codeTypeArt }} - {{ row.typeArticle.libTypeArt }}
+                      </div>
+                      <div *ngIf="!row.typeArticle">
+                        Aucun
+                      </div>
+
+                    </ng-template>
+                  </ngx-datatable-column>
+
+                  <ngx-datatable-column>
+                    <ng-template ngx-datatable-header-template>
+                      Choisir ? <label class="checkbox checkbox-success">
+                        <input type="checkbox" [checked]="(selectedArticleForMvt.length == articleFiltered.length && selectedArticleForMvt.length != 0)" (click)="selectAllArtForMvt()">
+                        <span aria-disabled="true" class="checkmark"></span>
+                      </label>
+                    </ng-template>
+                    <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                      <!--<strong>{{ row.code }}</strong>-->
+                        
+                        <label class="checkbox checkbox-success">
+                          <input readonly type="checkbox" [checked]="isArticleAlreadySelected(row)" (click)="addLignByDialog(row)">
+                          <span class="checkmark"></span>
+                        </label>
+                      
+                      
+                    </ng-template>
+                  </ngx-datatable-column>
+                </ngx-datatable>
+              </div>
+            </div>
+          </div>
+
+        </div>
       </div>
     </div>
   </div>

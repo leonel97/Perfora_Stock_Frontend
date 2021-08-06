@@ -178,10 +178,8 @@ export class UserComponent implements OnInit {
       //authorities: [user != null ? user.authorities: null],
       login: [user != null ? user.login: null,
         [Validators.required]],
-        motDePass: [user != null ? user.motDePass: null,
-        [Validators.required]],
-      password_confirmation: [user != null ? user.motDePass: null,
-        [Validators.required]],
+        motDePass: [user != null ? user.motDePass: null],
+      password_confirmation: [user != null ? user.motDePass: null],
     });
 
     //cette condition permet de basculer vers la tab contenant le formulaire lors d'une modification
@@ -226,7 +224,7 @@ export class UserComponent implements OnInit {
       const formData = this.validateForm.value;
       console.log('Objet avant enregistrement');
       console.log(formData);
-      if(formData.id == null) {
+      if(formData.idUtilisateur == null) {
         this.enregistrerUser(formData);
       } else {
         this.modifierUser(formData.idUtilisateur, formData);

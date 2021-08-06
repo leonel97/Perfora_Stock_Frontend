@@ -302,7 +302,7 @@ export class DemandePrixComponent implements OnInit {
       dateDemandePrix: [demandePrix != null ? demandePrix.dateDemandePrix.toString().substr(0, 10): null,
       [Validators.required]],
       dateLimiteDemandePrix: [demandePrix != null ? demandePrix.dateLimiteDemandePrix.toString().substr(0, 10) : null],
-      designationDemandePrix: [demandePrix != null ? demandePrix.designationDemandePrix.toString().substr(0, 10) : null],
+      designationDemandePrix: [demandePrix != null ? demandePrix.designationDemandePrix : null],
       /*frs: [demandePrix != null ? demandePrix.commande.frs.numFournisseur : null,
         [Validators.required]],
       numComm: [demandePrix != null ? demandePrix.commande.numCommande : null],*/
@@ -413,6 +413,8 @@ export class DemandePrixComponent implements OnInit {
           fourn = ligInt.listFrs[i];
         }
 
+        if(ligInt.dateRemis == 'Invalid date') ligInt.dateRemis = null;
+
         frsConsulters.push(new ConsulterFrsForDp(ligInt.dateRemis, ligInt.choisit, fourn, null));
 
       }
@@ -426,6 +428,7 @@ export class DemandePrixComponent implements OnInit {
 
         this.enregistrerDemandePrix(dp, lignesDp, frsConsulters);
       } else {
+        console.log(frsConsulters);
         this.modifieDemandePrix(formData.idDemandePrix,dp, lignesDp, frsConsulters);
         console.log(lignesDp);
       }

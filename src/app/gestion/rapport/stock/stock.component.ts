@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
 import { Article } from 'src/app/models/gestion/definition/article.model';
@@ -19,6 +19,13 @@ import * as moment from  'moment';
 import { Utils } from 'src/app/utilitaires/utils';
 import { MagasinService } from 'src/app/services/gestion/definition/magasin.service';
 import { Magasin } from 'src/app/models/gestion/definition/magasin.model';
+import { InventaireService } from 'src/app/services/gestion/saisie/inventaire.service';
+import { StockerService } from 'src/app/services/gestion/saisie/stocker.service';
+import { ReceptionService } from 'src/app/services/gestion/saisie/reception.service';
+import { ApprovisionnementService } from 'src/app/services/gestion/saisie/approvisionnement.service';
+import { Stocker } from 'src/app/models/gestion/saisie/stocker.model';
+import { element } from 'protractor';
+import { debounceTime } from 'rxjs/operators';
 
 @Component({
   selector: 'app-stock',
@@ -28,6 +35,10 @@ import { Magasin } from 'src/app/models/gestion/definition/magasin.model';
 export class StockComponent implements OnInit {
 
   validateForm: FormGroup;
+  validateForm2: FormGroup;
+  validateForm3: FormGroup;
+  validateForm4: FormGroup;
+  validateForm5: FormGroup;
   cloturePeriodiqList: CloturePeriodiq[] = [];
   familleList: Famille[] = [];
   filteredFamilleList: Famille[] = [];
@@ -35,8 +46,16 @@ export class StockComponent implements OnInit {
   magasinList: Magasin[] = [];
   typeArticleList: TypeArticle[] = [];
   loading: boolean;
+  loading2: boolean;
+  loading3: boolean;
+  loading4: boolean;
+  loading5: boolean;
   lastCloture: CloturePeriodiq = null;
 
+    //--------Pour les articles-----------
+    searchControlArticle: FormControl = new FormControl();
+    articleFiltered;
+    selectedArticleForMvt:Article[] = [];
 
   constructor(
     private cloturePeriodiquService: CloturePeriodiqService,
@@ -44,21 +63,83 @@ export class StockComponent implements OnInit {
     private typeArticleService: TypeArticleService,
     private articleService: ArticleService,
     private magasinService: MagasinService,
+    private inventaireService: InventaireService,
+    private stockerService: StockerService,
+    private rceptionService: ReceptionService,
+    private approService: ApprovisionnementService,
     private fb: FormBuilder,
     private toastr: ToastrService,
     private modalService: NgbModal
   ) {
+
+    this.searchControlArticle.valueChanges
+    .pipe(debounceTime(200))
+    .subscribe(value => {
+      this.filerDataArticle(value);
+    });
+
     this.makeForm(null);
+    this.makeForm2(null);
     this.getAllFamille();
     this.getAllTypeArticle();
     this.getAllMagasin();
-
+    this.getAllArticle();
 
   }
 
   ngOnInit(): void {
   }
 
+  isArticleAlreadySelected(article:Article):boolean{
+    for(const lig of this.selectedArticleForMvt){
+      if(lig.numArticle == article.numArticle){
+        return true;
+      }
+    }
+    return false;
+  }
+
+  addLignByDialog(article:Article){
+    if(this.selectedArticleForMvt.find((l) => l.numArticle == article.numArticle)){
+      const ind = this.selectedArticleForMvt.findIndex((l) => l.numArticle == article.numArticle);
+      if(ind > -1){
+        this.selectedArticleForMvt.splice(ind, 1);
+      }      
+    }
+    else{
+      this.selectedArticleForMvt.push(article);
+    }
+  }
+
+  selectAllArtForMvt(){
+    if(this.selectedArticleForMvt.length < 1) this.selectedArticleForMvt = [...this.articleFiltered];
+    else this.selectedArticleForMvt = [];
+
+  }
+
+  filerDataArticle(val) {
+    if (val) {
+      val = val.toLowerCase();
+    } else {
+      return this.articleFiltered = [...this.articleList.sort((a, b) => a.codeArticle.localeCompare(b.codeArticle.valueOf()))];
+    }
+
+    const columns = Object.keys(this.articleList[0]);
+    if (!columns.length) {
+      return;
+    }
+
+    const rows = this.articleList.filter(function (d) {
+      for (let i = 0; i <= columns.length; i++) {
+        const column = columns[i];
+        // console.log(d[column]);
+        if (d[column] && d[column].toString().toLowerCase().indexOf(val) > -1) {
+          return true;
+        }
+      }
+    });
+    this.articleFiltered = rows;
+  }
 
   getAllFamille(){
     this.familleService.getAllFamille().subscribe(
@@ -106,7 +187,7 @@ export class StockComponent implements OnInit {
     this.articleService.getAllArticle().subscribe(
       (data) => {
         this.articleList = data;
-
+        this.articleFiltered = data;
       },
       (error: HttpErrorResponse) => {
         console.log('Echec status ==> ' + error.status);
@@ -161,6 +242,37 @@ export class StockComponent implements OnInit {
       }, 3000);
     } else {
       this.printArticleParFamillePdf();
+    }
+
+  }
+
+  resetForm2(): void {
+    this.validateForm2.reset();
+    for (const key in this.validateForm.controls) {
+      this.validateForm.controls[key].markAsPristine();
+      this.validateForm.controls[key].updateValueAndValidity();
+    }
+    this.makeForm(null);
+  }
+
+  makeForm2(donne): void {
+    this.validateForm2 = this.fb.group({
+      magasin: [ -1, [Validators.required]],
+      date: [ moment(Date.now()).format('yyyy-MM-DD'), [Validators.required]],
+    });
+
+  }
+
+  submit2(){
+    this.loading2 = true;
+    if (this.validateForm2.valid == false) {
+
+      setTimeout(() => {
+        this.loading2 = false;
+        this.toastr.error('Veuillez remplir les champs convenablement.', ' Erreur !', {progressBar: true});
+      }, 3000);
+    } else {
+      this.printEtatStockPdf();
     }
 
   }
@@ -340,4 +452,173 @@ export class StockComponent implements OnInit {
 
 
   }
+
+
+  printEtatStockPdf(){
+
+    const formData = this.validateForm.value;
+    const doc = new jsPDF();
+
+    let magasin: Magasin[] = null;
+
+    magasin = formData.magasin == -1 ? [...this.magasinList] : [this.magasinList.find((l) => l.numMagasin == formData.magasin)];
+
+    autoTable(doc, {
+      theme: 'plain',
+      margin: { top: 5, left:35, right:9, bottom:100 },
+      columnStyles: {
+        0: { textColor: 'blue', fontStyle: 'bold', halign: 'left' },
+        1: { textColor: 'blue', fontStyle: 'bold', halign: 'right' },
+      },
+      body: [
+        ['PORT AUTONOME DE LOME\n\nTel.: 22.27.47.42/22.27.33.91/22.27.33.92\nFax: (228) 22.27.26.27\nCARTE N° 950113V',
+        'REPUBLIQUE TOGOLAISE\n\nTravail-Liberté-Patrie       ']
+      ]
+      ,
+    });
+    doc.addImage(Utils.logoUrlData, 'jpeg', 10, 5, 25, 25);
+
+
+    doc.setDrawColor(0);
+    doc.setFillColor(233 , 242, 248);
+    doc.roundedRect(50, 35, 110, 10, 3, 3, 'FD');
+    doc.setFontSize(20);
+    doc.text('ETAT DE STOCK', 67, 43);
+
+    autoTable(doc, {
+      theme: 'plain',
+      startY:50,
+      margin: { top: 0 },
+      columnStyles: {
+        0: { textColor: 0, fontStyle: 'bold', halign: 'center' },
+      },
+      body: [
+        ['Etat de Stock Par Magasin au PORT AUTONOME DE LOME à la date du '+moment(Date.now()).format('DD/MM/YYYY')]
+      ]
+      ,
+    });
+
+    autoTable(doc, {
+      theme: 'plain',
+      startY:60,
+      margin: { right: 0 },
+      columnStyles: {
+        0: { textColor: 0, fontStyle: 'bold', halign: 'left' },
+        1: { textColor: 0, halign: 'left' },
+      },
+      body: [
+        ['Magasin :', magasin.length <= 1 ? magasin[0]?.codeMagasin+' - '+magasin[0]?.libMagasin : ' Tous les Magasins'],
+      ]
+      ,
+    });
+
+
+
+    this.articleService.getAllArticle().subscribe(
+      (data) => {
+        this.articleList = data;
+
+        this.inventaireService.getAllInventaire().subscribe(
+          (data2) => {
+
+            this.rceptionService.getAllReception().subscribe(
+              (data3) => {
+
+                this.approService.getAllAppro().subscribe(
+                  (data4) => {
+
+                    this.stockerService.getAllStocker().subscribe(
+                      (data5) => {
+            
+                        magasin.forEach(elemente => {
+
+                          let concernedFictifStocker: Stocker[] = data5.filter((l) => l.magasin.numMagasin == elemente.numMagasin);
+
+                          data.filter((l) => l.famille && l.famille.magasin && l.famille.magasin.numMagasin == elemente.numMagasin).forEach(eleme => {
+                            if(!concernedFictifStocker.find((l) => l.article.numArticle == eleme.numArticle)){
+                              concernedFictifStocker.push(new Stocker(0, 0, 0, 0, eleme, elemente));
+                            }
+                          });
+
+                          let lignes = [];
+
+                          concernedFictifStocker.forEach(element2 => {
+
+                            let lig = [];
+                            lig.push(element2.article.codeArticle);
+                            lig.push(element2.article.libArticle);
+                            lig.push(element2.quantiterStocker);
+                            lig.push(element2.cmup);
+                            lig.push(element2.quantiterStocker*element2.cmup);
+
+                            lignes.push(lig);
+
+                          });
+                                        
+                          autoTable(doc, {
+                            theme: 'plain',
+                            columnStyles: {
+                              0: { textColor: 0, fontStyle: 'bold', halign: 'center', fontSize:16 },
+                            },
+                            body: [
+                              [elemente.codeMagasin+' - '+elemente.libMagasin],
+                              
+                            ]
+                            ,
+                          });
+
+                          autoTable(doc, {
+                            theme: 'grid',
+                            head: [['Article(code)', 'Désignation', 'Qte Stockée', 'CUMP', 'Montant']],
+                            headStyles:{
+                              fillColor: [41, 128, 185],
+                              textColor: 255,
+                              fontStyle: 'bold' ,
+                          },
+                            body: lignes
+                            ,
+                          });
+
+
+
+                        });
+
+                                
+                        this.loading2 = false;
+                        //doc.output('dataurlnewwindow');
+                        doc.save('EtatDeStock.pdf');
+
+                      },
+                      (error: HttpErrorResponse) => {
+                        console.log('Echec status ==> ' + error.status);
+                      }
+                    );
+        
+                  },
+                  (error: HttpErrorResponse) => {
+                    console.log('Echec status ==> ' + error.status);
+                  }
+                );
+    
+              },
+              (error: HttpErrorResponse) => {
+                console.log('Echec status ==> ' + error.status);
+              }
+            );
+
+          },
+          (error: HttpErrorResponse) => {
+            console.log('Echec status ==> ' + error.status);
+          }
+        );
+
+      },
+      (error: HttpErrorResponse) => {
+        console.log('Echec status ==> ' + error.status);
+      }
+    );
+
+
+  }
+
 }

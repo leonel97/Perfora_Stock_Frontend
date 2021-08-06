@@ -426,7 +426,7 @@ export class ServirBesoinComponent  implements OnInit {
     let lignShowValid: boolean = true;
 
     for(const lig of this.ligneShow){
-      if(lig.concernedStocker?.quantiterStocker < lig.ligneAppro.quantiteLigneAppro 
+      if(lig.concernedStocker?.quantiterStocker < (lig.ligneAppro.quantiteLigneAppro*lig.concernedLigneDa.uniter.poids)
         || lig.concernedLigneDa?.quantiteDemandee < lig.ligneAppro.quantiteLigneAppro 
         || lig.qteRest < lig.ligneAppro.quantiteLigneAppro){
         lignShowValid = false;
