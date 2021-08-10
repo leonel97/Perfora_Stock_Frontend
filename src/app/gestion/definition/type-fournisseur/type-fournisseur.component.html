@@ -1,26 +1,26 @@
 <div class="">
     <div class="breadcrumb">
-      <h1>Gestion des Catégories de Fournisseur</h1>
+      <h1>Gestion des Nationalités</h1>
       <ul>
-        <li><a routerLink="">Définition</a></li>
-        <li>Catégorie de Fournisseur</li>
+        <li><a routerLink="">Administration</a></li>
+        <li>Nationalité</li>
       </ul>
     </div>
     <div class="separator-breadcrumb border-top"></div>
 
     <div class="card mb-4">
       <div class="card-body">
-        <div class="card-title mb-3 border-bottom pb-2">Gestion des Catégories de Fournisseur</div>
+        <div class="card-title mb-3 border-bottom pb-2">Gestion des Nationalités</div>
 
         <ul #nav="ngbNav" [(activeId)]="activeTabsNav" class="nav-tabs" ngbNav>
           <li [ngbNavItem]="1">
-            <a ngbNavLink>Liste des Catégories de Fournisseur</a>
+            <a ngbNavLink>Liste des Nationalités</a>
             <ng-template ngbNavContent>
               <div class="row">
                 <div class="col-md-4">
                   <div class="form-group">
                     <input [formControl]="searchControl" class="form-control form-control-rounded" id="email"
-                           placeholder="Rechercher Catégorie de Fournisseur" type="email">
+                           placeholder="Rechercher une Nationalité" type="email">
                   </div>
                 </div>
                 <div class="col-md-12">
@@ -67,7 +67,7 @@
             </ng-template>
           </li>
           <li [ngbNavItem]="2">
-            <a ngbNavLink>Nouvelle Catégorie de Fournisseur</a>
+            <a ngbNavLink>Nouvelle Nationalité</a>
             <ng-template ngbNavContent>
 
               <div class="mb-2">

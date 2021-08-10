@@ -90,6 +90,7 @@ export class ExerciceComponent implements OnInit {
 
   // selected Exercice 
   selectOne(e, exo) {
+    
     if (exo.isSelected == true) {
       this.activeExercice = exo;
 

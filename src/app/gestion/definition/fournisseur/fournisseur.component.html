@@ -61,7 +61,7 @@
                       </ngx-datatable-column>
                       <ngx-datatable-column>
                         <ng-template ngx-datatable-header-template>
-                          Catégorie Fournisseur
+                          Nationalité
                         </ng-template>
                         <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
                             {{ row.categorieFrs.libCatFrs }}
@@ -118,8 +118,8 @@
                     </div>
 
                     <div class="col-md-3 form-group mb-3">
-                        <label for="tel">Catégorie de Fournisseur <span class="required-field">*</span> </label>
-                        <ng-select bindLabel="libCatFrs" id="categorieFrs" formControlName="categorieFrs" placeholder=" Entrer Catégorie du fournisseur">
+                        <label for="tel">Nationalité <span class="required-field">*</span> </label>
+                        <ng-select bindLabel="libCatFrs" id="categorieFrs" formControlName="categorieFrs" placeholder=" Entrer la Nationalité du fournisseur">
                             <!--option [ngValue]="null">-- Centre de consommation parent -- </option-->
                             <ng-option *ngFor="let categorieFrs of typeFournisseurFiltered" [value]="categorieFrs">{{categorieFrs.libCatFrs}}</ng-option>
                           </ng-select>

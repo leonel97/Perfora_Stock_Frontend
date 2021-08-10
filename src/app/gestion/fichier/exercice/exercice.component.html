@@ -50,8 +50,8 @@
                         <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
                         <!--span *ngIf="row.cloturerExo == false"-->
                           <label class="checkbox checkbox-outline-light ">
-                            <input (change)="selectOne($event, row)" [(ngModel)]="row.isSelected" type="checkbox" >
-                           
+                            <input (change)="selectOne($event, row)" [(ngModel)]="row.isSelected" type="checkbox"   >
+                            <span></span>
                             <span class="checkmark"></span>
                           </label>
                         <!--/span-->
@@ -129,7 +129,7 @@
                     <div class="col-md-3 form-group mb-3">
                       <label for="code">Année <span class="required-field">*</span> </label>
                       <input class="form-control" formControlName="codeExercice" id="codeExercice"
-                             placeholder="Entrer le code" type="text" autocomplete="off">
+                             placeholder="Entrer l'année" type="text" autocomplete="off">
                       <div *ngIf="validateForm.controls.codeExercice.errors &&
                      (validateForm.controls.codeExercice.dirty || validateForm.controls.codeExercice.touched)"
                            class="error-field">

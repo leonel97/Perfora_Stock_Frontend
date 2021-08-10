@@ -75,7 +75,7 @@
 
                       <ngx-datatable-column>
                         <ng-template ngx-datatable-header-template>
-                          Demande de Prix
+                          DRP
                         </ng-template>
                         <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
                           {{ row.demandePrix.idDemandePrix }} du {{ row.demandePrix.dateDemandePrix | date: "dd-MM-yyyy"}}
@@ -165,7 +165,7 @@
 
                       <div class="col-md form-group mb-3">
                         <label >
-                          Demande de Prix
+                          Demande de Renseignement de Prix
                         </label>
                         <ng-select formControlName="demandePrix" [readonly]="validateForm.value.idFpfa || detailView"
                         (ngModelChange)="getInfosOnDpSelected()" >
@@ -197,7 +197,7 @@
                       </div>
                     </div>
                     <div class="col-md form-group mb-3">
-                      <label for="picker2">Date de Prise</label>
+                      <label for="picker2">Date de Dépôt</label>
                       <div class="input-group">
                           <input formControlName="datePriseFpfa" id="picker2" class="form-control text-right" type="date"
                           [readOnly]="detailView"  >
@@ -205,7 +205,7 @@
                       </div>
                     </div>
                     <div class="col-md form-group mb-3">
-                      <label for="picker3">Date de Déplis</label>
+                      <label for="picker3">Date D'ouverture</label>
                       <div class="input-group">
                           <input formControlName="dateDeplisFpfa" id="picker3" class="form-control text-right" type="date"
                           [readOnly]="detailView"  >
@@ -219,13 +219,13 @@
                     <div class="col-md form-group">
                       <label for="orderNo">N° Générique</label>
                       <input formControlName="designationFpfa" type="text" class="form-control"
-                          placeholder="Numéro" [readOnly]="detailView">
+                          placeholder="Numéro Générique" [readOnly]="detailView">
 
                     </div>
                     <div class="col-md form-group">
                       <label for="orderNo">Observation</label>
                       <input formControlName="obserFpfa" type="text" class="form-control"
-                          placeholder="Numéro" [readOnly]="detailView">
+                          placeholder="Observation" [readOnly]="detailView">
 
                     </div>
                   </div>

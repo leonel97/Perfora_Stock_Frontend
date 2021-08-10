@@ -15,10 +15,11 @@ import { ComptabilisationRoutingModule } from './comptabilisation.routing';
 import { ComptabilisationComponent } from './comptabilisation.component';
 import { ImputationArticleComponent } from './imputation-article/imputation-article.component';
 import { EcritureComptableComponent } from './ecriture-comptable/ecriture-comptable.component';
+import { OperationJournalComponent } from './operation-journal/operation-journal.component';
 
 
 @NgModule({
-  declarations: [ComptabilisationComponent, ImputationArticleComponent, EcritureComptableComponent],
+  declarations: [ComptabilisationComponent, ImputationArticleComponent, EcritureComptableComponent, OperationJournalComponent],
   imports: [
     CommonModule,
     ComptabilisationRoutingModule,
