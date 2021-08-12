@@ -712,35 +712,93 @@ export class DemandePrixComponent implements OnInit {
   valider(demandePrix: DemandePrix, eta: boolean, content){
 
     this.etatVali = eta;
+    let msger:String = 'Chargement en cours';
+    //***********************
 
-    this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', centered: true})
-      .result.then((result) => {
-      //this.confirmResut = `Closed with: ${result}`;
+    let frsSelected: boolean = false;
+    let selectedFrsCons: ConsulterFrsForDp = null;
+    
+    for(const lig of this.consulterFrsForDpList){
+      if(lig.demandePrix.idDemandePrix == demandePrix.idDemandePrix && lig.choisit == true){
+        frsSelected = true;
+        selectedFrsCons = lig;
+        break;
+      }
+    }
 
-      demandePrix.valideDemandePrix = eta;
-
-      this.demandePrixService.editDemandePrix(demandePrix.idDemandePrix.toString(), demandePrix).subscribe(
+    if(frsSelected){
+      this.fpfaService.getAllFactureProFormAcha().subscribe(
         (data) => {
+          let concernedFpfa: FactureProFormAcha = null;
+          for(const lig of data){
+            if(lig.demandePrix.idDemandePrix == demandePrix.idDemandePrix && lig.fournisseur.numFournisseur == selectedFrsCons.fournisseur.numFournisseur){
+              concernedFpfa = lig;
+              break;
+            }
+          }
 
-          demandePrix = data;
+          if(concernedFpfa){
 
-          const i = this.demandePrixList.findIndex(l => l.idDemandePrix == demandePrix.idDemandePrix);
-              if (i > -1) {
-                this.demandePrixList[i] = demandePrix;
-                this.demandePrixFiltered = [...this.demandePrixList.sort((a, b) => a.idDemandePrix.localeCompare(b.idDemandePrix.valueOf()))];
-              }
+            msger = null;
 
-              let msg: String = 'Validation'
-              if(eta == false) msg = 'Annulation';
-              this.toastr.success(msg+' effectuée avec succès.', 'Success', { timeOut: 5000 });
+          } else {
+            //this.toastr.error('Veuillez Enrégistrer une Facture Proformat concernant le DP pour le Fournisseur choisi.', 'Erreur !', { timeOut: 5000 });
+            msger = 'Veuillez Enrégistrer une Facture Proformat concernant le DP pour le Fournisseur choisi.';
+          }
 
         },
         (error: HttpErrorResponse) => {
           console.log('Echec status ==> ' + error.status);
-          this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000 });
-
+          //this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000 });
+          msger = 'Erreur avec le status ' + error.status;
         }
       );
+    }
+    else{
+      //this.toastr.error('Veuillez Choisir un Fournisseur pour cette Demande de Prix d\'abord.', 'Erreur !', { timeOut: 5000 });
+      msger = 'Veuillez Choisir un Fournisseur pour cette Demande de Prix d\'abord.';
+
+    }
+
+
+
+    //**********************
+     
+    this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', centered: true})
+      .result.then((result) => {
+      //this.confirmResut = `Closed with: ${result}`;
+
+      if(msger && eta == true){
+        this.toastr.error(msger.valueOf(), 'Erreur !', { timeOut: 5000 });
+      }
+      else{
+        
+        demandePrix.valideDemandePrix = eta;
+
+        this.demandePrixService.editDemandePrix(demandePrix.idDemandePrix.toString(), demandePrix).subscribe(
+          (data) => {
+
+            demandePrix = data;
+
+            const i = this.demandePrixList.findIndex(l => l.idDemandePrix == demandePrix.idDemandePrix);
+                if (i > -1) {
+                  this.demandePrixList[i] = demandePrix;
+                  this.demandePrixFiltered = [...this.demandePrixList.sort((a, b) => a.idDemandePrix.localeCompare(b.idDemandePrix.valueOf()))];
+                }
+
+                let msg: String = 'Validation'
+                if(eta == false) msg = 'Annulation';
+                this.toastr.success(msg+' effectuée avec succès.', 'Success', { timeOut: 5000 });
+
+          },
+          (error: HttpErrorResponse) => {
+            console.log('Echec status ==> ' + error.status);
+            this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000 });
+
+          }
+        );
+
+      }
 
 
 

@@ -7,7 +7,7 @@ export class LigneReception {
 
   constructor(public quantiteLigneReception: number, public puLigneReception: number,
     public observationLigneReception: String, public lastCump: number, public ligneCommande: LigneCommande,
-    public reception: Reception){
+    public reception: Reception, public lastStockQte?: number){
 
   }
 

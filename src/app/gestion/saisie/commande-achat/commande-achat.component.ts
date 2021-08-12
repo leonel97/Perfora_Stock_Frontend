@@ -686,7 +686,7 @@ export class CommandeAchatComponent implements OnInit {
     doc.setFillColor(233 , 242, 248);
     doc.roundedRect(50, 35, 110, 10, 3, 3, 'FD');
     doc.setFontSize(20);
-    doc.text('BOND DE COMMANDE', 67, 43);
+    doc.text('BON DE COMMANDE', 67, 43);
     autoTable(doc, {
       theme: 'plain',
       startY:50,
@@ -695,7 +695,7 @@ export class CommandeAchatComponent implements OnInit {
         0: { textColor: 0, fontStyle: 'bold', halign: 'center' },
       },
       body: [
-        ['ACH-ERQ-11-PAL13\n\nBond de Commande N° '+element.numComAchat+' du '+moment(element.commande.dateCommande).format('DD/MM/YYYY')]
+        ['ACH-ERQ-11-PAL13\n\nBon de Commande N° '+element.numComAchat+' du '+moment(element.commande.dateCommande).format('DD/MM/YYYY')]
       ]
       ,
     });

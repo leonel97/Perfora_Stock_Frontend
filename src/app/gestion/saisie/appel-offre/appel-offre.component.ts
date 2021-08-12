@@ -682,7 +682,7 @@ export class AppelOffreComponent implements OnInit {
         0: { textColor: 0, fontStyle: 'bold', halign: 'center' },
       },
       body: [
-        ['ACH-ERQ-11-PAL13\n\nBond de Commande N° '+element.numAppelOffre+' du '+moment(element.commande.dateCommande).format('DD/MM/YYYY')]
+        ['ACH-ERQ-11-PAL13\n\nBon de Commande N° '+element.numAppelOffre+' du '+moment(element.commande.dateCommande).format('DD/MM/YYYY')]
       ]
       ,
     });

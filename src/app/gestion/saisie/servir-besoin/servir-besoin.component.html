@@ -241,7 +241,7 @@
                                       </td>
                                       <td>
                                         <input type="number" class="form-control" [(ngModel)] = "lig.ligneAppro.quantiteLigneAppro"
-                                        [ngStyle]="{'background-color': (lig.concernedStocker?.quantiterStocker < (lig.ligneAppro.quantiteLigneAppro*lig.concernedLigneDa.uniter.poids) || lig.concernedLigneDa?.quantiteDemandee < lig.ligneAppro.quantiteLigneAppro || lig.qteRest < lig.ligneAppro.quantiteLigneAppro) ? 'rgb(255, 172, 172)': null}"
+                                        [ngStyle]="{'background-color': (lig.concernedStocker?.quantiterStocker < (lig.ligneAppro.quantiteLigneAppro*lig.concernedLigneDa?.uniter.poids) || lig.concernedLigneDa?.quantiteDemandee < lig.ligneAppro.quantiteLigneAppro || lig.qteRest < lig.ligneAppro.quantiteLigneAppro) ? 'rgb(255, 172, 172)': null}"
                                             placeholder="Quantité" (change)="calculTotaux()" [readOnly]="detailView">
                                       </td>
                                       <td>
@@ -260,7 +260,7 @@
                                         {{lig.ligneAppro.puligneAppro}}
                                       </td>
                                       <td>
-                                        {{lig.ligneAppro.puligneAppro * lig.ligneAppro.quantiteLigneAppro}}
+                                        {{lig.ligneAppro.puligneAppro * lig.ligneAppro.quantiteLigneAppro*lig.concernedLigneDa?.uniter.poids}}
                                       </td>
                                       <td>
                                           <button class="btn btn-outline-secondary float-right" (click)="popALigneAppro(i)" *ngIf="!detailView">Retirer</button>

@@ -442,6 +442,12 @@ export class EntreeArticleComponent  implements OnInit {
       }
     }
 
+    for(const lc of this.lettreCommandeList){
+      if(lc.numLettreComm == numFille){
+        return lc.commande;
+      }
+    }
+    
     for(const dp of this.demandePrixList){
       if(dp.idDemandePrix == numFille){
         let concernedConsu: ConsulterFrsForDp = null;
@@ -461,29 +467,33 @@ export class EntreeArticleComponent  implements OnInit {
                 break;
               }
           }
-
+          
           if(concerFpfa){
 
             if(concerFpfa.commande){
               return concerFpfa.commande;
             }
             else{
-              this.toastr.error('Veuillez d\'abord générer le bond de Commande pour le DP Afin de Procéder à la réception', 'Erreur !', { timeOut: 5000 });
+              //this.toastr.error('Veuillez d\'abord générer le bond de Commande pour le DP Afin de Procéder à la réception', 'Erreur !', { timeOut: 5000 });
+              return null;
             }
 
           }
           else{
-            this.toastr.error('Aucune Facture Proformat enrégistrer pour le Fournisseur choisit pour ce DP', 'Erreur !', { timeOut: 5000 });
+            //this.toastr.error('Aucune Facture Proformat enrégistrer pour le Fournisseur choisit pour ce DP', 'Erreur !', { timeOut: 5000 });
+            return null;
           }
 
         }
         else{
-          this.toastr.error('Aucun fournisseur choisit pour cette DP', 'Erreur !', { timeOut: 5000 });
+          //this.toastr.error('Aucun fournisseur choisit pour cette DP', 'Erreur !', { timeOut: 5000 });
+          return null;
         }
 
 
       }
     }
+    
 
     return null;
   }
@@ -1090,7 +1100,7 @@ export class EntreeArticleComponent  implements OnInit {
       return false;
 
     }
-    
+
     return false;
 
   }

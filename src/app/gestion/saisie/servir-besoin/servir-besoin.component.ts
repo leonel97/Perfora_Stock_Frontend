@@ -364,9 +364,9 @@ export class ServirBesoinComponent  implements OnInit {
 
   }
 
-  getLigneDaBySelectedNumArti(numArt:number): LigneDemandeAppro{
+  getLigneDaBySelectedNumArti(numArt:number, idDa:String): LigneDemandeAppro{
     for(const lig1 of this.ligneDemandeApproList){
-      if(lig1.article.numArticle == numArt){
+      if(lig1.article.numArticle == numArt && lig1.appro.numDA == idDa){
         return lig1;
       }
     }
@@ -376,7 +376,7 @@ export class ServirBesoinComponent  implements OnInit {
 
   getInfosOfSelectArt(ind:number){
 
-    this.ligneShow[ind].concernedLigneDa = this.getLigneDaBySelectedNumArti(this.ligneShow[ind].selectedArticl);
+    this.ligneShow[ind].concernedLigneDa = this.getLigneDaBySelectedNumArti(this.ligneShow[ind].selectedArticl, this.validateForm.value.numDA);
     let mag: Magasin = new Magasin('', '');
     const i = this.magasinList.findIndex(l => l.numMagasin == this.validateForm.value.magasin);
     if(i > -1){
@@ -426,7 +426,7 @@ export class ServirBesoinComponent  implements OnInit {
     let lignShowValid: boolean = true;
 
     for(const lig of this.ligneShow){
-      if(lig.concernedStocker?.quantiterStocker < (lig.ligneAppro.quantiteLigneAppro*lig.concernedLigneDa.uniter.poids)
+      if(lig.concernedStocker?.quantiterStocker < (lig.ligneAppro.quantiteLigneAppro*lig.concernedLigneDa?.uniter.poids)
         || lig.concernedLigneDa?.quantiteDemandee < lig.ligneAppro.quantiteLigneAppro 
         || lig.qteRest < lig.ligneAppro.quantiteLigneAppro){
         lignShowValid = false;
@@ -657,7 +657,7 @@ export class ServirBesoinComponent  implements OnInit {
     let tot0: number = 0;
 
     this.ligneShow.forEach(element => {
-      tot0 += (element.ligneAppro.puligneAppro * element.ligneAppro.quantiteLigneAppro);
+      tot0 += (element.ligneAppro.puligneAppro * element.ligneAppro.quantiteLigneAppro *element.concernedLigneDa?.uniter.poids);
 
     });
 
@@ -673,7 +673,7 @@ export class ServirBesoinComponent  implements OnInit {
 
     this.ligneApproList.forEach(element => {
       if(element.appro.numAppro == row.numAppro){
-        tot += element.puligneAppro * element.quantiteLigneAppro;
+        tot += element.puligneAppro * element.quantiteLigneAppro * element.ligneDA.uniter.poids;
       }
     });
 
@@ -836,8 +836,8 @@ export class ServirBesoinComponent  implements OnInit {
         lig.push(element2.ligneDA.article.libArticle);
         lig.push(element2.quantiteLigneAppro);
         lig.push(element2.ligneDA.uniter.libUniter);
-        lig.push(element2.puligneAppro);
-        let ht = element2.quantiteLigneAppro*element2.puligneAppro;
+        lig.push(element2.puligneAppro*element2.ligneDA.uniter.poids);
+        let ht = element2.quantiteLigneAppro*element2.puligneAppro*element2.ligneDA.uniter.poids;
         lig.push(ht);
         lignes.push(lig);
 

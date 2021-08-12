@@ -6,7 +6,7 @@ export class LigneAppro {
   public idLigneAppro: number = null;
 
   constructor(public quantiteLigneAppro: number, public puligneAppro: number,
-    public appro: Approvisionnement, public ligneDA: LigneDemandeAppro){
+    public appro: Approvisionnement, public ligneDA: LigneDemandeAppro, public lastStockQte? :number){
 
   }
 
