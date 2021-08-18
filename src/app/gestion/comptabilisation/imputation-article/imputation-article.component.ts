@@ -7,6 +7,8 @@ import {HttpErrorResponse} from "@angular/common/http";
 import {debounceTime} from "rxjs/operators";
 import { StockComptaSetting } from 'src/app/models/gestion/comptabilisation/stockComptaSetting.model';
 import { StockComptaSettingService } from 'src/app/services/gestion/comptabilisation/stockComptaSetting.service';
+import { Famille } from 'src/app/models/gestion/definition/famille.model';
+import { FamilleService } from 'src/app/services/gestion/definition/famille.service';
 
 @Component({
   selector: 'app-imputation-article',
@@ -20,8 +22,13 @@ export class ImputationArticleComponent implements OnInit {
 
   validateForm: FormGroup;
   stockComptaSettingList: StockComptaSetting[] = [];
+  familleList: Famille[] = [];
   loading: boolean;
   stockComptaSetting: StockComptaSetting = null;
+
+  
+  etatImputation: boolean = false;
+  etatImpStockComptaSetting: StockComptaSetting = null;
 
   //pour les tabs navs
   activeTabsNav;
@@ -32,17 +39,45 @@ export class ImputationArticleComponent implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     private toastr: ToastrService,
-    private modalService: NgbModal
+    private modalService: NgbModal,
+    private familleService: FamilleService
   ) {
   }
 
   ngOnInit(): void {
 
+    //List des Familles 
+    this.familleService.getAllFamille().subscribe(
+      (data) => {
+        this.familleList = [...data];
+        //this.familleFiltered = this.familleList.sort((a, b) => a.codeFamille.localeCompare(b.codeFamille.valueOf()));
+        console.log(this.familleList);
+        //this.familleList2 = data;
+      },
+      (error: HttpErrorResponse) => {
+        console.log('Echec status ==> ' + error.status);
+      });
+
     this.stockComptaSettingService.list().subscribe(
-      (data: any) => {
+      (data) => {
         this.stockComptaSettingList = [...data];
-        this.stockComptaSettingFiltered = this.stockComptaSettingList.sort((a, b) => a.numParamCompta.toString().localeCompare(b.numParamCompta.toString()));
+        this.stockComptaSettingFiltered = this.stockComptaSettingList;
         console.log(this.stockComptaSettingList);
+        if (data.length == 0 && this.familleList.length > 0){
+
+          for(var i = 0; i <= this.familleList.length -1; i++){
+            //start
+          this.stockComptaSettingService.createStockComptaSetting(new StockComptaSetting('0', 0, '0','603300',0,false,this.familleList[i])).subscribe(
+            (data) => {
+            },
+            (error: HttpErrorResponse) => {
+              console.log('Echec status ==> ' + error.status);
+            });
+            //end
+         }
+          
+        }
+        this.getAllStockComptaSetting();
       },
       (error: HttpErrorResponse) => {
         console.log('Echec atatus ==> ' + error.status);
@@ -62,7 +97,7 @@ export class ImputationArticleComponent implements OnInit {
     if (val) {
       val = val.toLowerCase();
     } else {
-      return this.stockComptaSettingFiltered = [...this.stockComptaSettingList.sort((a, b) => a.numParamCompta.toString().localeCompare(b.numParamCompta.toString()))];
+      return this.stockComptaSettingFiltered = [...this.stockComptaSettingList];
     }
 
     const columns = Object.keys(this.stockComptaSettingList[0]);
@@ -81,6 +116,21 @@ export class ImputationArticleComponent implements OnInit {
     });
     this.stockComptaSettingFiltered = rows;
   }
+
+  //get all stockparam
+
+getAllStockComptaSetting(){
+  this.stockComptaSettingService.list().subscribe(
+    (data) => {
+      this.stockComptaSettingList = [...data];
+      this.stockComptaSettingFiltered = this.stockComptaSettingList;
+      console.log(this.stockComptaSettingList);     
+    },
+    (error: HttpErrorResponse) => {
+      console.log('Echec atatus ==> ' + error.status);
+    });
+}
+  
 
   makeForm(stockComptaSetting: StockComptaSetting): void {
     this.validateForm = this.fb.group({
@@ -208,5 +258,40 @@ export class ImputationArticleComponent implements OnInit {
       console.log(`Dismissed with: ${reason}`);
     });
   }
+
+  //
+  onChoiceAFrsClickedDialog(content, SelectedLigneImputation:StockComptaSetting){
+
+    
+    console.log(SelectedLigneImputation);
+    this.etatImpStockComptaSetting = SelectedLigneImputation;
+    
+    this.etatImputation = SelectedLigneImputation.exportable;
+    console.log(this.etatImputation);
+    
+
+    this.modalService.open(content,
+      {ariaLabelledBy: 'modal-basic-title', centered: true})
+      .result.then((result) => {
+
+       /* this.selectedCurrentFrsInter.forEach((element, ind) => {
+          if(inde != ind){
+            element.choisit = false;
+          }
+        });*/
+
+        //console.log(this.selectedCurrentFrsInter[inde].choisit);
+
+
+    }, (reason) => {
+      //this.selectedCurrentFrsInter[inde].choisit = !this.selectedCurrentFrsInter[inde].choisit;
+      //console.log(this.selectedCurrentFrsInter[inde].choisit);
+      console.log(`Dismissed with: ${reason}`);
+      //this.selectedCurrentFrsInter = [];
+    });
+
+
+  }
+
 
 }

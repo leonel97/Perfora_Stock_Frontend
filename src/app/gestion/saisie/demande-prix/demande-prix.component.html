@@ -1,9 +1,9 @@
 <div class="">
     <div class="breadcrumb">
-        <h1> Gestion des Demandes de prix</h1>
+        <h1> Gestion des Demandes de Renseignement de Prix</h1>
         <ul>
             <li><a href="">Saisie</a></li>
-            <li>Demande de prix</li>
+            <li>Demande  de Renseignement de Prix</li>
         </ul>
     </div>
 
@@ -12,17 +12,17 @@
 
     <div class="card mb-4">
       <div class="card-body">
-        <div class="card-title mb-3 border-bottom pb-2">Gestion des Demande de prix</div>
+        <div class="card-title mb-3 border-bottom pb-2">Gestion des Demandes de Renseignement de Prix</div>
 
         <ul #nav="ngbNav" [(activeId)]="activeTabsNav" class="nav-tabs" ngbNav>
           <li [ngbNavItem]="1">
-            <a ngbNavLink>Liste des Demande de prix</a>
+            <a ngbNavLink>Liste des Demandes de Renseignement  de Prix</a>
             <ng-template ngbNavContent>
               <div class="row">
                 <div class="col-md-4">
                   <div class="form-group">
-                    <input [formControl]="searchControl" class="form-control form-control-rounded" id="email"
-                           placeholder="Rechercher Demande de prix">
+                    <input [formControl]="searchControl" class="form-control form-control-rounded" id="searchWord"
+                           placeholder="Rechercher une Demande de Renseignement de Prix" type="text">
                   </div>
                 </div>
                 <div class="col-md-12">
@@ -122,7 +122,7 @@
 
 
           <li [ngbNavItem]="2">
-            <a ngbNavLink><span *ngIf="! validateForm.value.numComAchat">Nouvelle</span><span *ngIf="validateForm.value.numComAchat" span>Modifier</span> Demande de prix</a>
+            <a ngbNavLink><span *ngIf="! validateForm.value.numComAchat">Nouvelle</span><span *ngIf="validateForm.value.numComAchat" span>Modifier</span> Demande de Renseignement de Prix</a>
             <ng-template ngbNavContent>
 
               <div class="mb-2">
@@ -132,17 +132,17 @@
                   <btn-loading btnClass="btn-primary" [loading]="loading" (click)="submit()">Enrégistrer</btn-loading>
                 </div>
                 <form [formGroup]="validateForm">
-                  <h4 class="font-weight-bold">Informations sur la Demande de prix</h4>
+                  <h4 class="font-weight-bold">Informations sur la Demande de Renseignement de Prix</h4>
                   <div class="row">
                       <div class="col-md" *ngIf="validateForm.value.idDemandePrix">
                           <div class="col-md form-group">
-                              <label for="orderNo">Numéro DP</label>
+                              <label for="orderNo">Numéro DRP</label>
                               <input formControlName="idDemandePrix" type="text" class="form-control"
                                   placeholder="Numéro" readonly>
                           </div>
                       </div>
                       <div class="col-md form-group mb-3">
-                        <label for="picker1">Date de Demande de Prix</label>
+                        <label for="picker1">Date de Demande de Renseignement de Prix</label>
                         <div class="input-group">
                             <input formControlName="dateDemandePrix" id="picker1" class="form-control text-right" type="date"
                                 >
@@ -186,7 +186,7 @@
                   </div>
                 </form>
                   <div class="mt-3 mb-4 border-top"></div>
-                  <h4 class="font-weight-bold">Détails sur la Demande de prix</h4>
+                  <h4 class="font-weight-bold">Détails sur la Demande de Renseignement de Prix</h4>
 
                   <div class="row">
                       <div class="col-md-12 table-responsive">
@@ -379,7 +379,7 @@
 
 <ng-template #modalGenerBond let-modal>
   <div class="modal-header">
-    <h4 class="modal-title" id="modal-title">Informations sur le Bon</h4>
+    <h4 class="modal-title" id="modal-title">Informations sur le Bon de Commande</h4>
     <button (click)="modal.dismiss('Cross click')" aria-describedby="modal-title" aria-label="Close button"
             class="close"
             type="button">

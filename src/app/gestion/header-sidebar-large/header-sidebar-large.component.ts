@@ -3,10 +3,14 @@ import {AuthService} from "../../services/common/auth.service";
 import {SearchService} from "../../services/common/search.service";
 import {NavigationService} from "../../services/common/navigation.service";
 import {User} from "../../models/gestion/utilisateur/user";
+import {HttpErrorResponse} from "@angular/common/http";
 import {take, takeWhile} from "rxjs/operators";
 import {ExerciceFonction} from "../../models/gestion/utilisateur/exercice-fonction";
 import {LocalStoreService} from "../../services/common/local-store.service";
 //import { SearchService } from '../../../../services/search.service';
+
+import {Exercice} from "../../models/gestion/fichier/exercice";
+import {ExerciceService} from "../../services/gestion/fichier/exercice.service";
 
 @Component({
   selector: 'app-header-sidebar-large',
@@ -15,6 +19,10 @@ import {LocalStoreService} from "../../services/common/local-store.service";
 })
 export class HeaderSidebarLargeComponent implements OnInit {
 
+  exerciceFiltered;
+  
+  exerciceList: Exercice[] = [];
+
   notifications: any[];
   currentUser: User;
   defaultExerciceFonction: ExerciceFonction;
@@ -22,7 +30,8 @@ export class HeaderSidebarLargeComponent implements OnInit {
     private navService: NavigationService,
     private auth: AuthService,
     private store: LocalStoreService,
-    private navigationService: NavigationService
+    private navigationService: NavigationService,
+    private exerciceService: ExerciceService,
   ) {
     this.notifications = [
       {
@@ -72,6 +81,18 @@ export class HeaderSidebarLargeComponent implements OnInit {
   }
 
   ngOnInit() {
+
+    //list exercice
+    this.exerciceService.list().subscribe(
+      (data: any) => {
+        this.exerciceList = [...data];
+        this.exerciceFiltered = this.exerciceList.sort((a, b) => a.codeExercice.localeCompare(b.codeExercice));
+        console.log(this.exerciceList);
+      },
+      (error: HttpErrorResponse) => {
+        console.log('Echec atatus ==> ' + error.status);
+      });
+
     this.auth.currentToken.subscribe(token => {
       this.currentUser = this.auth.getUserFromJwtToken(token);
       if(this.currentUser!=null) {
@@ -107,14 +128,16 @@ export class HeaderSidebarLargeComponent implements OnInit {
   }
 
   onChange(currentExerciceFonctionId) {
-    const currentExerciceFonction = this.currentUser.exercicefonctions.find(e => e.id == currentExerciceFonctionId);
+    console.log('ex0',currentExerciceFonctionId);
+    
+   /* const currentExerciceFonction = this.currentUser.exercicefonctions.find(e => e.id == currentExerciceFonctionId);
     if(currentExerciceFonction !=null) {
       this.currentUser.currentExerciceFonction = currentExerciceFonction;
       this.navigationService.publishNavigationChange(this.currentUser);
       this.store.setItem('currentExerciceFonction',currentExerciceFonction);
     } else {
       this.navigationService.publishNavigationChange(null);
-    }
+    }*/
 
   }
 

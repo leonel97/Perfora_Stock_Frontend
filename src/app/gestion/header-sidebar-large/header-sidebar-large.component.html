@@ -137,6 +137,13 @@
     </div>
 </div>
 
+<div style= "z-index:50; position:fixed; right:12%; font-size: 18px;  border: 5px;">
+  <select id="exerciceSelected" (change)="onChange($event, exo )">
+    <!--option [ngValue]="null">Exercice</option-->
+    <option *ngFor="let exoSelected of exerciceFiltered" [value]="exoSelected" [selected]="exoSelected.cloturerExo == false">{{exoSelected.codeExercice+' - '+exoSelected.libExercice}}</option>
+  </select>
+</div>
+
 
 
   <div style="margin: auto"></div>
@@ -183,6 +190,9 @@
     </div>
 
     <div ngbDropdown [placement]="'bottom-right'" class="user col align-self-end">
+
+      
+
         <img src="./assets/images/faces/iconHommeNoir.jpg" id="userDropdown" ngbDropdownToggle alt="">
 
         <div ngbDropdownMenu aria-labelledby="userDropdown" class="header-account-dropdown">

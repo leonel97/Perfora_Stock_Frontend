@@ -30,8 +30,12 @@ export class StockComptaSettingService {
     return this.http.put(`${this.url}/byNum/${id}`, stockComptaSetting);
   }
 
-  list(): Observable<Object> {
+ /* list(): Observable<Object> {
     return this.http.get(`${this.url}/list`);
+  }*/
+
+  list(){
+    return this.http.get<StockComptaSetting[]>(`${this.url}/list`);
   }
 
 }

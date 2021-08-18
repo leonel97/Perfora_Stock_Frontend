@@ -14,6 +14,7 @@ import {PerfectScrollbarModule} from "ngx-perfect-scrollbar";
 import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 import {SharedPipesModule} from "../pipes/shared-pipes.module";
 import {NzDropDownModule} from "ng-zorro-antd/dropdown";
+import { NgSelectModule } from '@ng-select/ng-select';
 
 
 @NgModule({
@@ -27,6 +28,7 @@ import {NzDropDownModule} from "ng-zorro-antd/dropdown";
     SharedPipesModule,
     NgxEchartsModule,
     NzDropDownModule,
+    NgSelectModule,
   ]
 })
 export class GestionModule { }

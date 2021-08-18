@@ -17,13 +17,13 @@
 
       <ul #nav="ngbNav" [(activeId)]="activeTabsNav" class="nav-tabs" ngbNav>
         <li [ngbNavItem]="1">
-          <a ngbNavLink>Listes des Imputation des Articles et Configuration des Journaux</a>
+          <a ngbNavLink>Listes des Imputations des Articles et Configuration des Journaux</a>
           <ng-template ngbNavContent>
             <div class="row">
               <div class="col-md-4">
                 <div class="form-group">
-                  <input [formControl]="searchControl" class="form-control form-control-rounded" id="search"
-                         placeholder="Rechercher une ligne d'imputation" type="text" autocomplete="off">
+                    <input [formControl]="searchControl" class="form-control form-control-rounded" id="email"
+                    placeholder="Rechercher une ligne d'Imputation" type="email" autocomplete="off">
                 </div>
               </div>
               <div class="col-md-12">
@@ -34,45 +34,77 @@
                     [headerHeight]="50"
                     [rowHeight]="'auto'"
                     [messages]="{emptyMessage: 'Aucune donnée à afficher !!!'}"
-                    [rows]="operationJournalFiltered"
+                    [rows]="stockComptaSettingFiltered"
                     [limit]="4"
                     class="material striped"
                     style="height: 500px; box-shadow: none; overflow-y:visible">
-                    <ngx-datatable-column name="operation">
+                    <ngx-datatable-column>
                       <ng-template ngx-datatable-header-template>
                         Exportable
                       </ng-template>
+                      <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                       <!-- {{ row.exportable }}-->
+                       <p style="text-align: center;"><input class="form-check-input" type="checkbox"
+                        [(ngModel)]="row.exportable" (click)="onChoiceAFrsClickedDialog(modalConfirmChoiFrs, row)"></p>
+                      </ng-template>
+                     
                     </ngx-datatable-column>
-                    <ngx-datatable-column name="journal">
+
+                    <ngx-datatable-column>
                       <ng-template ngx-datatable-header-template>
                         Famille
                       </ng-template>
+                      <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                        {{ row.famille.codeFamille }}
+                      </ng-template>
                     </ngx-datatable-column>
-                    <ngx-datatable-column name="journal">
+
+                    <ngx-datatable-column>
                         <ng-template ngx-datatable-header-template>
-                          Désignation
+                         Désignation
                         </ng-template>
+                        <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                            {{ row.famille.libFamille }}
+                          </ng-template>
                     </ngx-datatable-column>
-                    <ngx-datatable-column name="journal">
+
+                    <ngx-datatable-column>
                         <ng-template ngx-datatable-header-template>
                           Achat
                         </ng-template>
+                        <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                            {{ row.achat }}
+                        </ng-template>
                     </ngx-datatable-column>
-                    <ngx-datatable-column name="journal">
+
+                    <ngx-datatable-column>
                         <ng-template ngx-datatable-header-template>
                           TVA/Achat
                         </ng-template>
+                        <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                            {{ row.tvaAchat }}
+                        </ng-template>
                     </ngx-datatable-column>
-                    <ngx-datatable-column name="journal">
+
+                    <ngx-datatable-column>
                         <ng-template ngx-datatable-header-template>
                             STOCK
                         </ng-template>
+                        
+                        <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                            {{ row.compteStock }}
+                        </ng-template>
                     </ngx-datatable-column>
-                    <ngx-datatable-column name="journal">
+
+                    <ngx-datatable-column>
                         <ng-template ngx-datatable-header-template>
                           V/STOCK
                         </ng-template>
+                        <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                            {{ row.compteVaStock }}
+                          </ng-template>
                     </ngx-datatable-column>
+                    
                     <ngx-datatable-column>
                       <ng-template ngx-datatable-header-template>
                         Actions
@@ -82,10 +114,10 @@
                         <button (click)="makeForm(row)" class="btn btn-primary m-1 btn-sm" ngbTooltip="Modifier" placement="bottom" type="button">
                           <i class="i-Pen-5"> </i>
                         </button>
-                        <button (click)="confirm(modalConfirm, row)" class="btn btn-outline-danger m-1 btn-sm"
+                        <!--button (click)="confirm(modalConfirm, row)" class="btn btn-outline-danger m-1 btn-sm"
                                 type="button" ngbTooltip="Supprimer" placement="bottom">
                           <i class="i-Folder-Trash"> </i>
-                        </button>
+                        </button-->
                       </ng-template>
                     </ngx-datatable-column>
                   </ngx-datatable>
@@ -95,32 +127,32 @@
           </ng-template>
         </li>
         <li [ngbNavItem]="2">
-          <a ngbNavLink><span *ngIf="! validateForm.value.numParamCompta">Nouvelle</span><span *ngIf="validateForm.value.numParamCompta" span>Modifier</span>Imputation des Articles et Configuration des Journaux</a>
+          <a ngbNavLink><span *ngIf="! validateForm.value.numParamCompta">Nouvelle </span><span *ngIf="validateForm.value.numParamCompta" span>Modifier </span>Imputation des Articles et Configuration des Journaux</a>
           <ng-template ngbNavContent>
 
             <div class="mb-2">
               <form (ngSubmit)="submit()" [formGroup]="validateForm">
                 <div class="row">
                   <div class="col-md-5 form-group mb-3">
-                    <label for="operation">Famille <span class="required-field">*</span> </label>
-                    <input class="form-control" formControlName="operation" id="operation"
+                    <label for="compteStock">Compte Stock </label>
+                    <input class="form-control" formControlName="compteStock" id="compteStock"
                            placeholder="Opération" type="text" autocomplete="off">
-                    <div *ngIf="validateForm.controls.operation.errors &&
-                   (validateForm.controls.operation.dirty || validateForm.controls.operation.touched)"
+                    <!--div *ngIf="validateForm.controls.compteStock.errors &&
+                   (validateForm.controls.compteStock.dirty || validateForm.controls.compteStock.touched)"
                          class="error-field">
                       Ce champs est obligatoire !
-                    </div>
+                    </div-->
                   </div>
 
                   <div class="col-md-7 form-group mb-3">
-                    <label for="valeur">Journal <span class="required-field">*</span> </label>
-                    <input class="form-control" formControlName="journal" id="journal"
+                    <label for="compteVaStock">Compte Variation Stock </label>
+                    <input class="form-control" formControlName="compteVaStock" id="journal"
                            placeholder="Journal associé" type="text" autocomplete="off">
-                    <div *ngIf="validateForm.controls.journal.errors &&
-                   (validateForm.controls.journal.dirty || validateForm.controls.journal.touched)"
+                    <!--div *ngIf="validateForm.controls.compteVaStock.errors &&
+                   (validateForm.controls.compteVaStock.dirty || validateForm.controls.compteVaStock.touched)"
                          class="error-field">
                       Ce champs est obligatoire !
-                    </div>
+                    </div-->
                   </div>
 
                   <div class="col-md-12">
@@ -160,6 +192,30 @@
       <button (click)="modal.dismiss('cancel')" class="btn btn-outline-secondary btn-rounded" type="button">Annuler
       </button>
       <button (click)="modal.close('Ok')" class="btn btn-danger btn-rounded" ngbAutofocus
+              type="button">Confirmer
+      </button>
+    </div>
+  </ng-template>
+
+  <ng-template #modalConfirmChoiFrs let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title" id="modal-title">Imputation des Articles</h4>
+      <button (click)="modal.dismiss('Cross click')" aria-describedby="modal-title" aria-label="Close button"
+              class="close"
+              type="button">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p>
+        <strong>Confirmez-vous <strong class="text-success" *ngIf="etatImputation == false">l'imputation</strong>
+        <strong class="text-danger" *ngIf="etatImputation == true">l'Annulation de l'imputation</strong> des articles de la famille 
+          <span class="text-primary">{{ etatImpStockComptaSetting.famille?.codeFamille }} - {{ etatImpStockComptaSetting.famille?.libFamille }}</span> ?</strong></p>
+    </div>
+    <div class="modal-footer">
+      <button (click)="modal.dismiss('cancel')" class="btn btn-outline-secondary btn-rounded" type="button">Annuler
+      </button>
+      <button (click)="modal.close('Ok')" class="btn btn-success btn-rounded" ngbAutofocus
               type="button">Confirmer
       </button>
     </div>

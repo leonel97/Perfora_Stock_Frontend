@@ -250,7 +250,7 @@ export class DemandePrixComponent implements OnInit {
 
   filerData(val) {
     if (val) {
-      val = val.toLowerCase();
+      val = val.toString().toLowerCase();
     } else {
       return this.demandePrixFiltered = [...this.demandePrixList.sort((a, b) => a.idDemandePrix.localeCompare(b.idDemandePrix.valueOf()))];
     }
