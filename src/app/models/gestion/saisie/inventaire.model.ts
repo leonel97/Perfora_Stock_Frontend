@@ -3,6 +3,8 @@ import { Magasin } from '../definition/magasin.model';
 
 export class Inventaire {
 
+  public dateValidation: Date;
+
   constructor(public numInv: String, public dateInv: Date, public descrInv: String,
     public valideInve: boolean, public valeur: number, public exercice: Exercice, public magasin: Magasin){
 

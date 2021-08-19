@@ -14,10 +14,10 @@
         <a class="nav-link" id="v-pills-settings2-tab" data-toggle="pill" href="#v-pills-settings2" role="tab" aria-controls="v-pills-settings2" aria-selected="false">
           Fiche de Stock
         </a>
-        -->
+        
         <a class="nav-link" id="v-pills-settings-tab" data-toggle="pill" href="#v-pills-settings" role="tab" aria-controls="v-pills-settings" aria-selected="false">
           Evolution du Stock
-        </a>
+        </a>-->
         <a class="nav-link" id="v-pills-settings3-tab" data-toggle="pill" href="#v-pills-settings3" role="tab" aria-controls="v-pills-settings3" aria-selected="false">
           Mouvement d'un Article
         </a>
@@ -141,11 +141,42 @@
         <div class="tab-pane fade" id="v-pills-settings2" role="tabpanel" aria-labelledby="v-pills-settings2-tab"> 5 Placeholder content for the tab panel. This one relates to the messages tab. You got the finest architecture. Passport stamps, she's cosmopolitan. Fine, fresh, fierce, we got it on lock. Never planned that one day I'd be losing you. She eats your heart out. Your kiss is cosmic, every move is magic. I mean the ones, I mean like she's the one. Greetings loved ones let's take a journey. Just own the night like the 4th of July! But you'd rather get wasted.</div>
         <div class="tab-pane fade" id="v-pills-settings3" role="tabpanel" aria-labelledby="v-pills-settings3-tab"> 
           <!--Contenu Onglet 6-->
+          <form [formGroup]="validateForm6" (ngSubmit)="submit6()">
+            <div class="card-title mb-3 border-bottom pb-2">Mouvement d'Article</div>
+            <div class="row">
+              <div class="col-md form-group mb-3">
+                <label for="dateDebut">Date de début <span class="required-field">*</span> </label>
+                <input class="form-control" formControlName="dateDebut" id="dateDebut"
+                       placeholder="Entrer le code" type="date" autocomplete="off">
+                <div *ngIf="validateForm6.controls.dateDebut.errors &&
+               (validateForm6.controls.dateDebut.dirty || validateForm6.controls.dateDebut.touched)"
+                     class="error-field">
+                  Ce champs est obligatoire !
+                </div>
+              </div>
+  
+              <div class="col-md form-group mb-3">
+                <label for="dateFin">Date de fin <span class="required-field">*</span> </label>
+                <input class="form-control" formControlName="dateFin" id="dateFin"
+                       placeholder="Entrer le libellé" type="date" autocomplete="off">
+                <div *ngIf="validateForm6.controls.dateFin.errors &&
+               (validateForm6.controls.dateFin.dirty || validateForm6.controls.dateFin.touched)"
+                     class="error-field">
+                  Ce champs est obligatoire !
+                </div>
+              </div>
+
+              <div class="col-md">
+                <btn-loading btnClass="btn-primary" ngbAutofocus [loading]="loading6">Mouvement</btn-loading>
+                
+              </div>
+            </div>
+          </form>
           <div class="row">
             <div class="col-md-4">
               <div class="form-group">
                 <input [formControl]="searchControlArticle" class="form-control form-control-rounded" id="email"
-                       placeholder="Rechercher Article" type="email">
+                       placeholder="Rechercher Article" type="text">
               </div>
             </div>
             
@@ -207,7 +238,7 @@
                   <ngx-datatable-column>
                     <ng-template ngx-datatable-header-template>
                       Choisir ? <label class="checkbox checkbox-success">
-                        <input type="checkbox" [checked]="(selectedArticleForMvt.length == articleFiltered.length && selectedArticleForMvt.length != 0)" (click)="selectAllArtForMvt()">
+                        <input type="checkbox" [checked]="(selectedArticleForMvt?.length == articleFiltered?.length && selectedArticleForMvt?.length != 0)" (click)="selectAllArtForMvt()">
                         <span aria-disabled="true" class="checkmark"></span>
                       </label>
                     </ng-template>

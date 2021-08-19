@@ -9,4 +9,52 @@
 
     <div class="separator-breadcrumb border-top"></div>
     <!--Contenu component Génération des écritures comptables-->
+
+     <!--Contenu Onglet 1-->
+     <div style="display: flex; align-items: center; justify-content: center;">
+        <div class="card mb-4" style="margin: auto; min-width: 60%; ">
+          <div class="card-body">
+            <form [formGroup]="validateForm" (ngSubmit)="submit()">
+              <div class="card-title mb-3 border-bottom pb-2">Journal Comptable</div>
+
+              <div class="row">
+                <div class="col-md-6 form-group mb-3">
+                  <label for="dateDebut">Date de début <span class="required-field">*</span> </label>
+                  <input class="form-control" formControlName="dateDebut" id="dateDebut"
+                        placeholder="Entrer le code" type="date" autocomplete="off">
+                  <div *ngIf="validateForm.controls.dateDebut.errors &&
+                (validateForm.controls.dateDebut.dirty || validateForm.controls.dateDebut.touched)"
+                      class="error-field">
+                    Ce champs est obligatoire !
+                  </div>
+                </div>
+    
+                <div class="col-md-6 form-group mb-3">
+                  <label for="dateFin">Date de fin <span class="required-field">*</span> </label>
+                  <input class="form-control" formControlName="dateFin" id="dateFin"
+                        placeholder="Entrer le libellé" type="date" autocomplete="off">
+                  <div *ngIf="validateForm.controls.dateFin.errors &&
+                (validateForm.controls.dateFin.dirty || validateForm.controls.dateFin.touched)"
+                      class="error-field">
+                    Ce champs est obligatoire !
+                  </div>
+                </div>
+
+              </div>
+
+              <div class="row">
+                <div class="col-md-12">
+                  <btn-loading btnClass="btn-primary" ngbAutofocus [loading]="loading">Générer</btn-loading>
+                  <button (click)="resetForm()" class="btn m-1 ml-2 btn-cancel" type="button"> Annuler</button>
+                </div>
+              </div>
+            </form>
+
+
+
+          </div>
+        </div>
+      </div>
+
+
 </div>

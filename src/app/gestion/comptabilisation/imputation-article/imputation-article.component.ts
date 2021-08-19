@@ -50,9 +50,7 @@ export class ImputationArticleComponent implements OnInit {
     this.familleService.getAllFamille().subscribe(
       (data) => {
         this.familleList = [...data];
-        //this.familleFiltered = this.familleList.sort((a, b) => a.codeFamille.localeCompare(b.codeFamille.valueOf()));
         console.log(this.familleList);
-        //this.familleList2 = data;
       },
       (error: HttpErrorResponse) => {
         console.log('Echec status ==> ' + error.status);
@@ -260,10 +258,12 @@ getAllStockComptaSetting(){
   }
 
   //
-  onChoiceAFrsClickedDialog(content, SelectedLigneImputation:StockComptaSetting){
+  onChoiceAFrsClickedDialog(content, SelectedLigneImputation:StockComptaSetting, indexChecked: number){
 
     
     console.log(SelectedLigneImputation);
+    console.log(indexChecked);
+    
     this.etatImpStockComptaSetting = SelectedLigneImputation;
     
     this.etatImputation = SelectedLigneImputation.exportable;
@@ -273,19 +273,30 @@ getAllStockComptaSetting(){
     this.modalService.open(content,
       {ariaLabelledBy: 'modal-basic-title', centered: true})
       .result.then((result) => {
+       
+          console.log('avant updated 1', SelectedLigneImputation);
+          if(this.etatImputation == false){
+            SelectedLigneImputation.exportable = true;
 
-       /* this.selectedCurrentFrsInter.forEach((element, ind) => {
-          if(inde != ind){
-            element.choisit = false;
+          }else{
+            SelectedLigneImputation.exportable = false;
+
           }
-        });*/
+            
+        this.stockComptaSettingService.updateStockComptaSetting(SelectedLigneImputation.numParamCompta, SelectedLigneImputation).subscribe(
+          (data) => {
+            //this.stockComptaSettingFiltered = [...data];
+            console.log('updated',data);
+          },
+          (error: HttpErrorResponse) => {
+            console.log('Echec status ==> ' + error.status);
+          });
 
-        //console.log(this.selectedCurrentFrsInter[inde].choisit);
 
 
     }, (reason) => {
-      //this.selectedCurrentFrsInter[inde].choisit = !this.selectedCurrentFrsInter[inde].choisit;
-      //console.log(this.selectedCurrentFrsInter[inde].choisit);
+      this.stockComptaSettingFiltered[indexChecked].exportable = !this.etatImpStockComptaSetting.exportable;
+      console.log(this.stockComptaSettingFiltered[indexChecked].exportable);
       console.log(`Dismissed with: ${reason}`);
       //this.selectedCurrentFrsInter = [];
     });

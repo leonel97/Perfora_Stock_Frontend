@@ -57,6 +57,7 @@ export interface modelLigneRecept{
   concernedStocker: Stocker;
   qteRest: number;
 
+
 }
 
 @Component({
@@ -403,16 +404,19 @@ export class EntreeArticleComponent  implements OnInit {
       if(this.detailView == true) this.detailView = false;
       for(const ligCo of this.ligneReceptList){
         if(ligCo.reception.numReception == reception.numReception){
+          let ne = new LigneReception(ligCo.quantiteLigneReception, ligCo.puLigneReception, ligCo.observationLigneReception, 
+            ligCo.lastCump, ligCo.ligneCommande, ligCo.reception, ligCo.lastStockQte);
+            ne.idLigneReception = ligCo.idLigneReception;
           this.ligneShow.push({
-            ligneReception: ligCo,
+            ligneReception: ne,
             listArticle: this.getNotUsedArticle(),
-            uniter: ligCo.ligneCommande.uniter,
-            selectedArticl: ligCo.ligneCommande.article.numArticle,
-            selectedUniter: ligCo.ligneCommande.uniter ? ligCo.ligneCommande.uniter.numUniter : null,
-            prixUnitaire: ligCo.puLigneReception,
-            concernedLigneCom: ligCo.ligneCommande,
-            concernedStocker: this.getStockerByArtiAndMagasin(ligCo.ligneCommande.article, reception.magasin),
-            qteRest: this.getQteRestanOfALigCom(ligCo.ligneCommande) + ligCo.quantiteLigneReception
+            uniter: ne.ligneCommande.uniter,
+            selectedArticl: ne.ligneCommande.article.numArticle,
+            selectedUniter: ne.ligneCommande.uniter ? ne.ligneCommande.uniter.numUniter : null,
+            prixUnitaire: ne.puLigneReception,
+            concernedLigneCom: ne.ligneCommande,
+            concernedStocker: this.getStockerByArtiAndMagasin(ne.ligneCommande.article, reception.magasin),
+            qteRest: this.getQteRestanOfALigCom(ne.ligneCommande) + ne.quantiteLigneReception
           });
         }
       }

@@ -45,7 +45,7 @@
                       <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
                        <!-- {{ row.exportable }}-->
                        <p style="text-align: center;"><input class="form-check-input" type="checkbox"
-                        [(ngModel)]="row.exportable" (click)="onChoiceAFrsClickedDialog(modalConfirmChoiFrs, row)"></p>
+                        [(ngModel)]="row.exportable" (click)="onChoiceAFrsClickedDialog(modalConfirmChoiFrs, row, rowIndex)"></p>
                       </ng-template>
                      
                     </ngx-datatable-column>

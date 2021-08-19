@@ -26,6 +26,13 @@ import { ApprovisionnementService } from 'src/app/services/gestion/saisie/approv
 import { Stocker } from 'src/app/models/gestion/saisie/stocker.model';
 import { element } from 'protractor';
 import { debounceTime } from 'rxjs/operators';
+import { LigneReceptionService } from 'src/app/services/gestion/saisie/ligne-reception.service';
+import { LigneApproService } from 'src/app/services/gestion/saisie/ligne-appro.service';
+import { LigneReception } from 'src/app/models/gestion/saisie/ligneReception.model';
+import { LigneAppro } from 'src/app/models/gestion/saisie/ligneAppro.model';
+import { LigneInventaireService } from 'src/app/services/gestion/saisie/ligneInventaire.service';
+import { LigneInventaire } from 'src/app/models/gestion/saisie/ligneInventaire.model';
+import { Inventaire } from 'src/app/models/gestion/saisie/inventaire.model';
 
 @Component({
   selector: 'app-stock',
@@ -39,6 +46,7 @@ export class StockComponent implements OnInit {
   validateForm3: FormGroup;
   validateForm4: FormGroup;
   validateForm5: FormGroup;
+  validateForm6: FormGroup;
   cloturePeriodiqList: CloturePeriodiq[] = [];
   familleList: Famille[] = [];
   filteredFamilleList: Famille[] = [];
@@ -50,6 +58,7 @@ export class StockComponent implements OnInit {
   loading3: boolean;
   loading4: boolean;
   loading5: boolean;
+  loading6: boolean;
   lastCloture: CloturePeriodiq = null;
 
     //--------Pour les articles-----------
@@ -67,6 +76,9 @@ export class StockComponent implements OnInit {
     private stockerService: StockerService,
     private rceptionService: ReceptionService,
     private approService: ApprovisionnementService,
+    private ligneReceptionService: LigneReceptionService,
+    private ligneApproService: LigneApproService,
+    private ligneInventaireService: LigneInventaireService,
     private fb: FormBuilder,
     private toastr: ToastrService,
     private modalService: NgbModal
@@ -80,6 +92,7 @@ export class StockComponent implements OnInit {
 
     this.makeForm(null);
     this.makeForm2(null);
+    this.makeForm6(null);
     this.getAllFamille();
     this.getAllTypeArticle();
     this.getAllMagasin();
@@ -263,6 +276,14 @@ export class StockComponent implements OnInit {
 
   }
 
+  makeForm6(donne): void {
+    this.validateForm6 = this.fb.group({
+      dateDebut: [ moment(Date.now()).format('yyyy-01-01'), [Validators.required]],
+      dateFin: [ moment(Date.now()).format('yyyy-12-31'), [Validators.required]],
+    });
+
+  }
+
   submit2(){
     this.loading2 = true;
     if (this.validateForm2.valid == false) {
@@ -274,6 +295,293 @@ export class StockComponent implements OnInit {
     } else {
       this.printEtatStockPdf();
     }
+
+  }
+
+  submit6(){
+    this.loading6 = true;
+    if (this.validateForm2.valid == false) {
+
+      setTimeout(() => {
+        this.loading6 = false;
+        this.toastr.error('Veuillez remplir les champs convenablement.', ' Erreur !', {progressBar: true});
+      }, 3000);
+    } else if(this.selectedArticleForMvt.length == 0){
+      
+      setTimeout(() => {
+        this.loading6 = false;
+        this.toastr.error('Veuillez Choisir un article.', ' Erreur !', {progressBar: true});
+      }, 3000);
+    }
+    else {
+      this.printEtatMvtArticlePdf();
+    }
+
+  }
+
+  printEtatMvtArticlePdf(){
+    
+    const formData = this.validateForm6.value;
+    
+    const doc = new jsPDF({orientation: "landscape"});
+
+    let articles: Article[] = [...this.selectedArticleForMvt];
+    let dateSto: Date = new Date(formData.dateDebut.toString());
+
+    dateSto = new Date(dateSto.getFullYear(), dateSto.getMonth(), dateSto.getDate()-1);
+    
+    autoTable(doc, {
+      theme: 'plain',
+      margin: { top: 5, left:35, right:9, bottom:100 },
+      columnStyles: {
+        0: { textColor: 'blue', fontStyle: 'bold', halign: 'left' },
+        1: { textColor: 'blue', fontStyle: 'bold', halign: 'right' },
+      },
+      body: [
+        ['PORT AUTONOME DE LOME\n\nTel.: 22.27.47.42/22.27.33.91/22.27.33.92\nFax: (228) 22.27.26.27\nCARTE N° 950113V',
+        'REPUBLIQUE TOGOLAISE\n\nTravail-Liberté-Patrie       ']
+      ]
+      ,
+    });
+    doc.addImage(Utils.logoUrlData, 'jpeg', 10, 5, 25, 25);
+
+
+    doc.setDrawColor(0);
+    doc.setFillColor(233 , 242, 248);
+    doc.roundedRect(90, 35, 130, 10, 3, 3, 'FD');
+    doc.setFontSize(20);
+    doc.text('MOUVEMENT D\'ARTICLE', 110, 43);
+
+    autoTable(doc, {
+      theme: 'plain',
+      startY:50,
+      margin: { top: 0 },
+      columnStyles: {
+        0: { textColor: 0, fontStyle: 'bold', halign: 'center' },
+      },
+      body: [
+        ['Mouvement d\'article entre sur la Période du '+moment(formData.dateDebut).format('DD/MM/YYYY')+' au '+moment(formData.dateFin).format('DD/MM/YYYY')]
+      ]
+      ,
+    });
+
+    this.ligneInventaireService.getAllLigneInventaire().subscribe(
+      (data3) => {
+        this.ligneApproService.getAllLigneAppro().subscribe(
+          (data4) => {
+    
+            this.ligneReceptionService.getAllLigneReception().subscribe(
+              (data5) => {
+    
+                let validLigneReception: LigneReception[] = data5.filter((l) => l.reception.valideRecep && Date.parse(l.reception.dateReception.toString()) >= Date.parse(formData.dateDebut) && Date.parse(l.reception.dateReception.toString()) <= Date.parse(formData.dateFin));
+                
+                let validLigneAppro: LigneAppro[] = data4.filter((l) => l.appro.valideAppro && Date.parse(l.appro.dateAppro.toString()) >= Date.parse(formData.dateDebut) && Date.parse(l.appro.dateAppro.toString()) <= Date.parse(formData.dateFin));
+                
+                let validLigneInventaire: LigneInventaire[] = data3.filter((l) => l.inventaire.valideInve && Date.parse(l.inventaire.dateInv.toString()) >= Date.parse(formData.dateDebut) && Date.parse(l.inventaire.dateInv.toString()) <= Date.parse(formData.dateFin))
+    
+                articles.forEach(elemente => {
+    
+    
+                  let lignes = [];
+                  
+                  
+                  if(elemente.exo && Date.parse(elemente.datStInitArtTres.toString()) >= Date.parse(formData.dateDebut) && Date.parse(elemente.datStInitArtTres.toString()) <= Date.parse(formData.dateFin)){
+
+                    let lig = [];
+                    lig.push(moment(elemente.datStInitArtTres).format('DD/MM/YYYY'));
+                    lig.push('Stock Init');
+                    lig.push('');
+                    lig.push('');
+                    lig.push(elemente.qteStIniTres);
+                    lig.push('');
+                    lig.push(elemente.puStIniTres);
+                    lig.push(elemente.qteStIniTres*elemente.puStIniTres);
+                    lig.push('');
+                    lig.push('');
+                    lig.push(-1);
+                    lig.push(Date.parse(elemente.datStInitArtTres.toString()));
+                    
+    
+                    lignes.push(lig);
+
+
+                  }
+    
+                  validLigneReception.filter((l) => l.ligneCommande.article.numArticle == elemente.numArticle).forEach(element2 => {
+    
+                   
+
+                    let lig = [];
+                    lig.push(moment(element2.reception.dateReception).format('DD/MM/YYYY'));
+                    lig.push(element2.reception.numReception);
+                    lig.push('');
+                    lig.push('');
+                    lig.push(element2.quantiteLigneReception*element2.ligneCommande.uniter.poids);
+                    lig.push('');
+                    lig.push(element2.puLigneReception/element2.ligneCommande.uniter.poids);
+                    lig.push(element2.quantiteLigneReception*element2.puLigneReception*(1+(element2.ligneCommande.tva/100)));
+                    lig.push('');
+                    lig.push('');
+                    lig.push(0);
+                    lig.push(Date.parse(element2.reception.dateValidation.toString()));
+                    lig.push(1+(element2.ligneCommande.tva/100));
+    
+                    lignes.push(lig);
+    
+                  });
+    
+    
+                  validLigneAppro.filter((l) => l.ligneDA.article.numArticle == elemente.numArticle).forEach(element2 => {
+    
+                    let lig = [];
+                    lig.push(moment(element2.appro.dateAppro).format('DD/MM/YYYY'));
+                    lig.push(element2.appro.numAppro);
+                    lig.push('');
+                    lig.push('');
+                    lig.push('');
+                    lig.push(element2.quantiteLigneAppro*element2.ligneDA.uniter.poids);
+                    lig.push(element2.puligneAppro);
+                    lig.push(element2.quantiteLigneAppro*element2.ligneDA.uniter.poids*element2.puligneAppro);
+                    lig.push('');
+                    lig.push('');
+                    lig.push(1);
+                    lig.push(Date.parse(element2.appro.dateValidation.toString()));
+    
+                    lignes.push(lig);
+    
+                  });
+
+                  validLigneInventaire.filter((l) => l.article.numArticle == elemente.numArticle).forEach(element2 => {
+    
+                    let lig = [];
+                    lig.push(moment(element2.inventaire.dateInv).format('DD/MM/YYYY'));
+                    lig.push(element2.inventaire.numInv);
+                    lig.push('');
+                    lig.push('');
+                    lig.push(element2.stockTheoriq < element2.stockreel ? element2.stockreel-element2.stockTheoriq : '');
+                    lig.push(element2.stockTheoriq >= element2.stockreel ? element2.stockTheoriq-element2.stockreel : '');
+                    lig.push(element2.pu);
+                    lig.push(Math.abs(element2.stockreel-element2.stockTheoriq)*element2.pu);
+                    lig.push('');
+                    lig.push('');
+                    lig.push(2);
+                    lig.push(Date.parse(element2.inventaire.dateValidation.toString()));
+    
+                    lignes.push(lig);
+    
+                  });
+
+                  lignes.sort((a, b) => {
+                    
+                    let dat1 = a[11];
+                    let dat2 = b[11];
+                    if(dat1 > dat2){
+                      return 1;
+                    }
+                    else if(dat1 < dat2){
+                      return -1;
+                    }
+                    else{
+                      return 0;
+                    }
+                    
+                  });
+
+                  //console.log(lignes);
+                  lignes.push(['', '', '', '', '', '', '', '', '', '', '', ''])
+
+                  lignes.forEach((element2, inde) => {
+                    if(inde == 0){
+                      let tabSto = this.getStockOfArtiAtADate(elemente, data3, data5, data4, new Date(formData.dateDebut.toString()));
+                      element2[2] = tabSto[0];
+                      element2[3] = tabSto[1];
+
+                    }
+                    else{
+                      if(lignes[inde-1][10] == 0){
+                        element2[2] = lignes[inde-1][2]+lignes[inde-1][4];
+                        element2[3] = ((lignes[inde-1][2]*lignes[inde-1][3])+(lignes[inde-1][4]*lignes[inde-1][6]*lignes[inde-1][12]))/(lignes[inde-1][2]+lignes[inde-1][4]);
+                        lignes[inde-1][8] = element2[2];
+                        lignes[inde-1][9] = element2[3];
+
+                      }
+                      else if(lignes[inde-1][10] == 1){
+                        element2[2] = lignes[inde-1][2]-lignes[inde-1][5];
+                        element2[3] = lignes[inde-1][6];
+                        lignes[inde-1][8] = element2[2];
+                        lignes[inde-1][9] = element2[3];
+
+                      }
+                      else if(lignes[inde-1][10] == 2){
+                        element2[2] = lignes[inde-1][4] != '' ? lignes[inde-1][2]+lignes[inde-1][4] : lignes[inde-1][2]-lignes[inde-1][5];
+                        element2[3] = lignes[inde-1][6];
+                        lignes[inde-1][8] = element2[2];
+                        lignes[inde-1][9] = element2[3];
+                      }
+                      else if(lignes[inde-1][10] == -1){
+                        element2[2] = lignes[inde-1][4];//lignes[inde-1][2]+lignes[inde-1][4];
+                        element2[3] = lignes[inde-1][6];
+                        lignes[inde-1][8] = element2[2];
+                        lignes[inde-1][9] = element2[3];
+                      }
+
+                    }
+                    
+                  });
+
+                  lignes.splice(lignes.length-1, 1);
+                                
+                  autoTable(doc, {
+                    theme: 'plain',
+                    columnStyles: {
+                      0: { textColor: 0, fontStyle: 'bold', halign: 'center', fontSize:16 },
+                    },
+                    body: [
+                      [elemente.codeArticle+' - '+elemente.libArticle],
+                      
+                    ]
+                    ,
+                  });
+    
+                  autoTable(doc, {
+                    theme: 'grid',
+                    head: [['Date', 'Pièce', 'Qte Init.', 'Valeur', 'Entrée', 'Sortie', 'PU', 'Montant', 'Qte Finale', 'Valeur']],
+                    headStyles:{
+                      fillColor: [41, 128, 185],
+                      textColor: 255,
+                      fontStyle: 'bold' ,
+                  },
+                    body: lignes
+                    ,
+                  });
+    
+    
+    
+                });
+    
+                        
+                this.loading6 = false;
+                //doc.output('dataurlnewwindow');
+                doc.save('sal.pdf');
+    
+              },
+              (error: HttpErrorResponse) => {
+                console.log('Echec status ==> ' + error.status);
+              }
+            );
+    
+          },
+          (error: HttpErrorResponse) => {
+            console.log('Echec status ==> ' + error.status);
+          }
+        );
+    
+      },
+      (error: HttpErrorResponse) => {
+        console.log('Echec status ==> ' + error.status);
+      }
+    );
+
 
   }
 
@@ -440,8 +748,9 @@ export class StockComponent implements OnInit {
 
 
         this.loading = false;
-        doc.output('dataurlnewwindow');
-
+        //doc.output('dataurlnewwindow');
+        
+        doc.save('articleParMagasin.pdf');
 
 
       },
@@ -452,12 +761,16 @@ export class StockComponent implements OnInit {
 
 
   }
-
+  
 
   printEtatStockPdf(){
 
-    const formData = this.validateForm.value;
+    const formData = this.validateForm2.value;
     const doc = new jsPDF();
+
+    let dateSto: Date = new Date(formData.date.toString());
+
+    dateSto = new Date(dateSto.getFullYear(), dateSto.getMonth(), dateSto.getDate());
 
     let magasin: Magasin[] = null;
 
@@ -493,7 +806,7 @@ export class StockComponent implements OnInit {
         0: { textColor: 0, fontStyle: 'bold', halign: 'center' },
       },
       body: [
-        ['Etat de Stock Par Magasin au PORT AUTONOME DE LOME à la date du '+moment(Date.now()).format('DD/MM/YYYY')]
+        ['Etat de Stock Par Magasin au PORT AUTONOME DE LOME à la date du '+moment(formData.date).format('DD/MM/YYYY')]
       ]
       ,
     });
@@ -518,13 +831,13 @@ export class StockComponent implements OnInit {
       (data) => {
         this.articleList = data;
 
-        this.inventaireService.getAllInventaire().subscribe(
+        this.ligneInventaireService.getAllLigneInventaire().subscribe(
           (data2) => {
 
-            this.rceptionService.getAllReception().subscribe(
+            this.ligneReceptionService.getAllLigneReception().subscribe(
               (data3) => {
 
-                this.approService.getAllAppro().subscribe(
+                this.ligneApproService.getAllLigneAppro().subscribe(
                   (data4) => {
 
                     this.stockerService.getAllStocker().subscribe(
@@ -534,6 +847,16 @@ export class StockComponent implements OnInit {
 
                           let concernedFictifStocker: Stocker[] = data5.filter((l) => l.magasin.numMagasin == elemente.numMagasin);
 
+                          /* */
+                          concernedFictifStocker.forEach(ele => {
+                            let info = this.getStockOfArtiAtADate(ele.article, data2, data3, data4, dateSto);
+                            
+                            ele.quantiterStocker = info[0];
+                            ele.cmup = info[1];
+                            
+                          });
+                          
+                          
                           data.filter((l) => l.famille && l.famille.magasin && l.famille.magasin.numMagasin == elemente.numMagasin).forEach(eleme => {
                             if(!concernedFictifStocker.find((l) => l.article.numArticle == eleme.numArticle)){
                               concernedFictifStocker.push(new Stocker(0, 0, 0, 0, eleme, elemente));
@@ -621,4 +944,62 @@ export class StockComponent implements OnInit {
 
   }
 
+  getStockOfArtiAtADate(article:Article, lignesIventaire: LigneInventaire[], lignesReception: LigneReception[], lignesAppro: LigneAppro[], dateSt: Date): number[]{
+    let tab:number[] = [0, 0];
+
+    let lig = [];
+
+    let concernedLignInv = lignesIventaire.filter((l) => l.inventaire.valideInve && l.article.numArticle == article.numArticle && Date.parse(l.inventaire.dateInv.toString()) <= dateSt.valueOf()).sort((a, b) => Date.parse(a.inventaire.dateInv.toString()) > Date.parse(b.inventaire.dateInv.toString()) ? -1 : 1 )[0];
+    let concernedLignRecep = lignesReception.filter((l) => l.reception.valideRecep && l.ligneCommande.article.numArticle == article.numArticle && Date.parse(l.reception.dateReception.toString()) <= dateSt.valueOf()).sort((a, b) => Date.parse(a.reception.dateReception.toString()) > Date.parse(b.reception.dateReception.toString())? -1 : 1 )[0];
+    let concernedLignAppro = lignesAppro.filter((l) => l.appro.valideAppro && l.ligneDA.article.numArticle == article.numArticle && Date.parse(l.appro.dateAppro.toString()) <= dateSt.valueOf()).sort((a, b) => Date.parse(a.appro.dateAppro.toString()) > Date.parse(b.appro.dateAppro.toString())? -1 : 1 )[0];
+
+    if(article.exo && Date.parse(article.datStInitArtTres.toString()) <= dateSt.valueOf()) {
+      let li = [];
+      li.push(Date.parse(article.datStInitArtTres.toString()));
+      li.push(article.qteStIniTres);
+      li.push(article.puStIniTres);
+
+      lig.push(li);
+    }
+    
+    if(concernedLignInv) {
+      let li = [];
+      li.push(Date.parse(concernedLignInv.inventaire.dateInv.toString()));
+      li.push(concernedLignInv.stockreel);
+      li.push(concernedLignInv.pu);
+
+      lig.push(li);
+    }
+
+    if(concernedLignRecep) {
+      let li = [];
+      li.push(Date.parse(concernedLignRecep.reception.dateReception.toString()));
+      li.push(concernedLignRecep.lastStockQte+(concernedLignRecep.quantiteLigneReception*concernedLignRecep.ligneCommande.uniter.poids));
+      concernedLignRecep.lastCump = ((concernedLignRecep.lastStockQte*concernedLignRecep.lastCump)+((concernedLignRecep.quantiteLigneReception*concernedLignRecep.ligneCommande.uniter.poids)*(concernedLignRecep.ligneCommande.puLigneCommande/concernedLignRecep.ligneCommande.uniter.poids)))/(concernedLignRecep.lastStockQte+(concernedLignRecep.quantiteLigneReception*concernedLignRecep.ligneCommande.uniter.poids));
+      li.push(concernedLignRecep.lastCump);
+
+      lig.push(li);
+    }
+
+    if(concernedLignAppro) {
+      let li = [];
+      li.push(Date.parse(concernedLignAppro.appro.dateAppro.toString()));
+      li.push(concernedLignAppro.lastStockQte-(concernedLignAppro.quantiteLigneAppro*concernedLignAppro.ligneDA.uniter.poids));
+      li.push(concernedLignAppro.puligneAppro);
+
+      lig.push(li);
+    }
+
+    lig.sort((a, b) => a[0] < b[0] ? 1: -1 );
+    console.log('liii', lig);
+    if(lig.length > 0){
+      tab[0] = lig[0][1];
+      tab[1] = lig[0][2];
+    }
+    
+    return tab;
+
+  }
+
 }
+
