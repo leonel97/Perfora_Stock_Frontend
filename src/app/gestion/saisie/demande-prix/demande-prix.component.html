@@ -3,7 +3,7 @@
         <h1> Gestion des Demandes de Renseignement de prix</h1>
         <ul>
             <li><a href="">Saisie</a></li>
-            <li>Demande de Renseignement de de prix</li>
+            <li>Demande de Renseignement de prix</li>
         </ul>
     </div>
 
@@ -12,11 +12,11 @@
 
     <div class="card mb-4">
       <div class="card-body">
-        <div class="card-title mb-3 border-bottom pb-2">Gestion des Demande de Renseignement de de prix</div>
+        <div class="card-title mb-3 border-bottom pb-2">Gestion des Demande de Renseignement de prix</div>
 
         <ul #nav="ngbNav" [(activeId)]="activeTabsNav" class="nav-tabs" ngbNav>
           <li [ngbNavItem]="1">
-            <a ngbNavLink>Liste des Demande de Renseignement de de prix</a>
+            <a ngbNavLink>Liste des Demande de Renseignement de prix</a>
             <ng-template ngbNavContent>
               <div class="row">
                 <div class="col-md-4">
@@ -122,7 +122,7 @@
 
 
           <li [ngbNavItem]="2">
-            <a ngbNavLink><span *ngIf="! validateForm.value.numComAchat">Nouvelle</span><span *ngIf="validateForm.value.numComAchat" span>Modifier</span> Demande de Renseignement de de prix</a>
+            <a ngbNavLink><span *ngIf="! validateForm.value.numComAchat">Nouvelle</span><span *ngIf="validateForm.value.numComAchat" span>Modifier</span> Demande de Renseignement de prix</a>
             <ng-template ngbNavContent>
 
               <div class="mb-2">
@@ -132,7 +132,7 @@
                   <btn-loading btnClass="btn-primary" [loading]="loading" (click)="submit()">Enrégistrer</btn-loading>
                 </div>
                 <form [formGroup]="validateForm">
-                  <h4 class="font-weight-bold">Informations sur la Demande de de Renseignement de prix</h4>
+                  <h4 class="font-weight-bold">Informations sur la Demande de Renseignement de prix</h4>
                   <div class="row">
                       <div class="col-md" *ngIf="validateForm.value.idDemandePrix">
                           <div class="col-md form-group">
@@ -142,7 +142,7 @@
                           </div>
                       </div>
                       <div class="col-md form-group mb-3">
-                        <label for="picker1">Date de Demande de Renseignement de de Prix</label>
+                        <label for="picker1">Date de Demande de Renseignement de Prix</label>
                         <div class="input-group">
                             <input formControlName="dateDemandePrix" id="picker1" class="form-control text-right" type="date"
                                 >
@@ -186,7 +186,7 @@
                   </div>
                 </form>
                   <div class="mt-3 mb-4 border-top"></div>
-                  <h4 class="font-weight-bold">Détails sur la Demande de Renseignement de de prix</h4>
+                  <h4 class="font-weight-bold">Détails sur la Demande de Renseignement de prix</h4>
 
                   <div class="row">
                       <div class="col-md-12 table-responsive">

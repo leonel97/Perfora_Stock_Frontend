@@ -466,6 +466,7 @@ export class StockComponent implements OnInit {
                     lig.push('');
                     lig.push(2);
                     lig.push(Date.parse(element2.inventaire.dateValidation.toString()));
+                    lig.push(element2.stockreel);
     
                     lignes.push(lig);
     
@@ -513,10 +514,12 @@ export class StockComponent implements OnInit {
 
                       }
                       else if(lignes[inde-1][10] == 2){
-                        element2[2] = lignes[inde-1][4] != '' ? lignes[inde-1][2]+lignes[inde-1][4] : lignes[inde-1][2]-lignes[inde-1][5];
+                        element2[2] = lignes[inde-1][12];
                         element2[3] = lignes[inde-1][6];
                         lignes[inde-1][8] = element2[2];
                         lignes[inde-1][9] = element2[3];
+                        lignes[inde-1][4] = lignes[inde-1][2] < lignes[inde-1][12] ? lignes[inde-1][12]-lignes[inde-1][2] : '';
+                        lignes[inde-1][5] = lignes[inde-1][2] >= lignes[inde-1][12] ? lignes[inde-1][2]-lignes[inde-1][12] : '';
                       }
                       else if(lignes[inde-1][10] == -1){
                         element2[2] = lignes[inde-1][4];//lignes[inde-1][2]+lignes[inde-1][4];
@@ -545,6 +548,16 @@ export class StockComponent implements OnInit {
     
                   autoTable(doc, {
                     theme: 'grid',
+                    columnStyles: {
+                      2: { halign: 'right', },
+                      3: { halign: 'right', },
+                      4: { halign: 'right', },
+                      5: { halign: 'right', },
+                      6: { halign: 'right', },
+                      7: { halign: 'right', },
+                      8: { halign: 'right', },
+                      9: { halign: 'right', },
+                    },
                     head: [['Date', 'Pièce', 'Qte Init.', 'Valeur', 'Entrée', 'Sortie', 'PU', 'Montant', 'Qte Finale', 'Valeur']],
                     headStyles:{
                       fillColor: [41, 128, 185],
