@@ -428,7 +428,7 @@ export class ServirBesoinComponent  implements OnInit {
     for(const lig of this.ligneShow){
       if(lig.concernedStocker?.quantiterStocker < (lig.ligneAppro.quantiteLigneAppro*lig.concernedLigneDa?.uniter.poids)
         || lig.concernedLigneDa?.quantiteDemandee < lig.ligneAppro.quantiteLigneAppro 
-        || lig.qteRest < lig.ligneAppro.quantiteLigneAppro){
+        || lig.qteRest < lig.ligneAppro.quantiteLigneAppro || lig.ligneAppro.quantiteLigneAppro <= 0){
         lignShowValid = false;
         break;
       }
@@ -695,6 +695,18 @@ export class ServirBesoinComponent  implements OnInit {
       .result.then((result) => {
       //this.confirmResut = `Closed with: ${result}`;
       
+        this.stockerService.getAllStocker().subscribe(
+          (data2) => {
+
+          },
+          (error: HttpErrorResponse) => {
+            console.log('Echec status ==> ' + error.status);
+            this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000 });
+  
+          }
+
+        );
+
         appro.valideAppro = eta;
   
         this.approService.editAAppro3(appro.numAppro, appro).subscribe(
@@ -711,7 +723,7 @@ export class ServirBesoinComponent  implements OnInit {
                   if(eta == false) msg = 'Annulation';
                   this.toastr.success(msg+' effectuée avec succès.', 'Success', { timeOut: 5000 });
                 } else {
-                  let msg: String = 'Erreur lors de la Sortie de l\'Article du Magasin, Il n\'est peut être pas disponible dans ce magasin.'
+                  let msg: String = 'Erreur lors de la Sortie de d\'Article du Magasin, la quantité disponible de l\'un des articles dans ce magasin n\'est pas satisfaisante.'
                   if(eta == false) msg = 'Erreur lors du Retour de l\'Article dans le Magasin Annulation';
                   this.toastr.error(msg.valueOf(), 'Erreur !', { timeOut: 5000 });
                 }

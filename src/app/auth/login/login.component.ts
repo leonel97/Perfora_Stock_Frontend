@@ -40,7 +40,7 @@ export class LoginComponent implements OnInit {
     this.signinForm = this.fb.group({
       login: [null, Validators.required],
       motDePass: [null, Validators.required],
-      password_confirmation: null
+      //password_confirmation: null
     });
     //this.makeForm(null);
   }
@@ -123,7 +123,15 @@ export class LoginComponent implements OnInit {
         
       }
       else{
-        this.auth.getAUtilisateurByLoginMdp(this.signinForm.value).subscribe(
+        console.log('auth data', this.signinForm.value);
+        
+
+        this.auth.loginByUsernameAndPassword(this.signinForm.value).subscribe(
+          (data1) =>{
+          console.log('verifier',data1);
+          
+        })
+       /* this.auth.getAUtilisateurByLoginMdp(this.signinForm.value).subscribe(
           (data) => {
             if(data){
               //this.utilisateurService.connectedUser = data; 
@@ -140,7 +148,7 @@ export class LoginComponent implements OnInit {
             console.log('Erreur lors de connexion au serveur.\n Code : '+erreur.status+' | '+erreur.statusText, 'Connexion');
           }
           
-        );
+        );*/
       }
 
   }

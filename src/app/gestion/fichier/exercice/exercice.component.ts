@@ -98,12 +98,19 @@ export class ExerciceComponent implements OnInit {
         this.disabledBtnCloturer = true;
         console.log("exoCl",exo);
         this.exerciceService.selectedExo = exo;
+       
       }
       else{
         this.disabledBtnCloturer = false;
         console.log("exoCl",exo);
         this.exerciceService.selectedExo = exo;
 
+      }
+
+      for (let dossierDec of this.exerciceFiltered){
+        if (dossierDec.numExercice !== exo.numExercice){
+          dossierDec.isSelected = false;
+        }
       }
       
       

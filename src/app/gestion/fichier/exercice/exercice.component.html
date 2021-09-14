@@ -43,18 +43,17 @@
                       class="material striped"
                       style="height: 500px; box-shadow: none; overflow-y:visible">
 
+                      
                       <ngx-datatable-column>
                         <ng-template ngx-datatable-header-template>
-        
+
                         </ng-template>
                         <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
-                        <!--span *ngIf="row.cloturerExo == false"-->
-                          <label class="checkbox checkbox-outline-light ">
-                            <input (change)="selectOne($event, row)" [(ngModel)]="row.isSelected" type="checkbox"   >
+                          <label class="checkbox checkbox-outline-light">
+                            <input (change)="selectOne($event, row)" [(ngModel)]="row.isSelected" type="checkbox">
                             <span></span>
                             <span class="checkmark"></span>
                           </label>
-                        <!--/span-->
                         </ng-template>
                       </ngx-datatable-column>
 

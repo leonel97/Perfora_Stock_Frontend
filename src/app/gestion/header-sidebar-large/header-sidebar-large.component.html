@@ -55,16 +55,23 @@
       </button>
       <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
           <div class="dropright dropdown-submenu">
-              <button class="dropdown-item dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#">Approvisionnement</button>
+              <!--button class="dropdown-item dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#">Approvisionnement</button-->
+              <button class="dropdown-item dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#">Passation de Marché</button>
               <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                  <button class="dropdown-item" routerLink="/gestion/saisie/appro-demande-prix" >Demande de Renseignement de Prix</button>
-                  <button class="dropdown-item" routerLink="/gestion/saisie/appro-depot-offre-facture-proformat" >Dépôts des Offres ou factures proformats</button>
+                  <button class="dropdown-item" routerLink="/gestion/saisie/appro-depot-offre-facture-proformat" >Factures Proformats (FP)</button>
+                  <button class="dropdown-item" routerLink="/gestion/saisie/appro-demande-prix" >Demandes de Cotation (DC)</button>
+                  <button class="dropdown-item" routerLink="/gestion/saisie/appro-demande-prix" >Demande de Renseignement de Prix (DRP)</button>
+                  <button class="dropdown-item" routerLink="/gestion/saisie/appro-demande-prix" >Appels d'Offres Ouvert (AOO)</button>
+                  <button class="dropdown-item" routerLink="/gestion/saisie/appro-demande-prix" >Entente Directe (ED)</button>
+                  <button class="dropdown-item" routerLink="/gestion/saisie/appro-demande-prix" >Prestation Intellectuelle (PI)</button>
+                  <button class="dropdown-item" routerLink="/gestion/saisie/appro-depot-offre-facture-proformat" >Appel à Manifestation d'Interêt</button>
               </div>
           </div>
 
           <button class="dropdown-item" routerLink="/gestion/saisie/commande-achat">Commande Achat</button>
           <button class="dropdown-item" routerLink="/gestion/saisie/lettre-commande">Lettre de Commande</button>
-          <button class="dropdown-item" routerLink="/gestion/saisie/bon-travail">Bon de Travail</button>
+          <!--button class="dropdown-item" routerLink="/gestion/saisie/bon-travail">Bon de Travail</button-->
+          <button class="dropdown-item" routerLink="/gestion/saisie/bon-travail">Caisse Menu Dépenses</button>
           <button class="dropdown-item" routerLink="/gestion/saisie/appel-offre">Appels d'Offres</button>
 
           <div class="dropright dropdown-submenu">
@@ -73,7 +80,6 @@
                       <button class="dropdown-item" routerLink="/gestion/saisie/stock-stock-initial" >Stock Initial</button>
                       <button class="dropdown-item" routerLink="/gestion/saisie/stock-entree-article" >Entrée d'Article</button>
                       <button class="dropdown-item" routerLink="/gestion/saisie/stock-etat-stock" >Etat de Stock</button>
-                      <button class="dropdown-item" routerLink="/gestion/saisie/stock-inventaire" >Inventaire</button>
               </div>
           </div>
 
@@ -84,7 +90,8 @@
                       <button class="dropdown-item" routerLink="/gestion/saisie/conso-interne-servir-besoin" >Servir</button>
               </div>
           </div>
-
+  
+          <button class="dropdown-item" routerLink="/gestion/saisie/stock-inventaire">Inventaire</button>
           <button class="dropdown-item" routerLink="/gestion/saisie/cloture-periodique">Clôture périodique</button>
       </div>
 
@@ -98,6 +105,7 @@
         Comptabilisation
       </button>
       <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+          <button class="dropdown-item" routerLink="/gestion/comptabilisation/operation-journal">Comptes Généraux</button>
           <button class="dropdown-item" routerLink="/gestion/comptabilisation/operation-journal">Opération et Journal associé</button>
           <button class="dropdown-item" routerLink="/gestion/comptabilisation/imputation-article">Imputation des Articles et Configuration des Journaux</button>
           <button class="dropdown-item" routerLink="/gestion/comptabilisation/ecriture-comptable">Génération des Ecritures Comptables</button>

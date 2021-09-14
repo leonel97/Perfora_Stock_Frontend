@@ -703,7 +703,7 @@ export class EntreeArticleComponent  implements OnInit {
     let lignShowValid: boolean = true;
 
     for(const lig of this.ligneShow){
-      if(lig.ligneReception.quantiteLigneReception > lig.qteRest){
+      if(lig.ligneReception.quantiteLigneReception > lig.qteRest || lig.ligneReception.quantiteLigneReception <= 0){
         lignShowValid = false;
         break;
       }

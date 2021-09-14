@@ -20,6 +20,9 @@ export class AuthService {
   url: string = environment.backend + '/authenticate';
 
   host: string = environment.backend2 +'/commune/user';
+  host1: string = environment.backend3 +'/login';
+
+  
 
   private currentUserSubject: BehaviorSubject<User>;
   public currentUser: Observable<User>;
@@ -107,6 +110,11 @@ export class AuthService {
     return this.http.post<User>(`${this.host}/byLoginMdpUser`, user); 
   }
 
+  // login 
+  loginByUsernameAndPassword(user: User): Observable<Object>{
+    return this.http.post<User>(`${this.host1}`, user); 
+
+  }
   
   updateUser(idUser: string, user: User): Observable<Object> {
     return this.http.put(`${this.host}/byCodUser/${idUser}`, user);
