@@ -4,7 +4,7 @@ import { Router } from "@angular/router";
 import {BehaviorSubject, Observable, of} from "rxjs";
 import {catchError, delay, tap} from "rxjs/operators";
 import {environment} from "../../../environments/environment";
-import {HttpClient, HttpErrorResponse} from "@angular/common/http";
+import {HttpClient, HttpErrorResponse, HttpHeaders} from "@angular/common/http";
 import {UserService} from "../gestion/utilisateur/user.service";
 import {User} from "../../models/gestion/utilisateur/user";
 import {ExerciceFonction} from "../../models/gestion/utilisateur/exercice-fonction";
@@ -21,6 +21,11 @@ export class AuthService {
 
   host: string = environment.backend2 +'/commune/user';
   host1: string = environment.backend3 +'/login';
+  host2: string = environment.backend3 +'/utilisat';
+
+  private jwttoken = null;
+
+
 
   
 
@@ -112,12 +117,38 @@ export class AuthService {
 
   // login 
   loginByUsernameAndPassword(user: User): Observable<Object>{
-    return this.http.post<User>(`${this.host1}`, user); 
+    return this.http.post<User>(`${this.host1}`, user, {observe: "response"}); 
 
   }
+
+  // find user by username
+  findUserByUsername(username: string): Observable<Object>{
+    return this.http.get(`${this.host2}/askMdp/${username}`, {observe: "response"}); 
+
+  }
+
   
   updateUser(idUser: string, user: User): Observable<Object> {
-    return this.http.put(`${this.host}/byCodUser/${idUser}`, user);
+    return this.http.put(`${this.host}/byCodUser/${idUser}`, user, {headers: new HttpHeaders({'Authorization' :this.jwttoken})});
+  }
+
+  findUserByLogin(login: string): Observable<Object> {
+    if (this.jwttoken == null) {
+      this.loadToken();
+      
+    }
+    return this.http.get<User>(`${this.host}/byLoginUser/${login}`, {headers: new HttpHeaders({'Authorization' :this.jwttoken})});
+  }
+
+  //save token 
+  saveToken(jwt: string){
+    localStorage.setItem('token' ,jwt)
+  }
+
+  //load token
+  loadToken(){
+    this.jwttoken = localStorage.getItem('token');
+
   }
 
 

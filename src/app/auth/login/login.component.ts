@@ -3,6 +3,13 @@ import {ResolveEnd, ResolveStart, RouteConfigLoadEnd, RouteConfigLoadStart, Rout
 import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 import {AuthService} from "../../services/common/auth.service";
 import { User } from 'src/app/models/gestion/utilisateur/user';
+import { HttpResponse } from '@angular/common/http';
+import {JwtHelperService} from "@auth0/angular-jwt";
+
+export class EnumUser {
+  login:	string;
+  motDePass:	string;
+}
 
 
 @Component({
@@ -15,7 +22,11 @@ export class LoginComponent implements OnInit {
   loadingText: string;
   authenticationFailError: string;
   signinForm: FormGroup;
+
   confirmation: boolean = false;
+  authentificationok: boolean = false;
+
+  
 
   userUpdated : User = null;
   constructor(
@@ -40,7 +51,7 @@ export class LoginComponent implements OnInit {
     this.signinForm = this.fb.group({
       login: [null, Validators.required],
       motDePass: [null, Validators.required],
-      //password_confirmation: null
+      password_confirmation: null
     });
     //this.makeForm(null);
   }
@@ -85,14 +96,15 @@ export class LoginComponent implements OnInit {
       });*/
       this.loading = false;
 
-      //Auth
 
       if(this.confirmation){
+
       
         if(this.signinForm.value.motDePass == this.signinForm.value.password_confirmation){
 
-          this.auth.getAUtilisateurByLoginMdp(this.signinForm.value).subscribe(
+          this.auth.findUserByLogin(this.signinForm.value.login).subscribe(
             (data : User) => {
+              console.log('user up', data);
 
               // modifier user 
               data.askMdp1erLance = false;
@@ -105,6 +117,7 @@ export class LoginComponent implements OnInit {
               //this.utilisateurService.connectedUser = data;
               console.log('connected', data);
               //this.utilisateurService.isAuth = true;
+              this.authentificationok = true;
               this.router.navigateByUrl('/gestion/accueil');
   
             },
@@ -123,32 +136,37 @@ export class LoginComponent implements OnInit {
         
       }
       else{
-        console.log('auth data', this.signinForm.value);
         
+        let userAuth = new User()
+       
+        userAuth.login = this.signinForm.value.login;
+        userAuth.motDePass = this.signinForm.value.motDePass;
+        console.log('auth data', userAuth);
 
-        this.auth.loginByUsernameAndPassword(this.signinForm.value).subscribe(
-          (data1) =>{
-          console.log('verifier',data1);
+        this.auth.loginByUsernameAndPassword(userAuth).subscribe(
+          (data1 : HttpResponse<any>) =>{
+          console.log('verifier',data1.headers.get("Authorization"));
+          const token = data1.headers.get("Authorization");
+
+          const helper = new JwtHelperService();
+          const decodedToken = helper.decodeToken(token);
+
+          console.log('user Details', decodedToken);
+
+          this.authentificationok = true;
+
+          this.router.navigateByUrl('/gestion/accueil');
+        
+          
           
         })
-       /* this.auth.getAUtilisateurByLoginMdp(this.signinForm.value).subscribe(
-          (data) => {
-            if(data){
-              //this.utilisateurService.connectedUser = data; 
-              //this.auth.isAuth = true;
-              this.router.navigateByUrl('/gestion/accueil');
-            }
-            else{
-             this.authenticationFailError = 'Erreur: Identifiant Ou Mot de Passe Incorrecte';
-            }
-          },
-          (erreur) => {
-            console.log('Erreur lors de la connexion au serveur', erreur);
-            
-            console.log('Erreur lors de connexion au serveur.\n Code : '+erreur.status+' | '+erreur.statusText, 'Connexion');
-          }
+
+        if (this.authentificationok == false) {
+          this.authenticationFailError = 'Erreur: Identifiant Ou Mot de Passe Incorrecte';
+          this.authentificationok = false;
+
           
-        );*/
+        } 
       }
 
   }
@@ -161,7 +179,7 @@ export class LoginComponent implements OnInit {
     console.log('user', formData);
     
     
-    this.auth.getAUtilisateurByLoginMdp(formData).subscribe(
+   /* this.auth.getAUtilisateurByLoginMdp(formData).subscribe(
       (data : User) => {
         this.confirmation = false;
         if(data){
@@ -179,8 +197,24 @@ export class LoginComponent implements OnInit {
         
         //this.toastr.error('Erreur lors de connexion au serveur.\n Code : '+erreur.status+' | '+erreur.statusText, 'Connexion');
       }
-    );
+    );*/
 
+    this.auth.findUserByUsername(this.signinForm.value.login).subscribe(
+      (data: HttpResponse<any>) =>{
+        this.confirmation = true;
+        
+         let token = data.headers.get("Authorization");
+        console.log('verf', token);
+
+        this.auth.saveToken(token);
+        
+
+      },
+      (erreur) => {
+        console.log('Erreur lors de la connexion ', erreur);
+        
+      }
+    )
   }
 
 }
