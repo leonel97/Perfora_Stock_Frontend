@@ -51,7 +51,7 @@ export class ExerciceComponent implements OnInit {
         console.log(this.exerciceList);
       },
       (error: HttpErrorResponse) => {
-        console.log('Echec atatus ==> ' + error.status);
+        console.log('Echec status ==> ' + error);
       });
 
     this.makeForm(null);

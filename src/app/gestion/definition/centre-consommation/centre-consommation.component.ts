@@ -122,7 +122,7 @@ export class CentreConsommationComponent implements OnInit {
       libService: [centreConsommation != null ? centreConsommation.libService : null, [Validators.required]],
       codeService: [centreConsommation != null ? centreConsommation.codeService: null, [Validators.required]],
       typeService: [centreConsommation != null ? centreConsommation.typeService: null, [Validators.required]],
-      direction: [centreConsommation != null ? centreConsommation.direction: null, [Validators.required]],
+      direction: [centreConsommation != null ? centreConsommation.direction: null],
       superService: [centreConsommation != null ? centreConsommation.superService: null],
     });
     //cette condition permet de basculer vers la tab contenant le formulaire lors d'une modification

@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import {environment} from "../../../../environments/environment";
-import {HttpClient, HttpErrorResponse} from "@angular/common/http";
+import {HttpClient, HttpErrorResponse, HttpHeaders} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {Exercice} from "../../../models/gestion/fichier/exercice";
+import {AuthService} from "../../../services/common/auth.service";
 
 
 @Injectable({
@@ -12,9 +13,12 @@ export class ExerciceService {
 
   url: string = environment.backend2 + '/commune/exercice';
 
+  private jwttoken = null;
+
   public selectedExo: Exercice = null;
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient,
+    private auth: AuthService,) {
     this.list().subscribe(
       (data: any) => {
         if(data.length){
@@ -45,7 +49,10 @@ export class ExerciceService {
   }
 
   list(): Observable<Object> {
-    return this.http.get(`${this.url}/list`);
+    if (this.jwttoken == null) {
+      this.auth.loadToken();
+    }
+    return this.http.get(`${this.url}/list`, {headers: new HttpHeaders({'Authorization' :this.jwttoken})});
   }
 
 }

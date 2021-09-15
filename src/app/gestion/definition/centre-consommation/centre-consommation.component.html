@@ -126,20 +126,20 @@
                     </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-4 form-group mb-3">
+                        <!--div class="col-md-4 form-group mb-3">
                             <label for="direction">Direction<span class="required-field">*</span></label>
-                            <ng-select bindLabel="libDirection" id="direction" formControlName="direction" placeholder="Entrer la direction">
+                            <ng-select bindLabel="libDirection" id="direction" formControlName="direction" placeholder="Entrer la direction"-->
                               <!--option [ngValue]="null">-- section parent -- </option-->
-                              <ng-option *ngFor="let direction of directionList" [value]="direction">{{direction.libDirection}}</ng-option>
+                              <!--ng-option *ngFor="let direction of directionList" [value]="direction">{{direction.libDirection}}</ng-option>
                             </ng-select>
                             <div *ngIf="validateForm.controls.direction.errors &&
                                 (validateForm.controls.direction.dirty || validateForm.controls.direction.touched)"
                                   class="error-field">
                                Ce champs est obligatoire !
                         </div>
-                        </div>
+                        </div-->
 
-                        <div class="col-md-4 form-group mb-3">
+                        <div class="col-md-6 form-group mb-3">
                             <label for="typeService">Catégorie de centre de Consommation <span class="required-field">*</span></label>
                             <ng-select bindLabel="libTypService"  id="typeService" formControlName="typeService" placeholder="Entrer le type de centre de consommation">
                               <!--option [ngValue]="null">-- section parent -- </option-->
@@ -152,7 +152,7 @@
                     </div>
                         </div>
 
-                        <div class="col-md-4 form-group mb-3">
+                        <div class="col-md-6 form-group mb-3">
                             <label for="superService">Super Centre de consommation</label>
                             <ng-select bindLabel="libService"  id="superService" formControlName="superService" placeholder="Entrer le Super Centre de Consomation">
                               <!--ng-option [ngValue]="null">-- Centre de consommation parent -- </ng-option-->

@@ -77,6 +77,7 @@ export class AuthService {
   }*/
 
   signout() {
+    localStorage.removeItem('token');
     this.router.navigateByUrl("/");
   }
 
@@ -111,6 +112,10 @@ export class AuthService {
 
   
   updateUser(idUser: string, user: User): Observable<Object> {
+    if (this.jwttoken == null) {
+      this.loadToken();
+      
+    }
     return this.http.put(`${this.host}/byCodUser/${idUser}`, user, {headers: new HttpHeaders({'Authorization' :this.jwttoken})});
   }
 

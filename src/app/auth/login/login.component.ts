@@ -117,7 +117,6 @@ export class LoginComponent implements OnInit {
               //this.utilisateurService.connectedUser = data;
               console.log('connected', data);
               //this.utilisateurService.isAuth = true;
-              this.authentificationok = true;
               this.router.navigateByUrl('/gestion/accueil');
   
             },
@@ -146,27 +145,26 @@ export class LoginComponent implements OnInit {
         this.auth.loginByUsernameAndPassword(userAuth).subscribe(
           (data1 : HttpResponse<any>) =>{
           console.log('verifier',data1.headers.get("Authorization"));
-          const token = data1.headers.get("Authorization");
+          let token = data1.headers.get("Authorization");
 
           const helper = new JwtHelperService();
           const decodedToken = helper.decodeToken(token);
 
           console.log('user Details', decodedToken);
 
-          this.authentificationok = true;
-
+          this.auth.saveToken(token);
           this.router.navigateByUrl('/gestion/accueil');
         
           
           
-        })
-
-        if (this.authentificationok == false) {
+        },
+        (erreur) => {
+          console.log('Erreur lors de la connexion au serveur', erreur);
           this.authenticationFailError = 'Erreur: Identifiant Ou Mot de Passe Incorrecte';
-          this.authentificationok = false;
+        }
+        );
 
-          
-        } 
+        
       }
 
   }
