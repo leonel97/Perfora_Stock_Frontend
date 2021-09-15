@@ -45,25 +45,17 @@ export class AuthService {
     private userService: UserService
   ) {
     this.checkAuth();
-    this.currentUserSubject = new BehaviorSubject<User>(this.store.getItem('currentUser'));
-    this.currentUser = this.currentUserSubject.asObservable();
-
-    this.currentTokenSubject = new BehaviorSubject<string>(this.store.getItem('access_token'));
-    this.currentToken = this.currentTokenSubject.asObservable();
-
-    this.currentExerciceFonctionSubject = new BehaviorSubject<ExerciceFonction>(this.store.getItem('currentExerciceFonction'));
-    this.currentExerciceFonction = this.currentExerciceFonctionSubject.asObservable();
   }
 
   checkAuth() {
-    this.authenticated = this.store.getItem("demo_login_status");
+    //this.authenticated = this.store.getItem("demo_login_status");
   }
 
   getuser() {
     return of({});
   }
 
-  signin(username:string, password: string, rememberMe: boolean) {
+  /*signin(username:string, password: string, rememberMe: boolean) {
     return this.http.post(`${this.url}`, {
       'username':username,
       'password':password,
@@ -78,16 +70,13 @@ export class AuthService {
       //const tokenInfo = atob(token.split('.')[1]);
       //console.log(tokenInfo);
 
-      this.store.setItem('access_token', token);
-      this.store.setItem("demo_login_status", true);
-      this.authenticated = true;
+      //this.store.setItem('access_token', token);
+      //this.store.setItem("demo_login_status", true);
+     //this.authenticated = true;
     }));
-  }
+  }*/
 
   signout() {
-    this.authenticated = false;
-    this.store.setItem("demo_login_status", false);
-    this.store.setItem("access_token", false);
     this.router.navigateByUrl("/");
   }
 
@@ -100,14 +89,7 @@ export class AuthService {
   }
 
   public getUserFromJwtToken(token:string){
-    //const user = JSON.parse(atob(token.split('.')[1])).userDetails;
-    const helper = new JwtHelperService();
-    const decodedToken = helper.decodeToken(token);
-    const user  = decodedToken.userDetails;
-    user.defaultExerciceFonction =  user.exercicefonctions.find(e => e.defaultexe == true);
-    user.currentExerciceFonction =  user.defaultExerciceFonction;
-    this.store.setItem('currentExerciceFonction',user.currentExerciceFonction);
-    return user;
+   
   }
 
   // Léonel user/byCodUser

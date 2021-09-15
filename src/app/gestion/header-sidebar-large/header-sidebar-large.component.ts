@@ -92,13 +92,6 @@ export class HeaderSidebarLargeComponent implements OnInit {
       (error: HttpErrorResponse) => {
         console.log('Echec atatus ==> ' + error.status);
       });
-
-    this.auth.currentToken.subscribe(token => {
-      this.currentUser = this.auth.getUserFromJwtToken(token);
-      if(this.currentUser!=null) {
-        this.defaultExerciceFonction = this.currentUser.defaultExerciceFonction;
-      }
-    })
   }
 
   toggelSidebar() {
@@ -129,15 +122,6 @@ export class HeaderSidebarLargeComponent implements OnInit {
 
   onChange(currentExerciceFonctionId) {
     console.log('ex0',currentExerciceFonctionId);
-    
-   /* const currentExerciceFonction = this.currentUser.exercicefonctions.find(e => e.id == currentExerciceFonctionId);
-    if(currentExerciceFonction !=null) {
-      this.currentUser.currentExerciceFonction = currentExerciceFonction;
-      this.navigationService.publishNavigationChange(this.currentUser);
-      this.store.setItem('currentExerciceFonction',currentExerciceFonction);
-    } else {
-      this.navigationService.publishNavigationChange(null);
-    }*/
 
   }
 
