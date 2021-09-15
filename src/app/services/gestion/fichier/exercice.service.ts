@@ -13,12 +13,12 @@ export class ExerciceService {
 
   url: string = environment.backend2 + '/commune/exercice';
 
-  private jwttoken = null;
+  private jwtTocken = null;
 
   public selectedExo: Exercice = null;
 
-  constructor(private http: HttpClient,
-    private auth: AuthService,) {
+  constructor(private http: HttpClient) {
+    this.jwtTocken = localStorage.getItem('token');
     this.list().subscribe(
       (data: any) => {
         if(data.length){
@@ -37,22 +37,19 @@ export class ExerciceService {
   }
 
   createExercice(exercice: Exercice): Observable<Object> {
-    return this.http.post(`${this.url}/list`, exercice);
+    return this.http.post(`${this.url}/list`, exercice, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
   }
 
   deleteExercice(id: String): Observable<Object> {
-    return this.http.delete(`${this.url}/byCodExe/`+ id);
+    return this.http.delete(`${this.url}/byCodExe/`+ id, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
   }
 
   updateExercice(id : String, exercice: Exercice): Observable<Object> {
-    return this.http.put(`${this.url}/byCodExe/${id}`, exercice);
+    return this.http.put(`${this.url}/byCodExe/${id}`, exercice, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
   }
 
   list(): Observable<Object> {
-    if (this.jwttoken == null) {
-      this.auth.loadToken();
-    }
-    return this.http.get(`${this.url}/list`, {headers: new HttpHeaders({'Authorization' :this.jwttoken})});
+    return this.http.get(`${this.url}/list`, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
   }
 
 }

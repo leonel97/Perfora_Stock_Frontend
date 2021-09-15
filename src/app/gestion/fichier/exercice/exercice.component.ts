@@ -51,14 +51,14 @@ export class ExerciceComponent implements OnInit {
         console.log(this.exerciceList);
       },
       (error: HttpErrorResponse) => {
-        console.log('Echec status ==> ' + error);
+        console.log('Echec status ==> ' + error.status);
       });
 
     this.makeForm(null);
 
     this.searchControl.valueChanges
       .pipe(debounceTime(200))
-      .subscribe(value => {
+      .subscribe(value => { 
         this.filerData(value);
       });
 
