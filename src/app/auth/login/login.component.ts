@@ -136,10 +136,10 @@ export class LoginComponent implements OnInit {
       }
       else{
         
-        let userAuth = new User()
+        let userAuth = new User(this.signinForm.value.login,this.signinForm.value.motDePass, null,null, null, null,null, null, null, null, null, null, null );
        
-        userAuth.login = this.signinForm.value.login;
-        userAuth.motDePass = this.signinForm.value.motDePass;
+        /*userAuth.login = this.signinForm.value.login;
+        userAuth.motDePass = this.signinForm.value.motDePass;*/
         console.log('auth data', userAuth);
 
         this.auth.loginByUsernameAndPassword(userAuth).subscribe(

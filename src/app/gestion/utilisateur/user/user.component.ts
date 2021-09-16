@@ -224,15 +224,6 @@ export class UserComponent implements OnInit {
         this.toastr.error('Veuillez remplir les champs convenablement.', ' Erreur !', {progressBar: true});
       }, 3000);
     } else  {
-      const formData1 = this.validateForm.value;
-      // setting the userGroup code
-      /*const i = this.userGroupList.findIndex(d => d.id == formData1.userGroupId);
-      if (i > -1) {
-        let userGroup = this.userGroupList[i];
-        this.validateForm.get('userGroupCode').setValue(userGroup.code);
-      }*/
-      const authorities = ['ROLE_USER'];
-      //this.validateForm.get('authorities').setValue(authorities);
 
       const formData = this.validateForm.value;
       console.log('Objet avant enregistrement');
