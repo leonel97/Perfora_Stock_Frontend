@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {UserGroup} from "../../../models/gestion/utilisateur/user-group";
+import {DroitUser} from "../../../models/gestion/utilisateur/droit-user";
 import {UserGroupService} from "../../../services/gestion/utilisateur/user-group.service";
 import {Router} from "@angular/router";
 import {ToastrService} from "ngx-toastr";
@@ -19,6 +20,7 @@ export class UserGroupComponent implements OnInit {
 
   validateForm: FormGroup;
   userGroupList: UserGroup[] = [];
+  droitUserList: DroitUser[] = [];
   loading: boolean;
   userGroup: UserGroup = null;
 
@@ -46,6 +48,17 @@ export class UserGroupComponent implements OnInit {
       (error: HttpErrorResponse) => {
         console.log('Echec atatus ==> ' + error.status);
       });
+
+
+      //list droit user
+      this.userGroupService.listDroitUser().subscribe(
+        (data: any) => {
+          this.droitUserList = [...data];
+          console.log('Droit list',this.droitUserList);
+        },
+        (error: HttpErrorResponse) => {
+          console.log('Echec atatus ==> ' + error.status);
+        });
 
     this.makeForm(null);
 
@@ -88,6 +101,7 @@ export class UserGroupComponent implements OnInit {
         [Validators.required]],
         libGroupUser: [userGroup != null ? userGroup.libGroupUser : null,
           [Validators.required]],
+        droits: [[]]
     });
     //cette condition permet de basculer vers la tab contenant le formulaire lors d'une modification
     if (userGroup?.numGroupUser !=null){
@@ -119,16 +133,18 @@ export class UserGroupComponent implements OnInit {
     } else {
       const formData = this.validateForm.value;
       if (formData.numGroupUser == null) {
-        this.enregistrerUserGroup(formData);
+        this.enregistrerUserGroup(formData, formData.droits);
       } else {
         this.modifierUserGroup(formData.numGroupUser, formData);
       }
     }
   }
 
-  enregistrerUserGroup(userGroup: UserGroup): void {
+  enregistrerUserGroup(userGroup: UserGroup, droit: DroitUser[]): void {
     this.userGroupService.createUserGroup(userGroup).subscribe(
       (data: any) => {
+
+        
         console.log(data);
         this.userGroupList.unshift(data);
         this.userGroupFiltered = [...this.userGroupList];
@@ -206,6 +222,11 @@ export class UserGroupComponent implements OnInit {
     }, (reason) => {
       console.log(`Dismissed with: ${reason}`);
     });
+  }
+
+  //Léo
+  choixPushPup(){
+    console.log(this.validateForm.value.droits);
   }
 
 }

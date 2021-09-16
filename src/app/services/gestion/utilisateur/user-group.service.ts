@@ -11,6 +11,7 @@ export class UserGroupService {
 
   host: string = environment.backend2 +'/commune/gro';
   url: string = environment.backend + '/groupes';
+  host1 : string = environment.backend2 +'/commune/du'
   private jwtTocken = null;
 
   constructor(private http: HttpClient) { this.jwtTocken = localStorage.getItem('token'); }
@@ -29,6 +30,11 @@ export class UserGroupService {
 
   list(): Observable<Object> {
     return this.http.get(`${this.host}/list`, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+  }
+
+  //list des droits users
+  listDroitUser(): Observable<Object> {
+    return this.http.get(`${this.host1}/list`, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
   }
 
 }

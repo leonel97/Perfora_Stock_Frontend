@@ -77,25 +77,11 @@
                   <div class="col-md-6 form-group mb-3">
 
                     <label for="fonction">Civilité de l'utilisateur</label>
-                    <!--<select class="form-control" id="fonctionId" formControlName="fonctionId">
-                      <option [ngValue]="null">&#45;&#45; fonction &#45;&#45; </option>
-                      <option *ngFor="let fonction of fonctionList" [value]="fonction.id">{{fonction.libelle}}</option>
-                    </select>-->
                     <ng-select bindLabel="libCivilite" formControlName="civilite" id="civilite" placeholder="-- sélectionner --">
                       <!--option *ngFor="let civilite of civiliteList" [value]="civilite.id">{{civilite.libelle}}</option-->
                       <ng-option *ngFor="let civilite of civiliteList" [value]="civilite">{{civilite.codeCivilite}} - {{civilite.libCivilite}}</ng-option>
                     </ng-select>
-                  </div>
-
-                  <div class="col-md-6 form-group mb-3">
-                    <label for="login">E-mail</label>
-                    <input type="text" class="form-control" id="login"
-                           placeholder="Entrer l'E-mail de l'utilisateur"  formControlName="login">
-                  </div>
-
-                </div>
-
-                <div class="row">
+                  </div> 
 
                   <div class="col-md-6 form-group mb-3">
                     <label for="nomUtilisateur">Nom  <span class="required-field">*</span></label>
@@ -108,6 +94,9 @@
                     </div>
                   </div>
 
+                </div>
+
+                <div class="row">
                   <div class="col-md-6 form-group mb-3">
                     <label for="prenomUtilisateur">Prénom  <span class="required-field">*</span></label>
                     <input type="text" class="form-control" id="prenomUtilisateur"
@@ -119,15 +108,19 @@
                     </div>
                   </div>
 
+                  <div class="col-md-6 form-group mb-3">
+                    <label for="profession">Corps de l'utilisateur</label>
+                    <ng-select bindLabel="libProfession" formControlName="profession" id="profession" placeholder="-- sélectionner --">
+                      <!--ng-option *ngFor="let corps of corpsList" [value]="corps.id">{{corps.libelle}}</ng-option-->
+                      <ng-option *ngFor="let profession of professionList" [value]="profession">{{profession.codeProfession}} - {{profession.libProfession}}</ng-option>
+                    </ng-select>
+                  </div>
+
                 </div>
 
                 <div class="row">
                   <div class="col-md-6 form-group mb-3">
                     <label for="profession">Corps de l'utilisateur</label>
-                    <!--<select class="form-control" id="corpsId" formControlName="corpsId" [compareWith]="compareFn">
-                      <option [ngValue]="null">&#45;&#45; corps &#45;&#45; </option>
-                      <option *ngFor="let corps of corpsList" [value]="corps.id">{{corps.libelle}}</option>
-                    </select>-->
                     <ng-select bindLabel="libProfession" formControlName="profession" id="profession" placeholder="-- sélectionner --">
                       <!--ng-option *ngFor="let corps of corpsList" [value]="corps.id">{{corps.libelle}}</ng-option-->
                       <ng-option *ngFor="let profession of professionList" [value]="profession">{{profession.codeProfession}} - {{profession.libProfession}}</ng-option>
@@ -150,55 +143,52 @@
                 <div class="row">
                   <div class="col-md-6 form-group mb-3">
                     <label for="service">Service de l'utilisateur</label>
-                    <!--<select class="form-control" id="servicesId" formControlName="servicesId" multiple="multiple">
-                      <option [ngValue]="null">&#45;&#45; Service &#45;&#45; </option>
-                      <option *ngFor="let serviceJuridique of serviceList" [value]="serviceJuridique.id">{{serviceJuridique.libelle}}</option>
-                    </select>-->
                     <ng-select bindLabel="libService" formControlName="service" id="service" placeholder="-- sélectionner --">
                       <!--ng-option *ngFor="let serviceJuridique of serviceList" [value]="serviceJuridique.id">{{serviceJuridique.libelle}}</ng-option-->
                       <ng-option *ngFor="let service of centreConsommationList" [value]="service">{{service.codeService}} - {{service.libService}}</ng-option>
                     </ng-select>
                   </div>
+
                   <div class="col-md-6 form-group mb-3">
-                    <label for="groupUser">Groupe utilisateur</label>
-                    <!--<select class="form-control" id="groupesId" formControlName="groupesId" multiple="multiple">
-                      <option [ngValue]="null">&#45;&#45; groupe &#45;&#45; </option>
-                      <option *ngFor="let userGroup of userGroupList" [value]="userGroup.id">{{userGroup.name}}</option>
-                    </select>-->
-                    <ng-select bindLabel="libGroupUser" formControlName="groupUser" id="groupUser" placeholder="-- sélectionner --">
-                      <ng-option *ngFor="let userGroup of userGroupList" [value]="userGroup">{{userGroup.idGroupUser}} - {{userGroup.libGroupUser}}</ng-option>
-                    </ng-select>
-                  </div>
-                </div>
-
-                <div class="row">
-
-                  <div class="col-md-4 form-group mb-3">
                     <label for="login">Login  <span class="required-field">*</span></label>
-                    <input type="text" class="form-control" id="login"
-                           placeholder="Entrer le login de l'utilisateur"  formControlName="login">
-                    <div class="error-field"
-                         *ngIf="validateForm.controls.login.errors &&
-                   (validateForm.controls.login.dirty || validateForm.controls.login.touched)">
+                    <input type="text" class="form-control" id="login"placeholder="Entrer le login de l'utilisateur"  formControlName="login">
+                    <div class="error-field"*ngIf="validateForm.controls.login.errors && (validateForm.controls.login.dirty || validateForm.controls.login.touched)">
                       Ce champs est obligatoire !
                     </div>
                   </div>
-
-                  <div class="col-md-4 form-group mb-3" *ngIf=" !validateForm.value.idUtilisateur">
-                    <label for="motDePass">Mot de passe</label>
-                    <input type="motDePass" class="form-control" id="motDePass"
-                           placeholder="Entrer le mot de passe de l'utilisateur"  formControlName="motDePass">
-                    
-                  </div>
-
-                  <div class="col-md-4 form-group mb-3" *ngIf=" !validateForm.value.idUtilisateur">
-                    <label for="password_confirmation">Mot de passe (Confirmation)</label>
-                    <input type="password" class="form-control" id="password_confirmation"
-                           placeholder="Confirmer le mot de passe"  formControlName="password_confirmation">
-                  </div>
+                 
                 </div>
 
                 <div class="row">
+
+                  <div class="col-md-6 form-group mb-3" *ngIf=" !validateForm.value.idUtilisateur">
+                    <label for="motDePass">Mot de passe</label>
+                    <input type="motDePass" class="form-control" id="motDePass" placeholder="Entrer le mot de passe de l'utilisateur"  formControlName="motDePass">
+                  </div>
+
+                  <div class="col-md-6 form-group mb-3" *ngIf=" !validateForm.value.idUtilisateur">
+                    <label for="password_confirmation">Mot de passe (Confirmation)</label>
+                    <input type="password" class="form-control" id="password_confirmation" placeholder="Confirmer le mot de passe"  formControlName="password_confirmation">
+                  </div>
+
+                </div>
+                <div class="row">
+                  <div class="col-md-12 form-group mb-3">
+                    <label for="groupUser">Groupe utilisateur</label>
+                    <ng-select formControlName="groupUser"  [multiple]="true" id="groupUser" (click)="choixPushPup()" placeholder="-- sélectionner --">
+                      <ng-option *ngFor="let userGroup of userGroupList" [value]="userGroup">{{userGroup.idGroupUser}} - {{userGroup.libGroupUser}}</ng-option>
+                    </ng-select>
+                  </div>
+
+                </div>
+
+                <div class="row">
+                  <div class="col-md-12 form-group mb-3">
+                    <label for="groupUser">Magasin</label>
+                    <ng-select formControlName="magasins"  [multiple]="true" id="magasins" (click)="choixPushPupMagasins()" placeholder="-- sélectionner --">
+                      <ng-option *ngFor="let magasin of magasinList" [value]="magasin">{{magasin.codeMagasin}} - {{magasin.libMagasin}}</ng-option>
+                    </ng-select>
+                  </div>
                   <div class="col-md-12">
                     <btn-loading [loading]="loading" btnClass="btn-save">Enregistrer</btn-loading>
                     <button (click)="resetForm()" class="btn m-1 ml-2 btn-cancel" type="button"> Annuler</button>

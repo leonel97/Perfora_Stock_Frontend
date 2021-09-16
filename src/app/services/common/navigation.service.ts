@@ -340,7 +340,7 @@ export class NavigationService {
   // }
 
   publishNavigationChange(currentUser:User) {
-    const currentExerciceFonction = currentUser?.currentExerciceFonction;
+    const currentExerciceFonction = null;
     if(currentExerciceFonction!=null) {
       switch (currentExerciceFonction.serviceId) {
 

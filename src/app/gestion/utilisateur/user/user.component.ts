@@ -19,6 +19,9 @@ import {CentreConsommation} from "../../../models/gestion/definition/centreConso
 import {CentreConsommationService} from "../../../services/gestion/definition/centreConsommation.service";
 import {Profession} from "../../../models/gestion/parametrage/profession";
 import {ProfessionService} from "../../../services/gestion/parametrage/profession.service";
+import { EncapUserGroup } from 'src/app/models/gestion/saisie/encapsuleur-model/encapUserGroupe.model';
+import { Magasin } from 'src/app/models/gestion/definition/magasin.model';
+import { MagasinService } from 'src/app/services/gestion/definition/magasin.service';
 
 @Component({
   selector: 'app-user',
@@ -41,13 +44,13 @@ export class UserComponent implements OnInit {
 
   
   centreConsommationList: CentreConsommation[] = [];
+  magasinList: Magasin[] = [];
 
   //pour les tabs navs
   activeTabsNav;
   //end
   constructor(
     private userGroupService: UserGroupService,
-    private corpsJuridiqueService: CorpsJuridiqueService,
     private civiliteService: CiviliteService,
     private fonctionService: FonctionService,
     private centreConsommationService: CentreConsommationService,
@@ -56,12 +59,24 @@ export class UserComponent implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     private toastr: ToastrService,
-    private modalService: NgbModal
+    private modalService: NgbModal,
+    private magasinService: MagasinService,
   ) { }
 
   compareFn = (o1: any, o2: any) => (o1 && o2 ? o1.id === o2.id : o1 === o2);
 
   ngOnInit(): void {
+ //magasin list
+    this.magasinService.getAllMagasin().subscribe(
+      (data) => {
+        this.magasinList = [...data];
+        console.log('Magasin List',this.magasinList);
+      },
+      (error: HttpErrorResponse) => {
+        console.log('Echec atatus ==> '+error.status);
+      });
+
+      //user list
     this.userService.list().subscribe(
       (data: any) => {
         this.userList = [...data];
@@ -163,23 +178,21 @@ export class UserComponent implements OnInit {
   makeForm(user: User): void {
     this.validateForm = this.fb.group({
       idUtilisateur: [user != null ? user.idUtilisateur: null],
-      nomUtilisateur: [user != null ? user.nomUtilisateur: null,
-        [Validators.required]],
-        prenomUtilisateur: [user != null ? user.prenomUtilisateur: null,
-        [Validators.required]],
-        civilite: [user != null ? user.civilite: null,
-        [Validators.required]],
+      login: [user != null ? user.login: null, [Validators.required]],
+      motDePass: [user != null ? user.motDePass: null],
+      nomUtilisateur: [user != null ? user.nomUtilisateur: null,[Validators.required]],
+      prenomUtilisateur: [user != null ? user.prenomUtilisateur: null,[Validators.required]],
+      activeUtilisateur: [user != null ? user.activeUtilisateur: false],
+      dateLastConnex: [user != null ? user.dateLastConnex: null],
+      askMdp1erLance: [user != null ? user.askMdp1erLance: true],
+      accesChildService: [user != null ? user.accesChildService: true],
+      civilite: [user != null ? user.civilite: null,[Validators.required]],
       profession: [user != null ? user.profession: null],
       fonction: [user != null ? user.fonction: null],
       service: [user != null ? user.service: null],
-      groupUser: [user != null ? user.groupUser: null],
-      activeUtilisateur: [user != null ? user.activeUtilisateur: false],
-      askMdp1erLance: [user != null ? user.askMdp1erLance: true],
-      //authorities: [user != null ? user.authorities: null],
-      login: [user != null ? user.login: null,
-        [Validators.required]],
-        motDePass: [user != null ? user.motDePass: null],
+      magasins: [user != null ? user.magasins: null],
       password_confirmation: [user != null ? user.motDePass: null],
+      groupUser: [[]]
     });
 
     //cette condition permet de basculer vers la tab contenant le formulaire lors d'une modification
@@ -225,15 +238,41 @@ export class UserComponent implements OnInit {
       console.log('Objet avant enregistrement');
       console.log(formData);
       if(formData.idUtilisateur == null) {
-        this.enregistrerUser(formData);
+        //this.enregistrerUser(formData);
       } else {
         this.modifierUser(formData.idUtilisateur, formData);
       }
     }
   }
 
-  enregistrerUser(user: User): void {
-    this.userService.createUser(user).subscribe(
+  enregistrerUser(user: User, userGroup: UserGroup[]): void {
+    
+    this.loading = true;
+
+    console.log('objet', new EncapUserGroup(user, userGroup));
+
+    this.userService.createUser2(new EncapUserGroup(user, userGroup)).subscribe(
+      (data: any) => {
+        console.log(data);
+        this.userList.unshift(data);
+        this.userFiltered = [...this.userList];
+        this.resetForm();
+        setTimeout(() => {
+          this.toastr.success('Enregistrement effectué avec succès.', 'Success!', {progressBar: true});
+        }, 3000);
+        this.loading = false;
+        //basculer vers la tab contenant la liste apres enregistrement
+        this.activeTabsNav = 1;
+      },
+      (error: HttpErrorResponse) => {
+        console.log('Echec atatus ==> '+error.status);
+        //this.loading = true;
+        setTimeout(() => {
+          this.toastr.error('Erreur avec le status '+error.status, ' Erreur !', {progressBar: true});
+        }, 3000);
+        this.loading = false;
+      });
+    /*this.userService.createUser(user).subscribe(
       (data: any) => {
         console.log(data);
         this.userList.unshift(data);
@@ -254,7 +293,7 @@ export class UserComponent implements OnInit {
           this.loading = false;
           this.toastr.error('Erreur avec le status '+error.status, ' Erreur !', {progressBar: true});
         }, 3000);
-      });
+      });*/
   }
 
   modifierUser(idUser: string, user: User): void {
@@ -310,6 +349,15 @@ export class UserComponent implements OnInit {
     }, (reason) => {
       console.log(`Dismissed with: ${reason}`);
     });
+  }
+
+  //Léo
+  choixPushPup(){
+    console.log(this.validateForm.value.groupUser);
+  }
+  choixPushPupMagasins(){
+    console.log(this.validateForm.value.magasins);
+
   }
 
 }

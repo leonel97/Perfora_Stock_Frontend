@@ -75,7 +75,7 @@
               <form (ngSubmit)="submit()" [formGroup]="validateForm">
                 <div class="row">
 
-                  <div class="col-md-12 form-group mb-3">
+                  <div class="col-md-6 form-group mb-3">
                     <label for="idGroupUser">Code <span class="required-field">*</span> </label>
                     <input class="form-control" formControlName="idGroupUser" id="idGroupUser"
                            placeholder="Entrer le code" type="text" autocomplete="off">
@@ -86,7 +86,7 @@
                     </div>
                   </div>
 
-                  <div class="col-md-12 form-group mb-3">
+                  <div class="col-md-6 form-group mb-3">
                     <label for="libGroupUser">Libellé <span class="required-field">*</span></label>
                     <input class="form-control" id="libGroupUser" formControlName="libGroupUser"
                      placeholder="Entrer le libellé" type="text" autocomplete="off">
@@ -96,7 +96,15 @@
                       Ce champs est obligatoire !
                     </div>
                   </div>
+                </div>
+                <div class="row">
 
+                  <div class="col-md-12 form-group mb-3">
+                    <label for="libGroupUser">Droits <span class="required-field">*</span></label>
+                    <ng-select formControlName="droits" [multiple]="true" (click)="choixPushPup()">
+                      <ng-option *ngFor="let droit of droitUserList" [value]="droit">{{droit.codeDroitUser}} - {{droit.libDroitUser}}</ng-option>
+                    </ng-select>
+                  </div>
                   <div class="col-md-12">
                     <btn-loading [loading]="loading" btnClass="btn-save">Enregistrer</btn-loading>
                     <button (click)="resetForm()" class="btn m-1 ml-2 btn-cancel" type="button"> Annuler</button>
