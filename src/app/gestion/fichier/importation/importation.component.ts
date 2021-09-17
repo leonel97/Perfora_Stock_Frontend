@@ -258,146 +258,137 @@ export class ImportationComponent implements OnInit {
       this.typeCentreService.list().subscribe(
         (data1: TypeCentreConsommation[]) => {
 
-          this.directionService.list().subscribe(
-            (data2: Direction[]) => {
+          this.centreConsService.list().subscribe(
+            (data3: CentreConsommation[]) => {
 
-              this.centreConsService.list().subscribe(
-                (data3: CentreConsommation[]) => {
+              
+            let inde:number = 0;
+            let listToSave: CentreConsommation[] = [];
 
-                  
-                let inde:number = 0;
-                let listToSave: CentreConsommation[] = [];
+            for (const element of this.feuille){
 
-                for (const element of this.feuille){
-
-                  inde++;
-                    if(element[0] != undefined && element[1] != undefined && element[2] != undefined
-                      && element[3] != undefined){
-                        let directi:Direction = null;
-                        let typeCen:TypeCentreConsommation = null;
-                        let finded1 = false;
-                        let finded2 = false;
-                        for(const element1 of data1) {
-                          if(element1.codeTypService == element[3]){
-                            typeCen = element1;
-                            finded1 = true;
-                            break;
-                          }
-                        }
-
-                        if(!finded1){
-                          console.log('Le code de Type de Centre à la ligne '+inde+' nExiste pas. Importation interrompu.');
-                          this.toastr.error('Le code de Type Centre à la ligne '+inde+' n\'Existe pas. Importation interrompu.', 'Importation de Centre de Consommation');
-                          this.loading = false;
-                          return;
-                        }
-
-                        for(const element2 of data2) {
-                          if(element2.codeDirection == element[2]){
-                            directi = element2;
-                            finded2 = true;
-                            break;
-                          }
-
-                        }
-
-                        if(!finded2){
-                          console.log('Le code de Direction à la ligne '+inde+' nExiste pas. Importation interrompu.');
-                          this.toastr.error('Le code de Direction à la ligne '+inde+' n\'Existe pas. Importation interrompu.', 'Importation de Centre de Consommation');
-                          return;
-                        }
-
-                        
-
-                        let superCentr: CentreConsommation = null;
-
-                            if(element[4]){
-                              for(const element3 of data3) {
-                                if(element3.codeService == element[4]){
-                                  superCentr = element3;
-
-                                  break;
-                                }
-
-                              }
-
-                            }
-
-                            let centre = new CentreConsommation();
-                            centre.codeService = element[0];
-                            centre.libService = element[1];
-                            centre.direction = directi;
-                            centre.typeService = typeCen;
-                            centre.superService = superCentr;
-
-                            listToSave.push(centre);
-
-                            /*
-
-                              (function(i, centreConsService, toastr, nbrLigne){
-                                centreConsService.createCentreConsommation(centre).subscribe(
-                                  (data) => {
-                                    if(data == null){
-                                      console.log('le code de la ligne '+i+' existe déjà');
-
-                                    }
-
-                                    if(i == nbrLigne){
-                                      console.log('Fin de lImportation, Importation réuissir');
-                                      toastr.success('Importation éffectuée avec Succès', 'Importation de Centre de Consommation');
-                                    }
-
-                                  },
-                                  (erreur) => {
-                                    console.log('Erreur lors de lAjout de la ligne '+i, erreur);
-                                    toastr.error('Erreur lors de l\'Ajout de la ligne '+i+'\n Code : '+erreur.status+' | '+erreur.statusText, 'Importation de Centre de Consommation');
-                                    return 1;
-                                  }
-                                );
-
-                              })(inde, this.centreConsService, this.toastr, this.feuille.length);
-
-                            */
-
-
-
+              inde++;
+                if(element[0] != undefined && element[1] != undefined 
+                  && element[3] != undefined){
+                    let directi:Direction = null;
+                    let typeCen:TypeCentreConsommation = null;
+                    let finded1 = false;
+                    let finded2 = false;
+                    for(const element1 of data1) {
+                      if(element1.codeTypService == element[3]){
+                        typeCen = element1;
+                        finded1 = true;
+                        break;
                       }
-                    else {
-                      console.log('Erreur à la ligne '+inde+'invalidité dUne information');
-                      this.toastr.error('Erreur à la ligne '+inde+'. Invalidité d\'Une information', 'Importation de Centre de Consommation');
+                    }
+
+                    if(!finded1){
+                      console.log('Le code de Type de Centre à la ligne '+inde+' nExiste pas. Importation interrompu.');
+                      this.toastr.error('Le code de Type Centre à la ligne '+inde+' n\'Existe pas. Importation interrompu.', 'Importation de Centre de Consommation');
                       this.loading = false;
                       return;
                     }
+                    
+                    /*
+                    
+                    for(const element2 of data2) {
+                      if(element2.codeDirection == element[2]){
+                        directi = element2;
+                        finded2 = true;
+                        break;
+                      }
+
+                    }
+                    Pour vérification de l'existance du code de la direction
+                    if(!finded2){
+                      console.log('Le code de Direction à la ligne '+inde+' nExiste pas. Importation interrompu.');
+                      this.toastr.error('Le code de Direction à la ligne '+inde+' n\'Existe pas. Importation interrompu.', 'Importation de Centre de Consommation');
+                      return;
+                    }
+                    */
+                    
+
+                    let superCentr: CentreConsommation = null;
+
+                        if(element[4]){
+                          for(const element3 of data3) {
+                            if(element3.codeService == element[4]){
+                              superCentr = element3;
+
+                              break;
+                            }
+
+                          }
+
+                        }
+
+                        let centre = new CentreConsommation();
+                        centre.codeService = element[0];
+                        centre.libService = element[1];
+                        centre.direction = null;
+                        centre.typeService = typeCen;
+                        centre.superService = superCentr;
+
+                        listToSave.push(centre);
+
+                        /*
+
+                          (function(i, centreConsService, toastr, nbrLigne){
+                            centreConsService.createCentreConsommation(centre).subscribe(
+                              (data) => {
+                                if(data == null){
+                                  console.log('le code de la ligne '+i+' existe déjà');
+
+                                }
+
+                                if(i == nbrLigne){
+                                  console.log('Fin de lImportation, Importation réuissir');
+                                  toastr.success('Importation éffectuée avec Succès', 'Importation de Centre de Consommation');
+                                }
+
+                              },
+                              (erreur) => {
+                                console.log('Erreur lors de lAjout de la ligne '+i, erreur);
+                                toastr.error('Erreur lors de l\'Ajout de la ligne '+i+'\n Code : '+erreur.status+' | '+erreur.statusText, 'Importation de Centre de Consommation');
+                                return 1;
+                              }
+                            );
+
+                          })(inde, this.centreConsService, this.toastr, this.feuille.length);
+
+                        */
 
 
 
-                }
-
-                this.centreConsService.addAListCentreConsommation(listToSave).subscribe(
-                  (data) => {
-
-                    console.log('Fin de lImportation, Importation réuissir');
-                    this.toastr.success('Importation éffectuée avec Succès', 'Importation de Centre de Consommation');
-                    this.loading = false;
-
-                  },
-                  (erreur) => {
-                    console.log('Erreur lors de lAjout des ligne ', erreur);
-                    this.toastr.error('Erreur lors de l\'Ajout des Centres de Consommation\n Code : '+erreur.status+' | '+erreur.statusText, 'Importation de Centre de Consommation');
-                    this.loading = false;
-                    return 1;
                   }
-                );
-
-                  
-                },
-                (error: HttpErrorResponse) => {
-                  console.log('Echec atatus ==> ' + error.status);
-                  this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000 });
+                else {
+                  console.log('Erreur à la ligne '+inde+'invalidité dUne information');
+                  this.toastr.error('Erreur à la ligne '+inde+'. Invalidité d\'Une information', 'Importation de Centre de Consommation');
                   this.loading = false;
+                  return;
                 }
-              );
 
+
+
+            }
+
+            this.centreConsService.addAListCentreConsommation(listToSave).subscribe(
+              (data) => {
+
+                console.log('Fin de lImportation, Importation réuissir');
+                this.toastr.success('Importation éffectuée avec Succès', 'Importation de Centre de Consommation');
+                this.loading = false;
+
+              },
+              (erreur) => {
+                console.log('Erreur lors de lAjout des ligne ', erreur);
+                this.toastr.error('Erreur lors de l\'Ajout des Centres de Consommation\n Code : '+erreur.status+' | '+erreur.statusText, 'Importation de Centre de Consommation');
+                this.loading = false;
+                return 1;
+              }
+            );
+
+              
             },
             (error: HttpErrorResponse) => {
               console.log('Echec atatus ==> ' + error.status);
@@ -405,6 +396,7 @@ export class ImportationComponent implements OnInit {
               this.loading = false;
             }
           );
+
 
         },
         (error: HttpErrorResponse) => {
