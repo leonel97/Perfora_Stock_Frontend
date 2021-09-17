@@ -176,7 +176,7 @@
                   <div class="col-md-12 form-group mb-3">
                     <label for="groupUser">Groupe utilisateur</label>
                     <ng-select formControlName="groupUser"  [multiple]="true" id="groupUser" (click)="choixPushPup()" placeholder="-- sélectionner --">
-                      <ng-option *ngFor="let userGroup of userGroupList" [value]="userGroup">{{userGroup.idGroupUser}} - {{userGroup.libGroupUser}}</ng-option>
+                      <ng-option *ngFor="let userGroup of userGroupList" [value]="userGroup.numGroupUser">{{userGroup.idGroupUser}} - {{userGroup.libGroupUser}}</ng-option>
                     </ng-select>
                   </div>
 
@@ -186,7 +186,7 @@
                   <div class="col-md-12 form-group mb-3">
                     <label for="groupUser">Magasin</label>
                     <ng-select formControlName="magasins"  [multiple]="true" id="magasins" (click)="choixPushPupMagasins()" placeholder="-- sélectionner --">
-                      <ng-option *ngFor="let magasin of magasinList" [value]="magasin">{{magasin.codeMagasin}} - {{magasin.libMagasin}}</ng-option>
+                      <ng-option *ngFor="let magasin of magasinList" [value]="magasin.numMagasin">{{magasin.codeMagasin}} - {{magasin.libMagasin}}</ng-option>
                     </ng-select>
                   </div>
                   <div class="col-md-12">

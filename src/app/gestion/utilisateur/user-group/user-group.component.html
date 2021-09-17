@@ -102,7 +102,7 @@
                   <div class="col-md-12 form-group mb-3">
                     <label for="libGroupUser">Droits <span class="required-field">*</span></label>
                     <ng-select formControlName="droits" [multiple]="true" (click)="choixPushPup()">
-                      <ng-option *ngFor="let droit of droitUserList" [value]="droit">{{droit.codeDroitUser}} - {{droit.libDroitUser}}</ng-option>
+                      <ng-option *ngFor="let droit of droitUserList" [value]="droit.idDroitUser">{{droit.codeDroitUser}} - {{droit.libDroitUser}}</ng-option>
                     </ng-select>
                   </div>
                   <div class="col-md-12">

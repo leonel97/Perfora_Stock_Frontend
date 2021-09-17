@@ -45,6 +45,8 @@ export class UserComponent implements OnInit {
   
   centreConsommationList: CentreConsommation[] = [];
   magasinList: Magasin[] = [];
+  userGroupListForUser: UserGroup[] = [];
+  userGroupListUser: UserGroup[] = [];
 
   //pour les tabs navs
   activeTabsNav;
@@ -77,15 +79,7 @@ export class UserComponent implements OnInit {
       });
 
       //user list
-    this.userService.list().subscribe(
-      (data: any) => {
-        this.userList = [...data];
-        this.userFiltered = this.userList;
-        //console.log(this.userList);
-      },
-      (error: HttpErrorResponse) => {
-        console.log('Echec atatus ==> '+error.status);
-      });
+    this.getAllUser();
 
       //profession 
 
@@ -176,6 +170,7 @@ export class UserComponent implements OnInit {
   }
 
   makeForm(user: User): void {
+    
     this.validateForm = this.fb.group({
       idUtilisateur: [user != null ? user.idUtilisateur: null],
       login: [user != null ? user.login: null, [Validators.required]],
@@ -190,16 +185,57 @@ export class UserComponent implements OnInit {
       profession: [user != null ? user.profession: null],
       fonction: [user != null ? user.fonction: null],
       service: [user != null ? user.service: null],
-      magasins: [user != null ? user.magasins: null],
+      magasins: [[]],
       password_confirmation: [user != null ? user.motDePass: null],
       groupUser: [[]]
     });
 
     //cette condition permet de basculer vers la tab contenant le formulaire lors d'une modification
     if (user?.idUtilisateur !=null){
-      this.activeTabsNav = 2;
+     this.userService.getAllGroupUserForUser(user?.idUtilisateur).subscribe(
+       (data:[UserGroup]) => {
+        let tab = [];
+        data.forEach(element => {
+          tab.push(element.numGroupUser);
+        });
+
+        let tab2 = [];
+        user.magasins.forEach(element => {
+          tab2.push(element.numMagasin);
+        });
+        
+        this.activeTabsNav = 2; 
+
+        this.validateForm.patchValue({
+          groupUser: tab
+        });
+        this.validateForm.patchValue({
+          magasins: tab2
+        });
+
+        
+       },
+       (error: HttpErrorResponse) => {
+        console.log('Echec atatus ==> '+error.status);
+       }
+     );
+
+      
     }
 
+  }
+
+  //get all User
+  getAllUser(){
+    this.userService.list().subscribe(
+      (data: any) => {
+        this.userList = [...data];
+        this.userFiltered = this.userList;
+        console.log(this.userList);
+      },
+      (error: HttpErrorResponse) => {
+        console.log('Echec atatus ==> '+error.status);
+      });
   }
 
   resetForm(): void {
@@ -225,13 +261,53 @@ export class UserComponent implements OnInit {
       }, 3000);
     } else  {
 
+      
       const formData = this.validateForm.value;
+
+      let tab: UserGroup[] = [];
+
+      formData.groupUser.forEach((element) => {
+        for (const fa of this.userGroupList){
+          if(element == fa.numGroupUser){
+            tab.push(fa);
+            break;
+          }
+        }
+      });
+     // formData.groupUser = tab;
+
+      //construire objet magasin
+
+      let tab2: Magasin[] = [];
+
+      formData.magasins.forEach((element) => {
+        for (const ma of this.magasinList){
+          if(element == ma.numMagasin){
+            tab2.push(ma);
+            break;
+          }
+        }
+      });
+
+      //formData.magasins = tab2;
+
+      let userObject = new User(this.validateForm.value.login, this.validateForm.value.motDePass, this.validateForm.value.nomUtilisateur, 
+        this.validateForm.value.prenomUtilisateur, true, null, true, true, this.validateForm.value.civilite, this.validateForm.value.profession,
+        this.validateForm.value.fonction, this.validateForm.value.service, tab2);
+
+
       console.log('Objet avant enregistrement');
       console.log(formData);
+      console.log('user object');
+      console.log(userObject);
+      console.log('GroupUser object');
+      console.log(tab);
+      console.log(formData.groupUser);
+
       if(formData.idUtilisateur == null) {
-        //this.enregistrerUser(formData);
+        this.enregistrerUser(userObject, tab);
       } else {
-        this.modifierUser(formData.idUtilisateur, formData);
+        this.modifierUser(formData.idUtilisateur,userObject, tab);
       }
     }
   }
@@ -245,8 +321,9 @@ export class UserComponent implements OnInit {
     this.userService.createUser2(new EncapUserGroup(user, userGroup)).subscribe(
       (data: any) => {
         console.log(data);
-        this.userList.unshift(data);
-        this.userFiltered = [...this.userList];
+        /*this.userList.unshift(data);
+        this.userFiltered = [...this.userList];*/
+        this.getAllUser();
         this.resetForm();
         setTimeout(() => {
           this.toastr.success('Enregistrement effectué avec succès.', 'Success!', {progressBar: true});
@@ -287,8 +364,36 @@ export class UserComponent implements OnInit {
       });*/
   }
 
-  modifierUser(idUser: string, user: User): void {
-    this.userService.updateUser(idUser,user).subscribe(
+  modifierUser(idUser: string, user: User, userGroup: UserGroup[]): void {
+    this.loading = true;
+    this.userService.updateUser2(idUser, new EncapUserGroup(user, userGroup)).subscribe(
+      (data: any) => {
+        console.log(data);
+        
+        
+        /*const i = this.userList.findIndex(l => l.idUtilisateur == data.idUtilisateur);
+        if(i > -1) {
+          this.userList[i]= data;
+          this.userFiltered = [...this.userList];
+        }*/
+        this.getAllUser();
+        setTimeout(() => {
+          
+          this.toastr.success('Modification effectué avec succès.', 'Success!', {progressBar: true});
+        }, 3000);
+        this.loading = false;
+        this.resetForm();
+        this.activeTabsNav = 1; 
+      },
+      (error: HttpErrorResponse) => {
+        console.log('Echec atatus ==> '+error.status);
+        this.loading = true;
+        setTimeout(() => {
+          this.loading = false;
+          this.toastr.error('Erreur avec le status '+error.status, ' Erreur !', {progressBar: true});
+        }, 3000);
+      });
+    /*this.userService.updateUser(idUser,user).subscribe(
       (data: any) => {
         console.log(data);
         const i = this.userList.findIndex(l => l.idUtilisateur == data.idUtilisateur);
@@ -310,7 +415,7 @@ export class UserComponent implements OnInit {
           this.loading = false;
           this.toastr.error('Erreur avec le status '+error.status, ' Erreur !', {progressBar: true});
         }, 3000);
-      });
+      });*/
   }
 
   confirm(content, user) {
@@ -318,7 +423,7 @@ export class UserComponent implements OnInit {
     this.modalService.open(content, { ariaLabelledBy: 'modal-basic-title', centered: true })
       .result.then((result) => {
       //this.confirmResut = `Closed with: ${result}`;
-      this.userService.deleteUser(user?.id).subscribe(
+      this.userService.deleteUser2(user?.idUtilisateur).subscribe(
         (data: any) => {
           console.log(data);
           const i = this.userList.findIndex(l => l.idUtilisateur == user.idUtilisateur);
@@ -350,5 +455,9 @@ export class UserComponent implements OnInit {
     console.log(this.validateForm.value.magasins);
 
   }
+
+ 
+ 
+ 
 
 }

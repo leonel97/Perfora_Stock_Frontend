@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {environment} from "../../../../environments/environment";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {UserGroup} from "../../../models/gestion/utilisateur/user-group";
+import { EncapGroupDroits } from 'src/app/models/gestion/saisie/encapsuleur-model/encapGroupeDroit.model';
 import {Observable} from "rxjs";
 
 @Injectable({
@@ -10,7 +11,7 @@ import {Observable} from "rxjs";
 export class UserGroupService {
 
   host: string = environment.backend2 +'/commune/gro';
-  url: string = environment.backend + '/groupes';
+  //url: string = environment.backend + '/groupes';
   host1 : string = environment.backend2 +'/commune/du'
   private jwtTocken = null;
 
@@ -35,6 +36,23 @@ export class UserGroupService {
   //list des droits users
   listDroitUser(): Observable<Object> {
     return this.http.get(`${this.host1}/list`, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+  }
+
+  //GroupDroits
+  createGroupDroits(corps:EncapGroupDroits){
+    return this.http.post<EncapGroupDroits>(`${this.host}/list2`, corps, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+  }
+
+  updateGroupDroits(code:String, corps:EncapGroupDroits){
+    return this.http.put<EncapGroupDroits>(this.host+'/byid2/'+code, corps, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+  }
+
+  deleteGroupDroits(code:String){
+    return this.http.delete<boolean>(this.host+'/byid2/'+code, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+  }
+
+  getAllDroitUserForGroupUser(id: number){
+    return this.http.get(this.host+'/byGroupUserId/'+id, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
   }
 
 }

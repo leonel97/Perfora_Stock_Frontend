@@ -3,6 +3,7 @@ import {environment} from "../../../../environments/environment";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {User} from "../../../models/gestion/utilisateur/user";
 import { EncapUserGroup } from 'src/app/models/gestion/saisie/encapsuleur-model/encapUserGroupe.model';
+import { UserGroup } from 'src/app/models/gestion/utilisateur/user-group';
 import {Observable} from "rxjs";
 
 @Injectable({
@@ -12,6 +13,7 @@ export class UserService {
 
   
   host: string = environment.backend2 +'/commune/user';
+  host1: string = environment.backend2 +'/commune/aug'; //aug/userGroup/{id}
   private jwtTocken = null;
 
   //url: string = environment.backend + '/users';
@@ -47,6 +49,10 @@ export class UserService {
 
   list(): Observable<Object> {
     return this.http.get(`${this.host}/list`, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+  }
+
+  getAllGroupUserForUser(id: number){
+    return this.http.get(this.host1+'/userGroup/'+id, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
   }
 
 }

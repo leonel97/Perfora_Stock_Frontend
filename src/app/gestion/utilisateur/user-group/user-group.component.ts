@@ -8,6 +8,7 @@ import {ToastrService} from "ngx-toastr";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {HttpErrorResponse} from "@angular/common/http";
 import {debounceTime} from "rxjs/operators";
+import { EncapGroupDroits } from 'src/app/models/gestion/saisie/encapsuleur-model/encapGroupeDroit.model';
 
 @Component({
   selector: 'app-user-group',
@@ -39,17 +40,9 @@ export class UserGroupComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this.userGroupService.list().subscribe(
-      (data: any) => {
-        this.userGroupList = [...data];
-        this.userGroupFiltered = this.userGroupList;
-        console.log(this.userGroupList);
-      },
-      (error: HttpErrorResponse) => {
-        console.log('Echec atatus ==> ' + error.status);
-      });
+    
 
-
+     this.getAllGroupUser();
       //list droit user
       this.userGroupService.listDroitUser().subscribe(
         (data: any) => {
@@ -94,6 +87,19 @@ export class UserGroupComponent implements OnInit {
     this.userGroupFiltered = rows;
   }
 
+  //get all Group User
+  getAllGroupUser(){
+    this.userGroupService.list().subscribe(
+      (data: any) => {
+        this.userGroupList = [...data];
+        this.userGroupFiltered = this.userGroupList;
+        console.log(this.userGroupList);
+      },
+      (error: HttpErrorResponse) => {
+        console.log('Echec atatus ==> ' + error.status);
+      });
+  }
+
   makeForm(userGroup: UserGroup): void {
     this.validateForm = this.fb.group({
       numGroupUser: [userGroup != null ? userGroup.numGroupUser : null],
@@ -105,6 +111,20 @@ export class UserGroupComponent implements OnInit {
     });
     //cette condition permet de basculer vers la tab contenant le formulaire lors d'une modification
     if (userGroup?.numGroupUser !=null){
+      this.userGroupService.getAllDroitUserForGroupUser(userGroup?.numGroupUser).subscribe(
+        (data: [DroitUser]) =>{
+          let tab = [];
+        data.forEach(element => {
+          tab.push(element.idDroitUser);
+        });
+
+        this.validateForm.patchValue({
+          droits: tab
+        });
+
+
+        }
+      )
       this.activeTabsNav = 2;
     }
   }
@@ -132,28 +152,52 @@ export class UserGroupComponent implements OnInit {
       }, 3000);
     } else {
       const formData = this.validateForm.value;
+
+      let tab: DroitUser[] = [];
+
+      formData.droits.forEach((element) => {
+        for (const du of this.droitUserList){
+          if(element == du.idDroitUser){
+            tab.push(du);
+            break;
+          }
+        }
+      });
+
+      let groupUserObject = new UserGroup(formData.numGroupUser, formData.idGroupUser,formData.libGroupUser )
+      console.log('objet avant enregistremrent');
+      console.log(groupUserObject, tab);
+      
+      
+
       if (formData.numGroupUser == null) {
-        this.enregistrerUserGroup(formData, formData.droits);
+        this.enregistrerUserGroup(groupUserObject, tab);
       } else {
-        this.modifierUserGroup(formData.numGroupUser, formData);
+        this.modifierUserGroup(formData.numGroupUser, groupUserObject, tab);
       }
     }
   }
 
   enregistrerUserGroup(userGroup: UserGroup, droit: DroitUser[]): void {
-    this.userGroupService.createUserGroup(userGroup).subscribe(
+
+    console.log('objet', new EncapGroupDroits(userGroup, droit));
+
+    this.userGroupService.createGroupDroits(new EncapGroupDroits(userGroup, droit)).subscribe(
       (data: any) => {
 
         
-        console.log(data);
+        /*console.log(data);
         this.userGroupList.unshift(data);
-        this.userGroupFiltered = [...this.userGroupList];
+        this.userGroupFiltered = [...this.userGroupList];*/
+
+        this.getAllGroupUser();
         this.resetForm();
         this.loading = true;
         setTimeout(() => {
           this.loading = false;
           this.toastr.success('Enregistrement effectué avec succès.', 'Success!', {progressBar: true});
         }, 3000);
+
         //basculer vers la tab contenant la liste apres enregistrement
         this.activeTabsNav = 1;
       },
@@ -167,15 +211,16 @@ export class UserGroupComponent implements OnInit {
       });
   }
 
-  modifierUserGroup(id: string, userGroup: UserGroup): void {
-    this.userGroupService.updateUserGroup(id, userGroup).subscribe(
+  modifierUserGroup(idGroup: string, groupUser: UserGroup, droit: DroitUser[]): void {
+    this.userGroupService.updateGroupDroits(idGroup, new EncapGroupDroits(groupUser, droit)).subscribe( 
       (data: any) => {
         console.log(data);
-        const i = this.userGroupList.findIndex(l => l.numGroupUser == data.numGroupUser);
+        /*const i = this.userGroupList.findIndex(l => l.numGroupUser == data.numGroupUser);
         if (i > -1) {
           this.userGroupList[i] = data;
           this.userGroupFiltered = [...this.userGroupList];
-        }
+        }*/
+        this.getAllGroupUser();
         this.loading = true;
         setTimeout(() => {
           this.loading = false;
@@ -200,7 +245,7 @@ export class UserGroupComponent implements OnInit {
     this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', centered: true})
       .result.then((result) => {
       //this.confirmResut = `Closed with: ${result}`;
-      this.userGroupService.deleteUserGroup(userGroup?.numGroupUser).subscribe(
+      this.userGroupService.deleteGroupDroits(userGroup?.numGroupUser).subscribe(
         (data: any) => {
           console.log(data);
           const i = this.userGroupList.findIndex(l => l.numGroupUser == userGroup.numGroupUser);

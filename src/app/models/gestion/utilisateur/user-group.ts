@@ -1,5 +1,10 @@
 export class UserGroup {
-  numGroupUser: number;
-  idGroupUser: string;
-  libGroupUser: string;
+
+ 
+  constructor(
+    public numGroupUser:  number = null,
+    public idGroupUser: string,
+    public libGroupUser: string)
+    { }
+  
 }
