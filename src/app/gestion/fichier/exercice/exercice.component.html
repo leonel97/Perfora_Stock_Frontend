@@ -26,7 +26,8 @@
                 </div>
                 <div class="col-md-5"></div>
                   <div class="col-md-1.5">
-                    <button type="button" (click)="gererClotureExercice(modalCloture)" [disabled]="disabledBtnCloturer"  class="btn btn-primary btn-block m-1">
+                    <button type="button" (click)="gererClotureExercice(modalCloture)" [disabled]="disabledBtnCloturer"  class="btn btn-primary btn-block m-1" 
+                    *ngIf="authService.hasAccess('fichier_exo_close')" >
                       Clôturer</button>
                   </div>
 
@@ -49,7 +50,7 @@
 
                         </ng-template>
                         <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
-                          <label class="checkbox checkbox-outline-light">
+                          <label class="checkbox checkbox-outline-light" *ngIf="authService.hasAccess('fichier_exo_select')">
                             <input (change)="selectOne($event, row)" [(ngModel)]="row.isSelected" type="checkbox">
                             <span></span>
                             <span class="checkmark"></span>
@@ -103,11 +104,13 @@
                         </ng-template>
                         <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
                           <!--<strong>{{ row.code }}</strong>-->
-                          <button (click)="makeForm(row)" class="btn btn-primary m-1 btn-sm" type="button" ngbTooltip="Modifier" placement="bottom">
+                          <button (click)="makeForm(row)" class="btn btn-primary m-1 btn-sm" type="button" ngbTooltip="Modifier" placement="bottom" 
+                          *ngIf="authService.hasAccess('fichier_exo_edit')">
                             <i class="i-Pen-5"> </i>
                           </button>
                           <button (click)="confirm(modalConfirm, row)" class="btn btn-outline-danger m-1 btn-sm"
-                                  type="button" ngbTooltip="Supprimer" placement="bottom">
+                                  type="button" ngbTooltip="Supprimer" placement="bottom" 
+                                  *ngIf="authService.hasAccess('fichier_exo_delete')">
                             <i class="i-Folder-Trash"> </i>
                           </button>
                         </ng-template>

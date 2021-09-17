@@ -7,6 +7,7 @@ import {HttpErrorResponse} from "@angular/common/http";
 import {debounceTime} from "rxjs/operators";
 import {Exercice} from "../../../models/gestion/fichier/exercice";
 import {ExerciceService} from "../../../services/gestion/fichier/exercice.service";
+import { AuthService } from 'src/app/services/common/auth.service';
 @Component({
   selector: 'app-exercice',
   templateUrl: './exercice.component.html',
@@ -36,11 +37,14 @@ export class ExerciceComponent implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     private toastr: ToastrService,
-    private modalService: NgbModal
+    private modalService: NgbModal,
+    private authService: AuthService
   ) {
   }
 
   ngOnInit(): void {
+
+    this.authService.hasAccess('fichier');
 
     this.disabledBtnCloturer = true;
 

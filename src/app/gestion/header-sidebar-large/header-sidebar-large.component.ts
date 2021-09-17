@@ -28,7 +28,7 @@ export class HeaderSidebarLargeComponent implements OnInit {
   defaultExerciceFonction: ExerciceFonction;
   constructor(
     private navService: NavigationService,
-    private auth: AuthService,
+    public auth: AuthService,
     private store: LocalStoreService,
     private navigationService: NavigationService,
     private exerciceService: ExerciceService,

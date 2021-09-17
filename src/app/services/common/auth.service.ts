@@ -138,5 +138,24 @@ export class AuthService {
 
   }
 
+  hasAccess(code: string):boolean{
+    let  token = localStorage.getItem('token');
+
+    const helper = new JwtHelperService();
+    const decodedToken :any[] = helper.decodeToken(token).roles;
+    console.log('user Details', decodedToken);
+
+    for (const element of decodedToken) {
+      if (element.authority == code) {
+        return true;
+        
+      }
+      
+    }
+
+    return false;
+
+  }
+
 
 }
