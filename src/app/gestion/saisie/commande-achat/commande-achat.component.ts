@@ -28,6 +28,7 @@ import autoTable from 'jspdf-autotable';
 import * as moment from  'moment';
 import { Utils } from 'src/app/utilitaires/utils';
 import { NumberToLetter } from 'convertir-nombre-lettre';
+import { AuthService } from 'src/app/services/common/auth.service';
 
 
 
@@ -88,7 +89,8 @@ export class CommandeAchatComponent implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     private toastr: ToastrService,
-    private modalService: NgbModal
+    private modalService: NgbModal,
+    public authService: AuthService
   ) {
   }
 

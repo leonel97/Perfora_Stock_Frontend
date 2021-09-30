@@ -6,6 +6,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
 import { debounceTime } from 'rxjs/operators';
 import { TypeArticle } from 'src/app/models/gestion/definition/typeArticle.model';
+import { AuthService } from 'src/app/services/common/auth.service';
 import { TypeArticleService } from 'src/app/services/gestion/definition/type-article.service';
 
 @Component({
@@ -32,7 +33,8 @@ export class TypeArticleComponent implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     private toastr: ToastrService,
-    private modalService: NgbModal
+    private modalService: NgbModal,
+    public authService: AuthService
   ) {
   }
 

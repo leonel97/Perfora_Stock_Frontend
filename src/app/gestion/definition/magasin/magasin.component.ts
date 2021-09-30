@@ -7,6 +7,7 @@ import { ToastrService } from 'ngx-toastr';
 import { debounceTime } from 'rxjs/operators';
 import { Famille } from 'src/app/models/gestion/definition/famille.model';
 import { Magasin } from 'src/app/models/gestion/definition/magasin.model';
+import { AuthService } from 'src/app/services/common/auth.service';
 import { FamilleService } from 'src/app/services/gestion/definition/famille.service';
 import { MagasinService } from 'src/app/services/gestion/definition/magasin.service';
 
@@ -39,7 +40,8 @@ export class MagasinComponent implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     private toastr: ToastrService,
-    private modalService: NgbModal
+    private modalService: NgbModal,
+    public authService: AuthService
   ) {
   }
 

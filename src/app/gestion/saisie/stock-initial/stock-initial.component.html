@@ -39,10 +39,11 @@
                         <th scope="col">Article</th>
                         <th scope="col">Désignation</th>
                         <th scope="col">Stock Initial</th>
+                        <th scope="col">CUMP</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr *ngFor="let ligArticle of articleInitial; let i = index;">
+                    <tr *ngFor="let ligArticle of articleListOfMagSelected; let i = index;">
                         <th scope="row">{{i + 1}}</th>
                         <td>
                 
@@ -55,13 +56,17 @@
                           <input type="number" class="form-control" [(ngModel)] = "ligArticle.qteStIniTres"
                               placeholder="Stock Initial" >
                         </td>
+                        <td>
+                          <input type="number" class="form-control" [(ngModel)] = "ligArticle.puStIniTres"
+                              placeholder="Stock Initial" >
+                        </td>
                         
                        
                         
                     </tr>
                 </tbody>
             </table>
-            <button class="btn btn-primary float-right mb-4" (click)="savedStockInitial()"  [disabled]="validateForm.valid == false">Enrégistrer</button>
+            <button class="btn btn-primary float-right mb-4" (click)="savedStockInitial()"  [disabled]="validateForm.valid == false" *ngIf="authService.hasAccess('saisie_stck_init_new')">Enrégistrer</button>
 
         </div>
 

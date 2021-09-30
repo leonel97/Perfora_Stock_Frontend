@@ -18,6 +18,6 @@ export class Fournisseur {
     numAgrementFrs: string;
     categorieFrs: TypeFournisseur;
     dateNaissance: Date;
-    sexe:string;
+    sexeFrs:string;
     
   }

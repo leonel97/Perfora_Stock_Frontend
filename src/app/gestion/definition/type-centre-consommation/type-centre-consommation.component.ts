@@ -7,6 +7,7 @@ import {HttpErrorResponse} from "@angular/common/http";
 import {debounceTime} from "rxjs/operators";
 import {TypeCentreConsommation} from "../../../models/gestion/definition/typeCentreConsommation";
 import {TypeCentreConsommationService} from "../../../services/gestion/definition/typeCentreConsommation.service";
+import { AuthService } from 'src/app/services/common/auth.service';
 
 @Component({
   selector: 'app-type-centre-consommation',
@@ -33,7 +34,8 @@ export class TypeCentreConsommationComponent implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     private toastr: ToastrService,
-    private modalService: NgbModal
+    private modalService: NgbModal,
+    public authService: AuthService
   ) {
   }
 

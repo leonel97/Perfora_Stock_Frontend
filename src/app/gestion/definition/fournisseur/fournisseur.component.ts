@@ -9,6 +9,7 @@ import {TypeFournisseur} from "../../../models/gestion/definition/typeFournisseu
 import {Fournisseur} from "../../../models/gestion/definition/fournisseur";
 import {TypeFournisseurService} from "../../../services/gestion/definition/typeFournisseur.service";
 import {FournisseurService} from "../../../services/gestion/definition/fournisseur.service";
+import { AuthService } from 'src/app/services/common/auth.service';
 
 
 @Component({
@@ -48,7 +49,8 @@ export class FournisseurComponent implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     private toastr: ToastrService,
-    private modalService: NgbModal
+    private modalService: NgbModal,
+    public authService: AuthService
   ) {
   }
 
@@ -129,7 +131,7 @@ export class FournisseurComponent implements OnInit {
       categorieFrs: [fournisseur != null ? fournisseur.categorieFrs : null,[Validators.required]],
       regComFrs: [fournisseur != null ? fournisseur.regComFrs : null,[Validators.required]],
       dateNaissance: [fournisseur != null ? fournisseur.dateNaissance : null,[Validators.required]],
-      sexe: [fournisseur != null ? fournisseur.sexe : null,[Validators.required]],
+      sexeFrs: [fournisseur != null ? fournisseur.sexeFrs : null,[Validators.required]],
     });
     //cette condition permet de basculer vers la tab contenant le formulaire lors d'une modification
     if (fournisseur?.numFournisseur !=null){

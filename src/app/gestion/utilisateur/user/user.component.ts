@@ -22,6 +22,7 @@ import {ProfessionService} from "../../../services/gestion/parametrage/professio
 import { EncapUserGroup } from 'src/app/models/gestion/saisie/encapsuleur-model/encapUserGroupe.model';
 import { Magasin } from 'src/app/models/gestion/definition/magasin.model';
 import { MagasinService } from 'src/app/services/gestion/definition/magasin.service';
+import { AuthService } from 'src/app/services/common/auth.service';
 
 @Component({
   selector: 'app-user',
@@ -63,6 +64,7 @@ export class UserComponent implements OnInit {
     private toastr: ToastrService,
     private modalService: NgbModal,
     private magasinService: MagasinService,
+    public authService: AuthService
   ) { }
 
   compareFn = (o1: any, o2: any) => (o1 && o2 ? o1.id === o2.id : o1 === o2);

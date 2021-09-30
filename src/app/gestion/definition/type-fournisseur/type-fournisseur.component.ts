@@ -7,6 +7,7 @@ import {HttpErrorResponse} from "@angular/common/http";
 import {debounceTime} from "rxjs/operators";
 import {TypeFournisseur} from "../../../models/gestion/definition/typeFournisseur";
 import {TypeFournisseurService} from "../../../services/gestion/definition/typeFournisseur.service";
+import { AuthService } from 'src/app/services/common/auth.service';
 
 @Component({
   selector: 'app-type-fournisseur',
@@ -32,7 +33,8 @@ export class TypeFournisseurComponent implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     private toastr: ToastrService,
-    private modalService: NgbModal
+    private modalService: NgbModal,
+    public authService: AuthService
   ) {
   }
 

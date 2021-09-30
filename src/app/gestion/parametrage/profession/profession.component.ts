@@ -7,6 +7,7 @@ import {debounceTime} from "rxjs/operators";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import { Profession } from '../../../models/gestion/parametrage/profession';
 import { ProfessionService } from '../../../services/gestion/parametrage/profession.service';
+import { AuthService } from 'src/app/services/common/auth.service';
 
 
 @Component({
@@ -32,7 +33,8 @@ export class ProfessionComponent implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     private toastr: ToastrService,
-    private modalService: NgbModal
+    private modalService: NgbModal,
+    public authService: AuthService
   ) { }
 
   ngOnInit(): void {

@@ -9,6 +9,7 @@ import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {HttpErrorResponse} from "@angular/common/http";
 import {debounceTime} from "rxjs/operators";
 import { EncapGroupDroits } from 'src/app/models/gestion/saisie/encapsuleur-model/encapGroupeDroit.model';
+import { AuthService } from 'src/app/services/common/auth.service';
 
 @Component({
   selector: 'app-user-group',
@@ -34,7 +35,8 @@ export class UserGroupComponent implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     private toastr: ToastrService,
-    private modalService: NgbModal
+    private modalService: NgbModal,
+    public authService: AuthService
   ) {
   }
 

@@ -96,23 +96,23 @@
                         <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
                           <!--<strong>{{ row.code }}</strong>-->
                           <button (click)="makeForm(row)" class="btn btn-primary m-1 btn-sm"
-                          type="button" *ngIf="row.commande.valide == false" ngbTooltip="Modifier" placement="bottom">
+                          type="button" *ngIf="row.commande.valide == false && authService.hasAccess('saisie_ca_edit')" ngbTooltip="Modifier" placement="bottom" >
                             <i class="i-Pen-5"> </i>
                           </button>
                           <button (click)="confirm(modalConfirm, row)" class="btn btn-outline-danger m-1 btn-sm"
-                                  type="button" *ngIf="row.commande.valide == false" ngbTooltip="Supprimer" placement="bottom">
+                                  type="button" *ngIf="row.commande.valide == false && authService.hasAccess('saisie_ca_delete')" ngbTooltip="Supprimer" placement="bottom">
                             <i class="i-Folder-Trash"> </i>
                           </button>
                           <button (click)="valider(row, true, modalValid)" class="btn btn-outline-success m-1 btn-sm"
-                                  type="button" *ngIf="row.commande.valide == false" ngbTooltip="Valider" placement="bottom">
+                                  type="button" *ngIf="row.commande.valide == false && authService.hasAccess('saisie_ca_valid')" ngbTooltip="Valider" placement="bottom">
                             <i class="i-Yes"> </i>
                           </button>
                           <button (click)="valider(row, false, modalValid)" class="btn btn-outline-warning m-1 btn-sm"
-                                  type="button" *ngIf="row.commande.valide == true" ngbTooltip="Annuler" placement="bottom">
+                                  type="button" *ngIf="row.commande.valide == true && authService.hasAccess('saisie_ca_rollback')" ngbTooltip="Annuler" placement="bottom" >
                             <i class="i-Reload"> </i>
                           </button>
                           <button (click)="openPdfToPrint(row)" class="btn btn-outline-warning m-1 btn-sm"
-                                  type="button" ngbTooltip="Imprimer" placement="bottom">
+                                  type="button" ngbTooltip="Imprimer" placement="bottom" *ngIf="authService.hasAccess('saisie_ca_print')">
                             <i class="i-File-Download"> </i>
                           </button>
                         </ng-template>
@@ -134,7 +134,7 @@
                 <div class="d-flex mb-5" style="margin-bottom: 0;">
                   <span class="m-auto"></span>
                   <button class="btn btn-outline-secondary mr-3" (click)="resetForm()">Annuler</button>
-                  <btn-loading btnClass="btn-primary" [loading]="loading" (click)="submit()">Enrégistrer</btn-loading>
+                  <btn-loading btnClass="btn-primary" [loading]="loading" (click)="submit()" *ngIf="authService.hasAccess('saisie_ca_new')">Enrégistrer</btn-loading>
                 </div>
                 <form [formGroup]="validateForm">
                   <h4 class="font-weight-bold">Informations sur la Commande Achat</h4>

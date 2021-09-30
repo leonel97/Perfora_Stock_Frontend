@@ -117,15 +117,15 @@
                         <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
                           <!--<strong>{{ row.code }}</strong>-->
                           <button (click)="makeForm(row)" class="btn btn-primary m-1 btn-sm"
-                          type="button" *ngIf="row.valideRecep == false" ngbTooltip="Modifier" placement="bottom">
+                          type="button" *ngIf="row.valideRecep == false && authService.hasAccess('saisie_recept_edit')" ngbTooltip="Modifier" placement="bottom">
                             <i class="i-Pen-5"> </i>
                           </button>
                           <button (click)="confirm(modalConfirm, row)" class="btn btn-outline-danger m-1 btn-sm"
-                                  type="button" *ngIf="row.valideRecep == false" ngbTooltip="Supprimer" placement="bottom">
+                                  type="button" *ngIf="row.valideRecep == false && authService.hasAccess('saisie_recept_delete')" ngbTooltip="Supprimer" placement="bottom">
                             <i class="i-Folder-Trash"> </i>
                           </button>
                           <button (click)="valider(row, true, modalValid)" class="btn btn-outline-success m-1 btn-sm"
-                                  type="button" *ngIf="row.valideRecep == false" ngbTooltip="Valider" placement="bottom">
+                                  type="button" *ngIf="row.valideRecep == false  && authService.hasAccess('saisie_recept_valid')" ngbTooltip="Valider" placement="bottom">
                             <i class="i-Yes"> </i>
                           </button>
                           <!--
@@ -135,11 +135,11 @@
                           </button>
                           -->
                           <button (click)="openDetail(row)" class="btn btn-outline-warning m-1 btn-sm"
-                                  type="button" ngbTooltip="Détail" placement="bottom" >
+                                  type="button" ngbTooltip="Détail" placement="bottom"  *ngIf="authService.hasAccess('saisie_recept_detail')">
                             <i class="i-Information"> </i>
                           </button>
                           <button (click)="openPdfToPrint(row)" class="btn btn-outline-warning m-1 btn-sm"
-                                  type="button" ngbTooltip="Imprimer" placement="bottom">
+                                  type="button" ngbTooltip="Imprimer" placement="bottom"  *ngIf="authService.hasAccess('saisie_recept_print')">
                             <i class="i-File-Download"> </i>
                           </button>
                         </ng-template>
@@ -157,11 +157,11 @@
             <a ngbNavLink><span *ngIf="! validateForm.value.numReception">Nouvelle</span><span *ngIf="validateForm.value.numReception && detailView == false" span>Modifier</span> <span *ngIf="validateForm.value.numReception && detailView == true" span>Détail sur</span> Entrée d'Article</a>
             <ng-template ngbNavContent>
 
-              <div class="mb-2">
+              <div class="mb-2"> 
                 <div class="d-flex mb-5" style="margin-bottom: 0;">
                   <span class="m-auto"></span>
                   <button class="btn btn-outline-secondary mr-3" (click)="resetForm()"><span *ngIf="!detailView">Annuler</span> <span *ngIf="detailView">Fermer</span></button>
-                  <btn-loading btnClass="btn-primary" [loading]="loading" (click)="submit()" *ngIf="!detailView" >Enrégistrer</btn-loading>
+                  <btn-loading btnClass="btn-primary" [loading]="loading" (click)="submit()" *ngIf="!detailView && authService.hasAccess('saisie_recept_new')" >Enrégistrer</btn-loading>
                 </div>
                 <form [formGroup]="validateForm">
                   <h4 class="font-weight-bold">Informations sur l'Entrée d'Article</h4>

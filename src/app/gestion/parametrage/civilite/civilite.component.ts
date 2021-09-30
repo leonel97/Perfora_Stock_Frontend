@@ -7,6 +7,7 @@ import {ToastrService} from "ngx-toastr";
 import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {HttpErrorResponse} from "@angular/common/http";
 import {debounceTime} from "rxjs/operators";
+import { AuthService } from 'src/app/services/common/auth.service';
 
 @Component({
   selector: 'app-civilite',
@@ -30,7 +31,8 @@ export class CiviliteComponent implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     private toastr: ToastrService,
-    private modalService: NgbModal
+    private modalService: NgbModal,
+    public authService: AuthService
   ) { }
 
   ngOnInit(): void {

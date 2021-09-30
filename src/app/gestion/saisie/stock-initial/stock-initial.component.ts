@@ -11,6 +11,7 @@ import { StockerService } from 'src/app/services/gestion/saisie/stocker.service'
 import { Article } from 'src/app/models/gestion/definition/article.model';
 import { ExerciceService } from 'src/app/services/gestion/fichier/exercice.service';
 import { ArticleService } from 'src/app/services/gestion/definition/article.service';
+import { AuthService } from 'src/app/services/common/auth.service';
 
 export interface modelLigneEtatStock{
   concernedStocker: Stocker;
@@ -31,6 +32,7 @@ export class StockInitialComponent implements OnInit {
   searchControl: FormControl = new FormControl();
   ligneShowFiltered;
   articleInitial :Article[] = [];
+  articleListOfMagSelected : Article[] = [];
   
 
   validateForm: FormGroup;
@@ -42,7 +44,8 @@ export class StockInitialComponent implements OnInit {
     private toastr: ToastrService,
     private modalService: NgbModal,
     private exerciceService: ExerciceService,
-    private articleService: ArticleService
+    private articleService: ArticleService,
+    public authService: AuthService
   ) {
 
     this.makeForm();
@@ -50,6 +53,7 @@ export class StockInitialComponent implements OnInit {
    }
 
   ngOnInit(): void {
+
 
     this.searchControl.valueChanges
       .pipe(debounceTime(200))
@@ -130,11 +134,30 @@ export class StockInitialComponent implements OnInit {
       }, 3000);
     } else {
       
-      this.getLignShowOfSelectedMagasin();
+      this.getAllArticleForOneMagasin(this.validateForm.value.magasin);
+      //this.getLignShowOfSelectedMagasin();
         
     }
 
    
+  }
+
+  //Get all article for one Magasin
+  getAllArticleForOneMagasin(numMag: number){
+    this.articleListOfMagSelected = [];
+    this.articleService.getAllArticleForMagasin(numMag).subscribe(
+      (data: Article[]) => {
+        //this.magasinList = data;
+        this.articleListOfMagSelected = data;
+        console.log('Article for Magasin ==>');
+        //console.log(data);
+        console.log(this.articleListOfMagSelected);
+      
+      },
+      (error: HttpErrorResponse) => {
+        console.log('Echec status ==> ' + error.status);
+      }
+    );
   }
 
   getLignShowOfSelectedMagasin(){
@@ -195,13 +218,13 @@ export class StockInitialComponent implements OnInit {
 
   savedStockInitial(){
     
+   console.log('exact value ==>', this.articleListOfMagSelected);
+   
     this.articleService.addAListArticleForStockInit(this.articleInitial).subscribe(
       (data) => {
-       // this.loading = true;
        console.log('objet', data);
        
         setTimeout(() => {
-         // this.loading = false;
           this.toastr.success('Stock Initial ajouté avec succès.', ' Success !', {progressBar: true});
         }, 3000);
         

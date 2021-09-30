@@ -73,11 +73,12 @@
                         </ng-template>
                         <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
                           <!--<strong>{{ row.code }}</strong>-->
-                          <button (click)="makeForm(row)" class="btn btn-primary m-1 btn-sm" ngbTooltip="Modifier" placement="bottom" type="button">
+                          <button (click)="makeForm(row)" class="btn btn-primary m-1 btn-sm" ngbTooltip="Modifier" placement="bottom" 
+                          type="button"  *ngIf="authService.hasAccess('def_fournis_edit')">
                             <i class="i-Pen-5"> </i>
                           </button>
                           <button (click)="confirm(modalConfirm, row)" class="btn btn-outline-danger m-1 btn-sm"
-                                  type="button" ngbTooltip="Supprimer" placement="bottom">
+                                  type="button" ngbTooltip="Supprimer" placement="bottom"  *ngIf="authService.hasAccess('def_fournis_delete')">
                             <i class="i-Folder-Trash"> </i>
                           </button>
                         </ng-template>
@@ -175,13 +176,13 @@
                   </div>
 
                   <div class="col-md-4 form-group mb-3">
-                    <label for="sexe">Sexe <span class="required-field">*</span> </label>
-                    <ng-select id="sexe" formControlName="sexe" placeholder=" Entrer le sexe">
+                    <label for="sexeFrs">Sexe <span class="required-field">*</span> </label>
+                    <ng-select id="sexeFrs" formControlName="sexeFrs" placeholder=" Entrer le sexe">
                         <!--option [ngValue]="null">-- Centre de consommation parent -- </option-->
                         <ng-option *ngFor="let sexeFrs of sexeList" [value]="sexeFrs.code">{{sexeFrs.libelle}}</ng-option>
                       </ng-select>
-                      <div *ngIf="validateForm.controls.sexe.errors &&
-                      (validateForm.controls.sexe.dirty || validateForm.controls.sexe.touched)"
+                      <div *ngIf="validateForm.controls.sexeFrs.errors &&
+                      (validateForm.controls.sexeFrs.dirty || validateForm.controls.sexeFrs.touched)"
                             class="error-field">
                          Ce champs est obligatoire !
                        </div>
@@ -227,7 +228,7 @@
                     </div>
 
                     <div class="col-md-12">
-                      <btn-loading [loading]="loading" btnClass="btn-save">Enrégistrer</btn-loading>
+                      <btn-loading [loading]="loading" btnClass="btn-save"  *ngIf="authService.hasAccess('def_fournis_new')">Enrégistrer</btn-loading>
                       <button (click)="resetForm()" class="btn m-1 ml-2 btn-cancel" type="button"> Annuler</button>
                     </div>
                   </div>

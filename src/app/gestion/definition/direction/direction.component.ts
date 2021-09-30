@@ -9,6 +9,7 @@ import {Annee} from "../../../models/gestion/parametrage/annee";
 import {AnneeService} from "../../../services/gestion/parametrage/annee.service";
 import {Direction} from "../../../models/gestion/definition/direction";
 import {DirectionService} from "../../../services/gestion/definition/direction.service";
+import { AuthService } from 'src/app/services/common/auth.service';
 
 @Component({
   selector: 'app-direction',
@@ -34,7 +35,8 @@ export class DirectionComponent implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     private toastr: ToastrService,
-    private modalService: NgbModal
+    private modalService: NgbModal,
+    public authService: AuthService
   ) {
   }
 

@@ -21,6 +21,7 @@ import { StockerService } from 'src/app/services/gestion/saisie/stocker.service'
 import { ExerciceService } from 'src/app/services/gestion/fichier/exercice.service';
 import { InventaireService } from 'src/app/services/gestion/saisie/inventaire.service';
 import { LigneInventaireService } from 'src/app/services/gestion/saisie/ligneInventaire.service';
+import { AuthService } from 'src/app/services/common/auth.service';
 
 
 export interface modelLigneEtatStock{
@@ -71,7 +72,8 @@ export class InventaireComponent implements OnInit {
     private stockerService: StockerService,
     private exerciceService: ExerciceService,
     private inventaireService: InventaireService,
-    private ligneInventaireService: LigneInventaireService) { }
+    private ligneInventaireService: LigneInventaireService,
+    public authService: AuthService) { }
 
   ngOnInit(): void {
 

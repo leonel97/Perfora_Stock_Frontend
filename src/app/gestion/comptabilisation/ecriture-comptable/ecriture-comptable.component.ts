@@ -10,6 +10,7 @@ import { Utils } from 'src/app/utilitaires/utils';
 
 import { EcritureComptable } from 'src/app/models/gestion/comptabilisation/ecritureComptable.model';
 import { EcritureComptableService } from 'src/app/services/gestion/comptabilisation/ecritureComptable.service';
+import { AuthService } from 'src/app/services/common/auth.service';
 
 @Component({
   selector: 'app-ecriture-comptable',
@@ -27,7 +28,8 @@ export class EcritureComptableComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private toastr: ToastrService,
-    private ecritureComptableService: EcritureComptableService) { 
+    private ecritureComptableService: EcritureComptableService,
+    public authService: AuthService) { 
       this.makeForm(null);
     }
 

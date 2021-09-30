@@ -7,6 +7,7 @@ import {Fonction} from "../../../models/gestion/parametrage/fonction";
 import {FonctionService} from "../../../services/gestion/parametrage/fonction.service";
 import {HttpErrorResponse} from "@angular/common/http";
 import {debounceTime} from "rxjs/operators";
+import { AuthService } from 'src/app/services/common/auth.service';
 
 @Component({
   selector: 'app-fonction',
@@ -32,7 +33,8 @@ export class FonctionComponent implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     private toastr: ToastrService,
-    private modalService: NgbModal
+    private modalService: NgbModal,
+    public authService: AuthService
   ) { }
 
   ngOnInit(): void {

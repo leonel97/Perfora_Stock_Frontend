@@ -6,6 +6,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
 import { debounceTime } from 'rxjs/operators';
 import { Uniter } from 'src/app/models/gestion/definition/uniter.model';
+import { AuthService } from 'src/app/services/common/auth.service';
 import { UniterService } from 'src/app/services/gestion/definition/uniter.service';
 
 @Component({
@@ -34,7 +35,8 @@ export class UniterComponent implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     private toastr: ToastrService,
-    private modalService: NgbModal
+    private modalService: NgbModal,
+    public authService: AuthService
   ) {
   }
 

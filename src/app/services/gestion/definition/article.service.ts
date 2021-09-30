@@ -42,5 +42,10 @@ export class ArticleService {
     return this.httpCli.delete<boolean>(this.host+'/stock/article/byCodArt/'+code, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
   }
 
+  //Léonel
+  getAllArticleForMagasin(idMag: number){
+    return this.httpCli.get<Article[]>(this.host+'/stock/article/listByCodMag/'+idMag, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+  }
+
 
 }

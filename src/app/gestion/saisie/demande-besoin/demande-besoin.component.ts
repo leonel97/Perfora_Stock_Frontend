@@ -24,6 +24,7 @@ import {jsPDF} from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import * as moment from  'moment';
 import { Utils } from 'src/app/utilitaires/utils';
+import { AuthService } from 'src/app/services/common/auth.service';
 
 
 export interface modelLigneDemandeAppro{
@@ -80,7 +81,8 @@ export class DemandeBesoinComponent  implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     private toastr: ToastrService,
-    private modalService: NgbModal
+    private modalService: NgbModal,
+    public authService: AuthService
   ) {
   }
 

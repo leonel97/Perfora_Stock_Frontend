@@ -17,6 +17,7 @@ import {jsPDF} from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import * as moment from  'moment';
 import { Utils } from 'src/app/utilitaires/utils';
+import { AuthService } from 'src/app/services/common/auth.service';
 
 
 @Component({
@@ -43,7 +44,8 @@ export class ArticleParFamilleComponent implements OnInit {
     private exerciceService: ExerciceService,
     private fb: FormBuilder,
     private toastr: ToastrService,
-    private modalService: NgbModal
+    private modalService: NgbModal,
+    public authService: AuthService
   ) {
     this.makeForm(null);
     this.getAllFamille();
