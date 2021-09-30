@@ -6,11 +6,6 @@ import { User } from 'src/app/models/gestion/utilisateur/user';
 import { HttpResponse } from '@angular/common/http';
 import {JwtHelperService} from "@auth0/angular-jwt";
 
-export class EnumUser {
-  login:	string;
-  motDePass:	string;
-}
-
 
 @Component({
   selector: 'app-login',
@@ -144,13 +139,13 @@ export class LoginComponent implements OnInit {
 
         this.auth.loginByUsernameAndPassword(userAuth).subscribe(
           (data1 : HttpResponse<any>) =>{
-          console.log('verifier',data1.headers.get("Authorization"));
+         // console.log('verifier',data1.headers.get("Authorization"));
           let token = data1.headers.get("Authorization");
 
           const helper = new JwtHelperService();
           const decodedToken = helper.decodeToken(token);
 
-          console.log('user Details', decodedToken);
+          //console.log('user Details', decodedToken);
 
           this.auth.saveToken(token);
           this.router.navigateByUrl('/gestion/accueil');
@@ -201,9 +196,8 @@ export class LoginComponent implements OnInit {
       (data: HttpResponse<any>) =>{
         this.confirmation = true;
         
-         let token = data.headers.get("Authorization");
-        console.log('verf', token);
-
+        let token = data.headers.get("Authorization");
+        //console.log('verf', token);
         this.auth.saveToken(token);
         
 

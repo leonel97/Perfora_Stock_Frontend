@@ -17,5 +17,7 @@ export class Fournisseur {
     agreerFrs: boolean;
     numAgrementFrs: string;
     categorieFrs: TypeFournisseur;
+    dateNaissance: Date;
+    sexe:string;
     
   }

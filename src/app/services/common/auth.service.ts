@@ -143,7 +143,7 @@ export class AuthService {
 
     const helper = new JwtHelperService();
     const decodedToken :any[] = helper.decodeToken(token).roles;
-    console.log('user Details', decodedToken);
+    //console.log('user Details', decodedToken);
 
     for (const element of decodedToken) {
       if (element.authority == code) {

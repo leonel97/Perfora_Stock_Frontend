@@ -10,6 +10,7 @@ import { Article } from 'src/app/models/gestion/definition/article.model';
 import { Famille } from 'src/app/models/gestion/definition/famille.model';
 import { TypeArticle } from 'src/app/models/gestion/definition/typeArticle.model';
 import { Uniter } from 'src/app/models/gestion/definition/uniter.model';
+import { AuthService } from 'src/app/services/common/auth.service';
 import { AffectUniterToArticleService } from 'src/app/services/gestion/definition/affect-uniter-to-article.service';
 import { ArticleService } from 'src/app/services/gestion/definition/article.service';
 import { FamilleService } from 'src/app/services/gestion/definition/famille.service';
@@ -49,7 +50,8 @@ export class ArticleComponent implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     private toastr: ToastrService,
-    private modalService: NgbModal
+    private modalService: NgbModal,
+    public authService: AuthService
   ) {
   }
 

@@ -231,7 +231,7 @@ export class UserComponent implements OnInit {
       (data: any) => {
         this.userList = [...data];
         this.userFiltered = this.userList;
-        console.log(this.userList);
+        console.log('user list',this.userList);
       },
       (error: HttpErrorResponse) => {
         console.log('Echec atatus ==> '+error.status);

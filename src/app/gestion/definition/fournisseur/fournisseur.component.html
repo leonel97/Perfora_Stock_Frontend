@@ -161,25 +161,56 @@
                     </div>
                 </div>
 
+                <!---->
                 <div class="row">
-                    <div class="col-md-4 form-group mb-3">
-                      <label for="code">Domaine d'intervention  <span class="required-field">*</span> </label>
-                      <input class="form-control" formControlName="domaineInterven" id="domaineInterven"
-                             placeholder="Entrer le domaine d'intervention" type="text" autocomplete="off">
-                      <div *ngIf="validateForm.controls.domaineInterven.errors &&
-                     (validateForm.controls.domaineInterven.dirty || validateForm.controls.domaineInterven.touched)"
-                           class="error-field">
-                        Ce champs est obligatoire !
-                      </div>
+                  <div class="col-md-4 form-group mb-3">
+                    <label for="dateNaissance"> Date de naissance <span class="required-field">*</span> </label>
+                    <input class="form-control" formControlName="dateNaissance" id="dateNaissance"
+                           placeholder="Entrer la date de naissance" type="date" autocomplete="off">
+                    <div *ngIf="validateForm.controls.dateNaissance.errors &&
+                   (validateForm.controls.dateNaissance.dirty || validateForm.controls.dateNaissance.touched)"
+                         class="error-field">
+                      Ce champs est obligatoire !
                     </div>
+                  </div>
 
-                    <div class="col-md-3 form-group mb-3">
+                  <div class="col-md-4 form-group mb-3">
+                    <label for="sexe">Sexe <span class="required-field">*</span> </label>
+                    <ng-select id="sexe" formControlName="sexe" placeholder=" Entrer le sexe">
+                        <!--option [ngValue]="null">-- Centre de consommation parent -- </option-->
+                        <ng-option *ngFor="let sexeFrs of sexeList" [value]="sexeFrs.code">{{sexeFrs.libelle}}</ng-option>
+                      </ng-select>
+                      <div *ngIf="validateForm.controls.sexe.errors &&
+                      (validateForm.controls.sexe.dirty || validateForm.controls.sexe.touched)"
+                            class="error-field">
+                         Ce champs est obligatoire !
+                       </div>
+                </div>
+
+                  <div class="col-md-4 form-group mb-3">
+                    <label for="code">Domaine d'intervention  <span class="required-field">*</span> </label>
+                    <input class="form-control" formControlName="domaineInterven" id="domaineInterven"
+                           placeholder="Entrer le domaine d'intervention" type="text" autocomplete="off">
+                    <div *ngIf="validateForm.controls.domaineInterven.errors &&
+                   (validateForm.controls.domaineInterven.dirty || validateForm.controls.domaineInterven.touched)"
+                         class="error-field">
+                      Ce champs est obligatoire !
+                    </div>
+                  </div>
+              </div>
+
+              <!--End new add-->
+
+                <div class="row">
+                   
+
+                    <div class="col-md-5 form-group mb-3">
                       <label for="description">N° Compte Bancaire </label>
                       <input class="form-control" formControlName="description" id="description"
                              placeholder="Entrer le N° du Compte Bancaire" type="text" autocomplete="off">
                     </div>
 
-                    <div class="col-md-1 form-group mb-1">
+                    <div class="col-md-2 form-group mb-1">
                       <label for="agreerFrs">Agrée </label>
                       <label class="checkbox checkbox-outline-light">
                         <input type="checkbox" formControlName="agreerFrs" id="agreerFrs"
@@ -189,7 +220,7 @@
                       </label>
                     </div>
 
-                    <div class="col-md-4 form-group mb-5">
+                    <div class="col-md-5 form-group mb-5">
                         <label for="numAgrementFrs">Numéro d'agrément </label>
                         <input class="form-control" formControlName="numAgrementFrs" id="numAgrementFrs"
                                placeholder="Entrer le numéro d'agrément" type="text" autocomplete="off" [readOnly]="!confirmed.checked">

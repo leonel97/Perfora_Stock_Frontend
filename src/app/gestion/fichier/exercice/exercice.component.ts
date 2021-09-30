@@ -44,8 +44,6 @@ export class ExerciceComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this.authService.hasAccess('fichier');
-
     this.disabledBtnCloturer = true;
 
     this.exerciceService.list().subscribe(

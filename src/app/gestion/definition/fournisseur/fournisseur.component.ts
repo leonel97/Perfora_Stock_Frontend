@@ -29,6 +29,13 @@ export class FournisseurComponent implements OnInit {
   loading: boolean;
   fournisseur: Fournisseur = null;
   typefournisseur: TypeFournisseur = null;
+
+
+  //gestion des sexe
+  sexeList = [
+    { code: 'Masculin', libelle: 'Masculin' },
+    { code: 'Féminin', libelle: 'Féminin' }
+  ];
   
 
   //pour les tabs navs
@@ -121,6 +128,8 @@ export class FournisseurComponent implements OnInit {
       numAgrementFrs: [fournisseur != null ? fournisseur.numAgrementFrs : null],
       categorieFrs: [fournisseur != null ? fournisseur.categorieFrs : null,[Validators.required]],
       regComFrs: [fournisseur != null ? fournisseur.regComFrs : null,[Validators.required]],
+      dateNaissance: [fournisseur != null ? fournisseur.dateNaissance : null,[Validators.required]],
+      sexe: [fournisseur != null ? fournisseur.sexe : null,[Validators.required]],
     });
     //cette condition permet de basculer vers la tab contenant le formulaire lors d'une modification
     if (fournisseur?.numFournisseur !=null){

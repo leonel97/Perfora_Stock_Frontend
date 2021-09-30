@@ -1,16 +1,16 @@
 <div class="">
     <div class="breadcrumb">
-        <h1> Gestion des importations</h1>
+        <h1> Gestion des importations & Exportation</h1>
         <ul>
             <li><a href="">Fichier</a></li>
-            <li>Importation</li>
+            <li>Importation & Exportation</li>
         </ul>
     </div>
 
     <div class="separator-breadcrumb border-top"></div>
     <!--Contenu component importation-->
     <ngb-accordion #acc="ngbAccordion" [closeOthers]="false" activeIds="ngb-panel-0">
-      <ngb-panel title="Importations">
+      <ngb-panel title="Importations"  *ngIf="authService.hasAccess('importation')">
         <ng-template ngbPanelContent >
           <div [@animate]="{value:'*',params:{y:'20px',opacity:'0',delay:'0ms', duration: '400ms'}}">
             <form [formGroup] = "repport1FormsGroup" (ngSubmit)="onRep1GenerateClicked()">
@@ -53,7 +53,7 @@
           </div>
         </ng-template>
       </ngb-panel>
-      <ngb-panel>
+      <ngb-panel *ngIf="authService.hasAccess('exportation')">
         <ng-template ngbPanelTitle>
           <span>Exportations</span>
         </ng-template>
@@ -85,7 +85,7 @@
           </div>
         </ng-template>
       </ngb-panel>
-      <ngb-panel title="Simple">
+      <!--ngb-panel title="Simple">
         <ng-template ngbPanelContent>
           <div [@animate]="{value:'*',params:{y:'20px',opacity:'0',delay:'0ms', duration: '400ms'}}">
             Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf
@@ -104,7 +104,7 @@
             labore sustainable VHS.
           </div>
         </ng-template>
-      </ngb-panel>
+      </ngb-panel-->
     </ngb-accordion>
 
 

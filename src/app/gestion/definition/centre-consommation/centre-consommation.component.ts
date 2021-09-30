@@ -11,6 +11,7 @@ import {Direction} from "../../../models/gestion/definition/direction";
 import {CentreConsommationService} from "../../../services/gestion/definition/centreConsommation.service";
 import {TypeCentreConsommationService} from "../../../services/gestion/definition/typeCentreConsommation.service";
 import {DirectionService} from "../../../services/gestion/definition/direction.service";
+import { AuthService } from 'src/app/services/common/auth.service';
 
 
 @Component({
@@ -44,7 +45,8 @@ export class CentreConsommationComponent implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     private toastr: ToastrService,
-    private modalService: NgbModal
+    private modalService: NgbModal,
+    public authService: AuthService
   ) {
   }
 

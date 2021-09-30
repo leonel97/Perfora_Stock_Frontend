@@ -7,6 +7,7 @@ import {HttpErrorResponse} from "@angular/common/http";
 import {debounceTime} from "rxjs/operators";
 import {CauseAnomalie} from "../../../models/gestion/definition/causeAnomalie";
 import {CauseAnomalieService} from "../../../services/gestion/definition/causeAnomalie.service";
+import { AuthService } from 'src/app/services/common/auth.service';
 
 @Component({
   selector: 'app-cause-annomalie',
@@ -32,7 +33,8 @@ export class CauseAnnomalieComponent implements OnInit {
     private fb: FormBuilder,
     private router: Router,
     private toastr: ToastrService,
-    private modalService: NgbModal
+    private modalService: NgbModal,
+    public authService: AuthService
   ) {
   }
 

@@ -14,6 +14,7 @@ import { TypeArticle } from 'src/app/models/gestion/definition/typeArticle.model
 import { TypeCentreConsommation } from 'src/app/models/gestion/definition/typeCentreConsommation';
 import { TypeFournisseur } from 'src/app/models/gestion/definition/typeFournisseur';
 import { Uniter } from 'src/app/models/gestion/definition/uniter.model';
+import { AuthService } from 'src/app/services/common/auth.service';
 import { ArticleService } from 'src/app/services/gestion/definition/article.service';
 import { CentreConsommationService } from 'src/app/services/gestion/definition/centreConsommation.service';
 import { DirectionService } from 'src/app/services/gestion/definition/direction.service';
@@ -50,7 +51,8 @@ export class ImportationComponent implements OnInit {
     private magasinService: MagasinService, private familleService: FamilleService,
     private typeArtiService: TypeArticleService, private articleService: ArticleService,
     private typeFrsService: TypeFournisseurService, private fournisseurService: FournisseurService,
-    private uniterService: UniterService
+    private uniterService: UniterService,
+    public authService: AuthService
     ) {
     this.repport1FormsGroup = this.formBulder.group({
       rep1Element:0,
