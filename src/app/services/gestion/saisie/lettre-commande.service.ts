@@ -9,29 +9,28 @@ import { environment } from 'src/environments/environment';
 export class LettreCommandeService {
 
   host: string = environment.backend2;
-  private jwtTocken = null;
 
-  constructor(private httpCli: HttpClient) { this.jwtTocken = localStorage.getItem('token'); }
+  constructor(private httpCli: HttpClient) { }
 
     //Partie réservée pour LettreCommande
     getAllLettreCommande(){
-      return this.httpCli.get<LettreCommande[]>(this.host+'/stock/lettreCommande/list', {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+      return this.httpCli.get<LettreCommande[]>(this.host+'/stock/lettreCommande/list');
     }
 
     getALettreCommandeById(code:String){
-      return this.httpCli.get<LettreCommande>(this.host+'/stock/lettreCommande/byCodLetCom/'+code, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+      return this.httpCli.get<LettreCommande>(this.host+'/stock/lettreCommande/byCodLetCom/'+code);
     }
 
     addALettreCommande(corps:LettreCommande){
-      return this.httpCli.post<LettreCommande>(this.host+'/stock/lettreCommande/list', corps, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+      return this.httpCli.post<LettreCommande>(this.host+'/stock/lettreCommande/list', corps);
     }
 
     editALettreCommande(code:String, corps:LettreCommande){
-      return this.httpCli.put<LettreCommande>(this.host+'/stock/lettreCommande/byCodLetCom/'+code, corps, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+      return this.httpCli.put<LettreCommande>(this.host+'/stock/lettreCommande/byCodLetCom/'+code, corps);
     }
 
     deleteALettreCommande(code:String){
-      return this.httpCli.delete<boolean>(this.host+'/stock/lettreCommande/byCodLetCom/'+code, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+      return this.httpCli.delete<boolean>(this.host+'/stock/lettreCommande/byCodLetCom/'+code);
     }
 
 

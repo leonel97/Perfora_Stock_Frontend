@@ -254,7 +254,8 @@
                     <div class="col-md form-group mb-3">
                       <label >Magasin</label>
                       <ng-select formControlName="magasin" (ngModelChange)="getInfosOnMagasinSelected()" [readonly]="detailView">
-                        <ng-option *ngFor="let mag of magasinList" [value]="mag.numMagasin">{{mag.codeMagasin}} - {{mag.libMagasin}}</ng-option>
+                        <!--ng-option [value]="null">Tous les Magasins des Articles concernés</ng-option-->
+                        <ng-option *ngFor="let mag of magasinList2" [value]="mag.numMagasin">{{mag.codeMagasin}} - {{mag.libMagasin}}</ng-option>
                       </ng-select>
                     </div>
 
@@ -312,7 +313,8 @@
                                       </td>
                                       <td>
                                         <input type="number" class="form-control" [(ngModel)] = "lig.ligneReception.quantiteLigneReception"
-                                            placeholder="Quantité" (ngModelChange)="calculTotaux()" [readOnly]="detailView" [ngStyle]="{'background-color': lig.qteRest < lig.ligneReception.quantiteLigneReception ? 'rgb(255, 172, 172)': null}">
+                                            placeholder="Quantité" (ngModelChange)="calculTotaux()" [readOnly]="detailView" 
+                                            [ngStyle]="{'background-color': lig.qteRest < lig.ligneReception.quantiteLigneReception || lig.ligneReception.quantiteLigneReception <= 0 ? 'rgb(255, 172, 172)': null}">
                                       </td>
                                       <td>
                                         {{lig.concernedLigneCom?.uniter?.codeUniter}} - {{lig.concernedLigneCom?.uniter?.libUniter}}

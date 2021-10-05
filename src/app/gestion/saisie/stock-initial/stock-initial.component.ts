@@ -148,6 +148,11 @@ export class StockInitialComponent implements OnInit {
     this.articleService.getAllArticleForMagasin(numMag).subscribe(
       (data: Article[]) => {
         //this.magasinList = data;
+        data.forEach(element => {
+          element.exo = this.exerciceService.selectedExo
+
+        });
+
         this.articleListOfMagSelected = data;
         console.log('Article for Magasin ==>');
         //console.log(data);
@@ -220,7 +225,7 @@ export class StockInitialComponent implements OnInit {
     
    console.log('exact value ==>', this.articleListOfMagSelected);
    
-    this.articleService.addAListArticleForStockInit(this.articleInitial).subscribe(
+    this.articleService.addAListArticleForStockInit(this.articleListOfMagSelected).subscribe(
       (data) => {
        console.log('objet', data);
        

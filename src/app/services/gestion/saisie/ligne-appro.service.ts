@@ -11,29 +11,28 @@ export class LigneApproService {
 
 
   host: string = environment.backend2;
-  private jwtTocken = null;
 
-  constructor(private httpCli: HttpClient) { this.jwtTocken = localStorage.getItem('token'); }
+  constructor(private httpCli: HttpClient) {}
 
     //Partie réservée pour Ligne Bon Approvisionnement
     getAllLigneAppro(){
-      return this.httpCli.get<LigneAppro[]>(this.host+'/stock/ligneAppro/list', {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+      return this.httpCli.get<LigneAppro[]>(this.host+'/stock/ligneAppro/list');
     }
 
     getALigneApproById(code:String){
-      return this.httpCli.get<LigneAppro>(this.host+'/stock/ligneAppro/byCodLigApp/'+code, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+      return this.httpCli.get<LigneAppro>(this.host+'/stock/ligneAppro/byCodLigApp/'+code);
     }
 
     addALigneAppro(corps:LigneAppro){
-      return this.httpCli.post<LigneAppro>(this.host+'/stock/ligneAppro/list', corps, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+      return this.httpCli.post<LigneAppro>(this.host+'/stock/ligneAppro/list', corps);
     }
 
     editALigneAppro(code:String, corps:LigneAppro){
-      return this.httpCli.put<LigneAppro>(this.host+'/stock/ligneAppro/byCodLigApp/'+code, corps, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+      return this.httpCli.put<LigneAppro>(this.host+'/stock/ligneAppro/byCodLigApp/'+code, corps);
     }
 
     deleteALigneAppro(code:String){
-      return this.httpCli.delete<boolean>(this.host+'/stock/ligneAppro/byCodLigApp/'+code, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+      return this.httpCli.delete<boolean>(this.host+'/stock/ligneAppro/byCodLigApp/'+code);
     }
 
 

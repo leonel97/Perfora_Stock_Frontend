@@ -11,24 +11,23 @@ import { EcritureComptable } from 'src/app/models/gestion/comptabilisation/ecrit
 export class EcritureComptableService {
 
   url: string = environment.backend2 + '/compta/ecritureComptable';
-  private jwtTocken = null;
 
-  constructor(private http: HttpClient) { this.jwtTocken = localStorage.getItem('token'); }
+  constructor(private http: HttpClient) {}
 
   createEcritureComptable(ecritureComptable: EcritureComptable): Observable<Object> {
-    return this.http.post(`${this.url}/list`, ecritureComptable, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})}); 
+    return this.http.post(`${this.url}/list`, ecritureComptable); 
   }
 
   addAListEcritureComptable(corps: EcritureComptable[]){
-    return this.http.post<EcritureComptable[]>(`${this.url}/list2`, corps, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.http.post<EcritureComptable[]>(`${this.url}/list2`, corps);
   }
 
   deleteEcritureComptable(id: number): Observable<Object> {
-    return this.http.delete(`${this.url}/byNum/`+ id, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.http.delete(`${this.url}/byNum/`+ id);
   }
 
   updateEcritureComptable(id : number, ecritureComptable: EcritureComptable): Observable<Object> {
-    return this.http.put(`${this.url}/byNum/${id}`, ecritureComptable, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.http.put(`${this.url}/byNum/${id}`, ecritureComptable);
   }
 
  /* list(): Observable<Object> {
@@ -36,7 +35,7 @@ export class EcritureComptableService {
   }*/
 
   list(){
-    return this.http.get<EcritureComptable[]>(`${this.url}/list`, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.http.get<EcritureComptable[]>(`${this.url}/list`);
   }
 
 }

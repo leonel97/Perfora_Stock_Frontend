@@ -25,6 +25,8 @@ import autoTable from 'jspdf-autotable';
 import * as moment from  'moment';
 import { Utils } from 'src/app/utilitaires/utils';
 import { AuthService } from 'src/app/services/common/auth.service';
+import { SalTools } from 'src/app/utilitaires/salTools';
+import { CloturePeriodiqService } from 'src/app/services/gestion/saisie/cloture-periodiq.service';
 
 
 export interface modelLigneDemandeAppro{
@@ -78,6 +80,7 @@ export class DemandeBesoinComponent  implements OnInit {
     private uniterService: UniterService,
     private exerciceService: ExerciceService,
     private affectUniterToArticleService: AffectUniterToArticleService,
+    private clotureService: CloturePeriodiqService,
     private fb: FormBuilder,
     private router: Router,
     private toastr: ToastrService,
@@ -88,7 +91,7 @@ export class DemandeBesoinComponent  implements OnInit {
 
   ngOnInit(): void {
 
-    this.demandeApproService.getAllDemandeAppro().subscribe(
+    /*this.demandeApproService.getAllDemandeAppro().subscribe(
       (data) => {
         this.demandeApproList = [...data];
         this.demandeApproFiltered = this.demandeApproList.sort((a, b) => a.numDA.localeCompare(b.numDA.valueOf()));
@@ -96,7 +99,7 @@ export class DemandeBesoinComponent  implements OnInit {
       },
       (error: HttpErrorResponse) => {
         console.log('Echec status ==> ' + error.status);
-      });
+      });*/
 
     this.makeForm(null);
 
@@ -135,13 +138,25 @@ export class DemandeBesoinComponent  implements OnInit {
   getAllDemandeAppro(){
     this.demandeApproService.getAllDemandeAppro().subscribe(
       (data) => {
-        this.demandeApproList = [...data];
+        this.demandeApproList = [...data.filter(l => this.isAllowedService(this.serviceList, l))];
         this.demandeApproFiltered = this.demandeApproList.sort((a, b) => a.numDA.localeCompare(b.numDA.valueOf()));
-        console.log(this.demandeApproList);
+        console.log(data);
       },
       (error: HttpErrorResponse) => {
         console.log('Echec status ==> ' + error.status);
       });
+  }
+
+  isAllowedService(listServ:CentreConsommation[], demandeAppro: DemandeApprovisionnement):boolean{
+    
+    let b:boolean = false;
+    for (const serv of listServ) {
+      if(serv.numService == demandeAppro.service.numService){
+        b = true;
+        break;
+      }
+    }
+    return b;
   }
 
   getAllLigneDemandeAppro(){
@@ -194,7 +209,8 @@ export class DemandeBesoinComponent  implements OnInit {
   getAllService(){
     this.centreConsommationService.list().subscribe(
       (data: any) => {
-        this.serviceList = data;
+        this.serviceList = SalTools.getConnectedUser().accesChildService ? SalTools.deepSearcher(SalTools.getConnectedUser().service, 'superService', 'numService', data) : [SalTools.getConnectedUser().service];
+        this.getAllDemandeAppro();
       },
       (error: HttpErrorResponse) => {
         console.log('Echec status ==> ' + error.status);
@@ -346,6 +362,16 @@ export class DemandeBesoinComponent  implements OnInit {
       this.validateForm.controls[i].updateValueAndValidity();
     }
 
+    let lignShowValid: boolean = true;
+    
+    
+    for(const lig of this.ligneShow){
+      if(lig.ligneDemandeAppro.quantiteDemandee <=0 || lig.selectedUniter == null){
+        lignShowValid = false;
+        break;
+      }
+    }
+
     if (this.validateForm.valid == false) {
       this.loading = true;
       setTimeout(() => {
@@ -357,6 +383,13 @@ export class DemandeBesoinComponent  implements OnInit {
       setTimeout(() => {
         this.loading = false;
         this.toastr.error('Veuillez Ajouter au moins une Ligne.', ' Erreur !', {progressBar: true});
+      }, 3000);
+    } else if (lignShowValid == false) {
+      this.loading = true;
+      setTimeout(() => {
+        this.loading = false;
+        this.toastr.error('Veuillez Renseigner les Lignes Convenablement.', ' Erreur !', {progressBar: true});
+
       }, 3000);
     } else {
       const formData = this.validateForm.value;
@@ -560,48 +593,66 @@ export class DemandeBesoinComponent  implements OnInit {
 
   valider(demandeAppro: DemandeApprovisionnement, eta: boolean, content){
 
-    this.etatVali = eta;
+    this.clotureService.isPeriodeCloturedByDate(demandeAppro.dateDA).subscribe(
+      (data) => {
+        if(data == false){
+          
+          this.etatVali = eta;
 
-    this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', centered: true})
-    .result.then((result) => {
-    //this.confirmResut = `Closed with: ${result}`;
-    
-      demandeAppro.valideDA = eta;
-
-      this.demandeApproService.editADemandeAppro(demandeAppro.numDA, demandeAppro).subscribe(
-        (data) => {
-
-          demandeAppro = data;
-
-          const i = this.demandeApproList.findIndex(l => l.numDA == demandeAppro.numDA);
-              if (i > -1) {
-                this.demandeApproList[i] = demandeAppro;
-                this.demandeApproFiltered = [...this.demandeApproList.sort((a, b) => a.numDA.localeCompare(b.numDA.valueOf()))];
+          this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', centered: true})
+          .result.then((result) => {
+          //this.confirmResut = `Closed with: ${result}`;
+          
+            demandeAppro.valideDA = eta;
+      
+            this.demandeApproService.editADemandeAppro(demandeAppro.numDA, demandeAppro).subscribe(
+              (data) => {
+      
+                demandeAppro = data;
+      
+                const i = this.demandeApproList.findIndex(l => l.numDA == demandeAppro.numDA);
+                    if (i > -1) {
+                      this.demandeApproList[i] = demandeAppro;
+                      this.demandeApproFiltered = [...this.demandeApproList.sort((a, b) => a.numDA.localeCompare(b.numDA.valueOf()))];
+                    }
+      
+                    this.getAllArticle();
+                    this.getAllUniter();
+                    this.getAllLigneDemandeAppro();
+                    this.getAllAffecterUniterToArticle();
+                    this.getAllService();
+      
+                    let msg: String = 'Validation'
+                    if(eta == false) msg = 'Annulation';
+                    this.toastr.success(msg+' effectuée avec succès.', 'Success', { timeOut: 5000 });
+      
+              },
+              (error: HttpErrorResponse) => {
+                console.log('Echec status ==> ' + error.status);
+                this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000 });
+      
               }
-
-              this.getAllArticle();
-              this.getAllUniter();
-              this.getAllLigneDemandeAppro();
-              this.getAllAffecterUniterToArticle();
-              this.getAllService();
-
-              let msg: String = 'Validation'
-              if(eta == false) msg = 'Annulation';
-              this.toastr.success(msg+' effectuée avec succès.', 'Success', { timeOut: 5000 });
-
-        },
-        (error: HttpErrorResponse) => {
-          console.log('Echec status ==> ' + error.status);
-          this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000 });
-
+            );
+      
+      
+      
+          }, (reason) => {
+            console.log(`Dismissed with: ${reason}`);
+          });
+      
+          
         }
-      );
+        else{
+          this.toastr.error('Période Cloturée ', 'Erreur !', { timeOut: 5000, progressBar:true });
+        }
+      },
+      (error: HttpErrorResponse) => {
+        console.log('Echec atatus ==> ' + error.status);
+        this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000, progressBar:true });
+        
+      }
+    );
 
-
-
-    }, (reason) => {
-      console.log(`Dismissed with: ${reason}`);
-    });
 
 
   }

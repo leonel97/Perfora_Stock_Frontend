@@ -10,29 +10,28 @@ export class LigneReceptionService {
 
 
   host: string = environment.backend2;
-  private jwtTocken = null;
 
-  constructor(private httpCli: HttpClient) { this.jwtTocken = localStorage.getItem('token'); }
+  constructor(private httpCli: HttpClient) {}
 
   //Partie réservée pour les lignes de récèption
   getAllLigneReception(){
-    return this.httpCli.get<LigneReception[]>(this.host+'/stock/ligneReception/list', {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.httpCli.get<LigneReception[]>(this.host+'/stock/ligneReception/list');
   }
 
   getALigneReceptionById(code:String){
-    return this.httpCli.get<LigneReception>(this.host+'/stock/ligneReception/byCodLigRec/'+code, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.httpCli.get<LigneReception>(this.host+'/stock/ligneReception/byCodLigRec/'+code);
   }
 
   addALigneReception(corps:LigneReception){
-    return this.httpCli.post<LigneReception>(this.host+'/stock/ligneReception/list', corps, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.httpCli.post<LigneReception>(this.host+'/stock/ligneReception/list', corps);
   }
 
   editALigneReception(code:String, corps:LigneReception){
-    return this.httpCli.put<LigneReception>(this.host+'/stock/ligneReception/byCodLigRec/'+code, corps, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.httpCli.put<LigneReception>(this.host+'/stock/ligneReception/byCodLigRec/'+code, corps);
   }
 
   deleteALigneReception(code:String){
-    return this.httpCli.delete<boolean>(this.host+'/stock/ligneReception/byCodLigRec/'+code, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.httpCli.delete<boolean>(this.host+'/stock/ligneReception/byCodLigRec/'+code);
   }
 
 

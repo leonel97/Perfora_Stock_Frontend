@@ -21,8 +21,7 @@ export class AuthGuard implements CanActivate {
     });
     const token = this.store.getItem('access_token');
     if(token) {
-      const currentUser = this.auth.getUserFromJwtToken(token);
-      if(currentUser!=null) {
+      if(token!=null) {
         // if dealing with authencation only, just return true here ...
         let rep = false;
 

@@ -11,24 +11,23 @@ export class FonctionService {
 
   host: string = environment.backend2 +'/commune/fonction';
   url: string = environment.backend + '/fonctions';
-  private jwtTocken = null;
 
-  constructor(private http: HttpClient) { this.jwtTocken = localStorage.getItem('token'); }
+  constructor(private http: HttpClient) {  }
 
   createFonction(fonction: Fonction): Observable<Object> {
-    return this.http.post(`${this.host}/list`, fonction, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.http.post(`${this.host}/list`, fonction);
   }
 
   deleteFonction(id: number): Observable<Object> {
-    return this.http.delete(`${this.host}/byCodFon/${id}`, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.http.delete(`${this.host}/byCodFon/${id}`);
   }
 
   updateFonction(id: string, fonction: Fonction): Observable<Object> {
-    return this.http.put(`${this.host}/byCodFon/${id}`, fonction, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.http.put(`${this.host}/byCodFon/${id}`, fonction);
   }
 
   list(): Observable<Object> {
-    return this.http.get(`${this.host}/list`, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.http.get(`${this.host}/list`);
   }
 
 }

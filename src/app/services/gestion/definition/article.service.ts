@@ -9,42 +9,41 @@ import { environment } from 'src/environments/environment';
 export class ArticleService {
 
   host: string = environment.backend2;
-  private jwtTocken = null;
 
-  constructor(private httpCli: HttpClient) {  this.jwtTocken = localStorage.getItem('token'); }
+  constructor(private httpCli: HttpClient) { }
 
   //partie Réservée pour les articles
   getAllArticle(){
-    return this.httpCli.get<Article[]>(this.host+'/stock/article/list', {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.httpCli.get<Article[]>(this.host+'/stock/article/list');
   }
 
   getArticleById(code:String){
-    return this.httpCli.get<Article>(this.host+'/stock/article/byCodArt/'+code, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.httpCli.get<Article>(this.host+'/stock/article/byCodArt/'+code);
   }
 
   addArticle(corps: Article){
-    return this.httpCli.post<Article>(this.host+'/stock/article/list', corps, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.httpCli.post<Article>(this.host+'/stock/article/list', corps);
   }
 
   addAListArticle(corps: Article[]){
-    return this.httpCli.post<Article[]>(this.host+'/stock/article/list2', corps, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.httpCli.post<Article[]>(this.host+'/stock/article/list2', corps);
   }
 
   addAListArticleForStockInit(corps: Article[]){
-    return this.httpCli.post<Article[]>(this.host+'/stock/article/list3', corps, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.httpCli.post<Article[]>(this.host+'/stock/article/list3', corps);
   }
 
   editArticle(code:String, corps:Article){
-    return this.httpCli.put<Article>(this.host+'/stock/article/byCodArt/'+code, corps, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.httpCli.put<Article>(this.host+'/stock/article/byCodArt/'+code, corps);
   }
 
   deleteArticle(code:String){
-    return this.httpCli.delete<boolean>(this.host+'/stock/article/byCodArt/'+code, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.httpCli.delete<boolean>(this.host+'/stock/article/byCodArt/'+code);
   }
 
   //Léonel
   getAllArticleForMagasin(idMag: number){
-    return this.httpCli.get<Article[]>(this.host+'/stock/article/listByCodMag/'+idMag, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.httpCli.get<Article[]>(this.host+'/stock/article/listByCodMag/'+idMag);
   }
 
 

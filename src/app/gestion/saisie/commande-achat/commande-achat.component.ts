@@ -29,6 +29,8 @@ import * as moment from  'moment';
 import { Utils } from 'src/app/utilitaires/utils';
 import { NumberToLetter } from 'convertir-nombre-lettre';
 import { AuthService } from 'src/app/services/common/auth.service';
+import { SalTools } from 'src/app/utilitaires/salTools';
+import { CloturePeriodiqService } from 'src/app/services/gestion/saisie/cloture-periodiq.service';
 
 
 
@@ -86,6 +88,7 @@ export class CommandeAchatComponent implements OnInit {
     private commandeService: CommandeService,
     private exerciceService: ExerciceService,
     private affectUniterToArticleService: AffectUniterToArticleService,
+    private clotureService: CloturePeriodiqService,
     private fb: FormBuilder,
     private router: Router,
     private toastr: ToastrService,
@@ -273,7 +276,10 @@ export class CommandeAchatComponent implements OnInit {
       frs: [commandeAchat != null ? commandeAchat.commande.frs.numFournisseur : null,
         [Validators.required]],
       numComm: [commandeAchat != null ? commandeAchat.commande.numCommande : null],
+    }, {
+      validators : SalTools.validatorDateOrdre('dateCommande', 'dateRemise', false)
     });
+
     //cette condition permet de basculer vers la tab contenant le formulaire lors d'une modification
     if (commandeAchat?.numComAchat !=null){
       this.ligneShow = [];
@@ -295,6 +301,7 @@ export class CommandeAchatComponent implements OnInit {
       this.calculTotaux();
 
       this.activeTabsNav = 2;
+
     }
   }
 
@@ -312,22 +319,51 @@ export class CommandeAchatComponent implements OnInit {
   }
 
   submit(): void {
+    //console.log(this.validateForm?.value['dateRemise']);
     for (const i in this.validateForm.controls) {
       this.validateForm.controls[i].markAsDirty();
       this.validateForm.controls[i].updateValueAndValidity();
     }
 
+    let lignShowValid: boolean = true;
+    
+    
+    for(const lig of this.ligneShow){
+      if(lig.lignesCommande.puLigneCommande <=0 || lig.selectedUniter == null
+        || lig.lignesCommande.qteLigneCommande <=0 || lig.lignesCommande.tva < 0){
+        lignShowValid = false;
+        break;
+      }
+    }
+
     if (this.validateForm.valid == false) {
       this.loading = true;
+      console.log(this.validateForm);
+      
       setTimeout(() => {
         this.loading = false;
-        this.toastr.error('Veuillez remplir le Formulaire convenablement.', ' Erreur !', {progressBar: true});
+        let msgForm:String = '\n';
+        for (const key in this.validateForm.errors) {
+          if (Object.prototype.hasOwnProperty.call(this.validateForm.errors, key)) {
+            const element = this.validateForm.errors[key];
+            msgForm += element.value+'\n';
+          }
+        }
+
+        this.toastr.error('Veuillez remplir le Formulaire convenablement.'+msgForm, ' Erreur !', {progressBar: true});
       }, 3000);
     } else if (this.ligneShow.length == 0) {
       this.loading = true;
       setTimeout(() => {
         this.loading = false;
         this.toastr.error('Veuillez Ajouter au moins une Ligne.', ' Erreur !', {progressBar: true});
+      }, 3000);
+    } else if (lignShowValid == false) {
+      this.loading = true;
+      setTimeout(() => {
+        this.loading = false;
+        this.toastr.error('Veuillez Renseigner les Lignes Convenablement.', ' Erreur !', {progressBar: true});
+
       }, 3000);
     } else {
       const formData = this.validateForm.value;
@@ -622,44 +658,58 @@ export class CommandeAchatComponent implements OnInit {
 
   valider(commandeAchat: CommandeAchat, eta: boolean, content){
 
-    this.etatVali = eta;
+    this.clotureService.isPeriodeCloturedByDate(commandeAchat.commande.dateCommande).subscribe(
+      (data) => {
+        if(data == false){
+          
+          this.etatVali = eta;
 
-    this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', centered: true})
-      .result.then((result) => {
-      //this.confirmResut = `Closed with: ${result}`;
-      commandeAchat.commande.valide = eta;
+          this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', centered: true})
+            .result.then((result) => {
+            //this.confirmResut = `Closed with: ${result}`;
+            commandeAchat.commande.valide = eta;
 
-      this.commandeService.editACommande(commandeAchat.commande.numCommande.toString(), commandeAchat.commande).subscribe(
-        (data) => {
+            this.commandeService.editACommande(commandeAchat.commande.numCommande.toString(), commandeAchat.commande).subscribe(
+              (data) => {
 
-          commandeAchat.commande = data;
+                commandeAchat.commande = data;
 
-          const i = this.commandeAchatList.findIndex(l => l.numComAchat == commandeAchat.numComAchat);
-              if (i > -1) {
-                this.commandeAchatList[i] = commandeAchat;
-                this.commandeAchatFiltered = [...this.commandeAchatList.sort((a, b) => a.numComAchat.localeCompare(b.numComAchat.valueOf()))];
+                const i = this.commandeAchatList.findIndex(l => l.numComAchat == commandeAchat.numComAchat);
+                    if (i > -1) {
+                      this.commandeAchatList[i] = commandeAchat;
+                      this.commandeAchatFiltered = [...this.commandeAchatList.sort((a, b) => a.numComAchat.localeCompare(b.numComAchat.valueOf()))];
+                    }
+
+                    let msg: String = 'Validation'
+                    if(eta == false) msg = 'Annulation';
+                    this.toastr.success(msg+' effectuée avec succès.', 'Success', { timeOut: 5000 });
+
+              },
+              (error: HttpErrorResponse) => {
+                console.log('Echec status ==> ' + error.status);
+                this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000 });
+
               }
+            );
 
-              let msg: String = 'Validation'
-              if(eta == false) msg = 'Annulation';
-              this.toastr.success(msg+' effectuée avec succès.', 'Success', { timeOut: 5000 });
 
-        },
-        (error: HttpErrorResponse) => {
-          console.log('Echec status ==> ' + error.status);
-          this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000 });
 
+          }, (reason) => {
+            console.log(`Dismissed with: ${reason}`);
+          });
+          
         }
-      );
-
-
-
-    }, (reason) => {
-      console.log(`Dismissed with: ${reason}`);
-    });
-
-
-
+        else{
+          this.toastr.error('Période Cloturée ', 'Erreur !', { timeOut: 5000, progressBar:true });
+        }
+      },
+      (error: HttpErrorResponse) => {
+        console.log('Echec atatus ==> ' + error.status);
+        this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000, progressBar:true });
+        
+      }
+    );
+    
   }
 
   openPdfToPrint(element: CommandeAchat){

@@ -221,15 +221,24 @@
                                       </td>
                                       <td>
                                           <input type="number" class="form-control" [(ngModel)] = "lig.lignesCommande.puLigneCommande"
-                                              placeholder="Prix Unitaire HT" (ngModelChange)="calculTotaux()">
+                                              placeholder="Prix Unitaire HT" (ngModelChange)="calculTotaux()"
+                                              [ngStyle]="{'background-color': (lig.lignesCommande.puLigneCommande <=0) ? 'rgb(255, 172, 172)': null}"  
+                                          >
                                       </td>
                                       <td>
                                         <input type="number" class="form-control" [(ngModel)] = "lig.lignesCommande.qteLigneCommande"
-                                            placeholder="Quantité" (ngModelChange)="calculTotaux()">
+                                            placeholder="Quantité" (ngModelChange)="calculTotaux()"
+                                            [ngStyle]="{'background-color': (lig.lignesCommande.qteLigneCommande <=0) ? 'rgb(255, 172, 172)': null}"
+                                          >
                                       </td>
                                       <td>
-                                        <ng-select [(ngModel)]="lig.selectedUniter" style="min-width: 180px;">
+                                        <ng-select [(ngModel)]="lig.selectedUniter" style="min-width: 180px;" 
+                                        [ngStyle]="{'border': (lig.selectedUniter == null) ? '2px solid rgb(255, 172, 172)': null,
+                                                    'background-color': (lig.selectedUniter == null) ? '2px solid rgb(255, 172, 172)': null,
+                                                    'border-radius':  (lig.selectedUniter == null) ? '5px': null}"
+                                        >
                                           <ng-option *ngFor="let unit of lig.listUniter" [value]="unit.numUniter"
+                                          
                                            >{{unit.codeUniter}} - {{unit.libUniter}}</ng-option>
                                         </ng-select>
                                       </td>
@@ -238,7 +247,9 @@
                                       </td>
                                       <td>
                                           <input type="number" class="form-control" [(ngModel)] = "lig.lignesCommande.tva"
-                                              placeholder="Tva" (ngModelChange)="calculTotaux()">
+                                              placeholder="Tva" (ngModelChange)="calculTotaux()"
+                                              [ngStyle]="{'background-color': (lig.lignesCommande.tva < 0) ? 'rgb(255, 172, 172)': null}"
+                                              >
                                       </td>
                                       <td>
                                         {{ lig.lignesCommande.puLigneCommande * lig.lignesCommande.qteLigneCommande*(1+(lig.lignesCommande.tva/100)) }}

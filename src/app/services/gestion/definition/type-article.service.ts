@@ -9,33 +9,32 @@ import { environment } from 'src/environments/environment';
 export class TypeArticleService {
 
   host: string = environment.backend2;
-  private jwtTocken = null;
 
-  constructor(private httpCli: HttpClient) { this.jwtTocken = localStorage.getItem('token'); }
+  constructor(private httpCli: HttpClient) {}
 
   //Partie réservée TypeArticle
   getAllTypeArticle(){
-    return this.httpCli.get<TypeArticle[]>(this.host+'/stock/typeArticle/list', {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.httpCli.get<TypeArticle[]>(this.host+'/stock/typeArticle/list');
   }
 
   getATypeArticleById(code:String){
-    return this.httpCli.get<TypeArticle>(this.host+'/stock/typeArticle/byCodTypArti/'+code, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.httpCli.get<TypeArticle>(this.host+'/stock/typeArticle/byCodTypArti/'+code);
   }
 
   addATypeArticle(corps:TypeArticle){
-   return this.httpCli.post<TypeArticle>(this.host+'/stock/typeArticle/list', corps, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+   return this.httpCli.post<TypeArticle>(this.host+'/stock/typeArticle/list', corps);
   }
 
   addAListTypeArticle(corps: TypeArticle[]){
-    return this.httpCli.post<TypeArticle[]>(this.host+'/stock/typeArticle/list2', corps, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.httpCli.post<TypeArticle[]>(this.host+'/stock/typeArticle/list2', corps);
   }
 
   editATypeArticle(code:String, corps:TypeArticle){
-    return this.httpCli.put<TypeArticle>(this.host+'/stock/typeArticle/byCodTypArti/'+code, corps, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.httpCli.put<TypeArticle>(this.host+'/stock/typeArticle/byCodTypArti/'+code, corps);
   }
 
   deleteATypeArticle(code:String){
-   return this.httpCli.delete<boolean>(this.host+'/stock/typeArticle/byCodTypArti/'+code, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+   return this.httpCli.delete<boolean>(this.host+'/stock/typeArticle/byCodTypArti/'+code);
   }
 
 

@@ -4,7 +4,7 @@ import { Router } from "@angular/router";
 import {BehaviorSubject, Observable, of} from "rxjs";
 import {catchError, delay, tap} from "rxjs/operators";
 import {environment} from "../../../environments/environment";
-import {HttpClient, HttpErrorResponse, HttpHeaders} from "@angular/common/http";
+import {HttpClient, HttpErrorResponse} from "@angular/common/http";
 import {UserService} from "../gestion/utilisateur/user.service";
 import {User} from "../../models/gestion/utilisateur/user";
 import {ExerciceFonction} from "../../models/gestion/utilisateur/exercice-fonction";
@@ -15,7 +15,7 @@ import {JwtHelperService} from "@auth0/angular-jwt";
 })
 export class AuthService {
   //Only for demo purpose
-  authenticated = true;
+  authenticated = false;
   users: User[] = [];
   url: string = environment.backend + '/authenticate';
 
@@ -79,6 +79,7 @@ export class AuthService {
   signout() {
     localStorage.removeItem('token');
     this.router.navigateByUrl("/");
+    this.authenticated = false; 
   }
 
   logout() {
@@ -89,9 +90,6 @@ export class AuthService {
     return this.currentTokenSubject.value;
   }
 
-  public getUserFromJwtToken(token:string){
-   
-  }
 
   // Léonel user/byCodUser
   getAUtilisateurByLoginMdp(user: User): Observable<Object> {
@@ -116,7 +114,7 @@ export class AuthService {
       this.loadToken();
       
     }
-    return this.http.put(`${this.host}/byCodUser/${idUser}`, user, {headers: new HttpHeaders({'Authorization' :this.jwttoken})});
+    return this.http.put(`${this.host}/byCodUser/${idUser}`, user);
   }
 
   findUserByLogin(login: string): Observable<Object> {
@@ -124,12 +122,15 @@ export class AuthService {
       this.loadToken();
       
     }
-    return this.http.get<User>(`${this.host}/byLoginUser/${login}`, {headers: new HttpHeaders({'Authorization' :this.jwttoken})});
+    return this.http.get<User>(`${this.host}/byLoginUser/${login}`);
   }
 
   //save token 
   saveToken(jwt: string){
-    localStorage.setItem('token' ,jwt)
+    localStorage.setItem('token' ,jwt);
+    if(localStorage.getItem('token') != null){
+      this.authenticated = true;
+    }
   }
 
   //load token

@@ -11,29 +11,28 @@ import {TypeFournisseur} from "../../../models/gestion/definition/typeFournisseu
 export class TypeFournisseurService {
 
   url: string = environment.backend2 + '/commune/categorieFrs';
-  private jwtTocken = null;
 
-  constructor(private http: HttpClient) { this.jwtTocken = localStorage.getItem('token'); }
+  constructor(private http: HttpClient) { }
 
   createTypeFournisseur(typeFournisseur: TypeFournisseur): Observable<Object> {
-    return this.http.post(`${this.url}/list`, typeFournisseur, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.http.post(`${this.url}/list`, typeFournisseur);
   }
 
   addAListTypeFournisseur(corps: TypeFournisseur[]){
-    return this.http.post<TypeFournisseur[]>(`${this.url}/list2`, corps, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.http.post<TypeFournisseur[]>(`${this.url}/list2`, corps);
   }
 
 
   deleteTypeFournisseur(id: String): Observable<Object> {
-    return this.http.delete(`${this.url}/byCodCatFrs/`+ id, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.http.delete(`${this.url}/byCodCatFrs/`+ id);
   }
 
   updateTypeFournisseur(id : String, typeFournisseur: TypeFournisseur): Observable<Object> {
-    return this.http.put(`${this.url}/byCodCatFrs/${id}`, typeFournisseur, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.http.put(`${this.url}/byCodCatFrs/${id}`, typeFournisseur);
   }
 
   list(): Observable<Object> {
-    return this.http.get(`${this.url}/list`, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.http.get(`${this.url}/list`);
   }
 
 }

@@ -11,28 +11,27 @@ import {Fournisseur} from "../../../models/gestion/definition/fournisseur";
 export class FournisseurService {
 
   url: string = environment.backend2 + '/commune/fournisseur';
-  private jwtTocken = null;
 
-  constructor(private http: HttpClient) { this.jwtTocken = localStorage.getItem('token'); }
+  constructor(private http: HttpClient) {}
 
   createFournisseur(fournisseur: Fournisseur): Observable<Object> {
-    return this.http.post(`${this.url}/list`, fournisseur, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.http.post(`${this.url}/list`, fournisseur);
   }
 
   addAListFournisseur(corps: Fournisseur[]){
-    return this.http.post<Fournisseur[]>(`${this.url}/list2`, corps, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.http.post<Fournisseur[]>(`${this.url}/list2`, corps);
   }
 
   deleteFournisseur(id: String): Observable<Object> {
-    return this.http.delete(`${this.url}/byCodFou/`+ id, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.http.delete(`${this.url}/byCodFou/`+ id);
   }
 
   updateFournisseur(id : String, fournisseur: Fournisseur): Observable<Object> {
-    return this.http.put(`${this.url}/byCodFou/${id}`, fournisseur, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.http.put(`${this.url}/byCodFou/${id}`, fournisseur);
   }
 
   list(): Observable<Object> {
-    return this.http.get(`${this.url}/list`, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.http.get(`${this.url}/list`);
   }
 
 }

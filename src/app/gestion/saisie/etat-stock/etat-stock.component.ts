@@ -3,11 +3,15 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
+import { element } from 'protractor';
 import { debounceTime } from 'rxjs/operators';
+import { Article } from 'src/app/models/gestion/definition/article.model';
 import { Magasin } from 'src/app/models/gestion/definition/magasin.model';
 import { Stocker } from 'src/app/models/gestion/saisie/stocker.model';
+import { ArticleService } from 'src/app/services/gestion/definition/article.service';
 import { MagasinService } from 'src/app/services/gestion/definition/magasin.service';
 import { StockerService } from 'src/app/services/gestion/saisie/stocker.service';
+import { SalTools } from 'src/app/utilitaires/salTools';
 
 export interface modelLigneEtatStock{
   concernedStocker: Stocker;
@@ -32,6 +36,7 @@ export class EtatStockComponent implements OnInit {
   constructor(
     private stockerService: StockerService,
     private magasinService: MagasinService,
+    private articleService: ArticleService,
     private fb: FormBuilder,
     private toastr: ToastrService,
     private modalService: NgbModal
@@ -49,8 +54,8 @@ export class EtatStockComponent implements OnInit {
         this.filerData(value);
       });
 
-    this.getAllMagasin();
-    this.getAllStocker();
+      this.submit();
+
   }
 
   makeForm(): void {
@@ -87,7 +92,7 @@ export class EtatStockComponent implements OnInit {
     if (val) {
       val = val.toLowerCase();
     } else {
-      return this.ligneShowFiltered = [...this.ligneShow.sort((a, b) => a.concernedStocker.idStocker.toString().localeCompare(b.concernedStocker.idStocker.toString()))];
+      return this.ligneShowFiltered = [...this.ligneShow.sort((a, b) => a.concernedStocker.article.codeArticle.toString().localeCompare(b.concernedStocker.article.codeArticle.toString()))];
     }
 
     const columns = Object.keys(this.ligneShow[0]);
@@ -108,64 +113,67 @@ export class EtatStockComponent implements OnInit {
   }
 
   submit(){
-
+    this.loading = true;
     for (const i in this.validateForm.controls) {
       this.validateForm.controls[i].markAsDirty();
       this.validateForm.controls[i].updateValueAndValidity();
     }
 
-    if (this.validateForm.valid == false) {
-      this.loading = true;
-      setTimeout(() => {
-        this.loading = false;
-        this.toastr.error('Veuillez Choisir un Magasin.', ' Erreur !', {progressBar: true});
-      }, 3000);
-    } else {
-      
-      this.getLignShowOfSelectedMagasin();
-        
-    }
+    this.getLignShowOfSelectedMagasin();
 
-   
   }
 
   getLignShowOfSelectedMagasin(){
     this.ligneShow = [];
-    this.loading = true;
-    this.stockerService.getAllStocker().subscribe(
-      (data) => {
-        this.stockerList = data;
-        let selectedMag : Magasin = null;
+    
+    this.articleService.getAllArticle().subscribe(
+      (data2) => {
 
-        const i = this.magasinList.findIndex(l => l.numMagasin == this.validateForm.value.magasin);
+        this.stockerService.getAllStocker().subscribe(
+          (data) => {
+            this.stockerList = data;
+            let selectedMag : Magasin = null;
 
-        if (i > -1) {
-          selectedMag= this.magasinList[i];
-          this.stockerList.forEach(element => {
-            if(element.magasin.numMagasin == selectedMag.numMagasin){
-              this.ligneShow.push({
-                concernedStocker : element,
-              })
-            }
-          });
+            let autorisedArticle: Article[] = [];
 
-          this.ligneShowFiltered = [...this.ligneShow];
+            SalTools.getConnectedUser().magasins.forEach(elementMag => {
+              autorisedArticle = [...autorisedArticle, ...data2.filter(l => (l.famille.magasin && l.famille.magasin.numMagasin == elementMag.numMagasin))];
+            });
 
-          this.loading = false;
+            autorisedArticle.sort((a, b) => a.codeArticle >= b.codeArticle ? 1:-1);
 
-          console.log(this.ligneShowFiltered);
+            let tab:modelLigneEtatStock[] = [];
 
-        }
-        else{
-          this.loading = false;
-        }
+            autorisedArticle.forEach(elementAut => {
+              const indeStock = data.findIndex(l => l.article.numArticle == elementAut.numArticle);
+              if(indeStock > -1){
+                tab.push({concernedStocker:data[indeStock]});
+              }
+              else{
+                tab.push({concernedStocker : new Stocker(0, 0, 0, 0, elementAut, null)});
+              }
+            });
+
+            this.ligneShow = tab;
+            //this.ligneShowFiltered = tab;
+            //console.log(tab);
+            this.filerData('');
+            this.loading = false;
+            
+          },
+          (error: HttpErrorResponse) => {
+            console.log('Echec status ==> ' + error.status);
+            this.loading = false;
+          }
+        );
+    
       },
       (error: HttpErrorResponse) => {
         console.log('Echec status ==> ' + error.status);
         this.loading = false;
       }
     );
-    
+
 
   }
 

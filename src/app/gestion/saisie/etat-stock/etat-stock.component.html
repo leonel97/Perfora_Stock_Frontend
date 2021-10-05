@@ -10,8 +10,18 @@
     <div class="separator-breadcrumb border-top"></div>
     <!--Contenu component importation-->
     <div class="row">
-      <form [formGroup]="validateForm" (ngSubmit)="submit()" class = "row">
-        <div class="col-md-4 form-group mb-3">
+      
+      <div class="col-md">
+        <div class="form-group">
+          <input [formControl]="searchControl" class="form-control form-control-rounded"
+                 placeholder="Rechercher un Article">
+        </div>
+      </div>
+      <div style="margin: auto;" class="col-md">
+        
+      </div>
+      <form [formGroup]="validateForm" (ngSubmit)="submit()" class = "col-md-2">
+        <!--div class="col-md-4 form-group mb-3">
           <label >Magasin</label>
           <ng-select formControlName="magasin" style="width: 500px;" >
             <ng-option *ngFor="let mag of magasinList" [value]="mag.numMagasin">{{mag.codeMagasin}} - {{mag.libMagasin}}</ng-option>
@@ -19,22 +29,18 @@
           </ng-select>
         </div>
         <div style="margin: auto;">
-
+          <div class="spinner spinner-success mr-3"></div>
+        </div-->
+        <div class="col-md-1" style="padding-bottom: 3%;">
+          <btn-loading [loading]="loading" btnClass="btn-save">Actualiser</btn-loading>
         </div>
-        <div class="col-md-1" style="padding-top: 3%;">
-          <btn-loading [loading]="loading" btnClass="btn-save">Afficher</btn-loading>
-        </div>
+        
       </form>
     </div>
     <div class="row">
-      <div class="col-md-4">
-        <div class="form-group">
-          <input [formControl]="searchControl" class="form-control form-control-rounded" id="email"
-                 placeholder="Rechercher Entrée Article">
-        </div>
-      </div>
       <div class="col-md-12">
         <div class="o-hidden">
+          
           <ngx-datatable
             [columnMode]="'force'"
             [footerHeight]="50"
@@ -43,7 +49,7 @@
             [rows]="ligneShowFiltered"
             [limit]="6"
             class="material fullscreen"
-            style="height: 500px; box-shadow: none; overflow-y:visible">
+            style="box-shadow: none; overflow-y:visible">
 
             <ngx-datatable-column [maxWidth]="200">
               <ng-template ngx-datatable-header-template>
@@ -65,30 +71,39 @@
 
             <ngx-datatable-column>
               <ng-template ngx-datatable-header-template>
+                Magasin
+              </ng-template>
+              <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                {{ row.concernedStocker?.article?.famille?.magasin?.codeMagasin }} - {{ row.concernedStocker?.article?.famille?.magasin?.libMagasin }}
+              </ng-template>
+            </ngx-datatable-column>
+
+            <!--ngx-datatable-column>
+              <ng-template ngx-datatable-header-template>
                 Stock Initial
               </ng-template>
               <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
                 Pas encore
               </ng-template>
-            </ngx-datatable-column>
+            </ngx-datatable-column-->
 
-            <ngx-datatable-column>
+            <!--ngx-datatable-column>
               <ng-template ngx-datatable-header-template>
                 Entrées
               </ng-template>
               <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
                 Pas encore
               </ng-template>
-            </ngx-datatable-column>
+            </ngx-datatable-column-->
 
-            <ngx-datatable-column>
+            <!--ngx-datatable-column>
               <ng-template ngx-datatable-header-template>
                 Sorties
               </ng-template>
               <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
                 Pas encore
               </ng-template>
-            </ngx-datatable-column>
+            </ngx-datatable-column-->
 
             <ngx-datatable-column>
               <ng-template ngx-datatable-header-template>
@@ -120,8 +135,5 @@
           </ngx-datatable>
         </div>
       </div>
-    </div>
-    <div class="row">
-
     </div>
 </div>

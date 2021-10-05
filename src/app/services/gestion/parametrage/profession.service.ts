@@ -11,24 +11,23 @@ export class ProfessionService {
 
   host: string = environment.backend2 +'/commune/profession';
   url: string = environment.backend + '/professions';
-  private jwtTocken = null;
 
-  constructor(private http: HttpClient) { this.jwtTocken = localStorage.getItem('token'); }
+  constructor(private http: HttpClient) { }
 
   createProfession(profession: Profession): Observable<Object> {
-    return this.http.post(`${this.host}/list`, profession, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.http.post(`${this.host}/list`, profession);
   }
 
   deleteProfession(id: number): Observable<Object> {
-    return this.http.delete(`${this.host}/byCodPro/${id}`, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.http.delete(`${this.host}/byCodPro/${id}`);
   }
 
   updateProfession(id: string, profession: Profession): Observable<Object> {
-    return this.http.put(`${this.host}/byCodPro/${id}`, profession, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.http.put(`${this.host}/byCodPro/${id}`, profession);
   }
 
   list(): Observable<Object> {
-    return this.http.get(`${this.host}/list`, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.http.get(`${this.host}/list`);
   }
 
 }

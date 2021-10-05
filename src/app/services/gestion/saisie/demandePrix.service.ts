@@ -10,41 +10,40 @@ import { environment } from 'src/environments/environment';
 export class DemandePrixService {
 
   host: string = environment.backend2;
-  private jwtTocken = null;
 
-  constructor(private httpCli: HttpClient) { this.jwtTocken = localStorage.getItem('token'); }
+  constructor(private httpCli: HttpClient) {}
 
     //Partie réservée pour Demande de prix
     getAllDemandePrix(){
-      return this.httpCli.get<DemandePrix[]>(this.host+'/stock/demandePrix/list', {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+      return this.httpCli.get<DemandePrix[]>(this.host+'/stock/demandePrix/list');
     }
 
     getDemandePrixById(code:String){
-      return this.httpCli.get<DemandePrix>(this.host+'/stock/demandePrix/byCodDemPri/'+code, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+      return this.httpCli.get<DemandePrix>(this.host+'/stock/demandePrix/byCodDemPri/'+code);
     }
 
     addDemandePrix(corps:DemandePrix){
-      return this.httpCli.post<DemandePrix>(this.host+'/stock/demandePrix/list', corps, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+      return this.httpCli.post<DemandePrix>(this.host+'/stock/demandePrix/list', corps);
     }
 
     addDemandePrix2(corps:EncapDemandePrix){
-      return this.httpCli.post<EncapDemandePrix>(this.host+'/stock/demandePrix/list2', corps, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+      return this.httpCli.post<EncapDemandePrix>(this.host+'/stock/demandePrix/list2', corps);
     }
 
     editDemandePrix(code:String, corps:DemandePrix){
-      return this.httpCli.put<DemandePrix>(this.host+'/stock/demandePrix/byCodDemPri/'+code, corps, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+      return this.httpCli.put<DemandePrix>(this.host+'/stock/demandePrix/byCodDemPri/'+code, corps);
     }
 
     editDemandePrix2(code:String, corps:EncapDemandePrix){
-      return this.httpCli.put<EncapDemandePrix>(this.host+'/stock/demandePrix/byCodDemPri2/'+code, corps, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+      return this.httpCli.put<EncapDemandePrix>(this.host+'/stock/demandePrix/byCodDemPri2/'+code, corps);
     }
 
     deleteDemandePrix(code:String){
-      return this.httpCli.delete<boolean>(this.host+'/stock/demandePrix/byCodDemPri/'+code, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+      return this.httpCli.delete<boolean>(this.host+'/stock/demandePrix/byCodDemPri/'+code);
     }
 
     deleteDemandePrix2(code:String){
-      return this.httpCli.delete<boolean>(this.host+'/stock/demandePrix/byCodDemPri2/'+code, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+      return this.httpCli.delete<boolean>(this.host+'/stock/demandePrix/byCodDemPri2/'+code);
     }
 
 

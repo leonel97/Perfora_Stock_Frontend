@@ -11,24 +11,22 @@ export class CiviliteService {
 
   host: string = environment.backend2 +'/commune/civilite';
   url: string = environment.backend + '/civilites';
-  private jwtTocken = null;
-
-  constructor(private http: HttpClient) { this.jwtTocken = localStorage.getItem('token'); }
+  constructor(private http: HttpClient) {  }
 
   createCivilite(civilite: Civilite): Observable<Object> {
-    return this.http.post(`${this.host}/list`, civilite, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.http.post(`${this.host}/list`, civilite);
   }
 
   deleteCivilite(id: number): Observable<Object> {
-    return this.http.delete(`${this.host}/byCodCiv/${id}`, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.http.delete(`${this.host}/byCodCiv/${id}`);
   }
 
   updateCivilite(id: string, civilite: Civilite): Observable<Object> {
-    return this.http.put(`${this.host}/byCodCiv/${id}`, civilite, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.http.put(`${this.host}/byCodCiv/${id}`, civilite);
   }
 
   list(): Observable<Object> {
-    return this.http.get(`${this.host}/list`, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.http.get(`${this.host}/list`);
   }
 
 }

@@ -9,31 +9,33 @@ import { environment } from 'src/environments/environment';
 export class CloturePeriodiqService {
 
   host: string = environment.backend2;
-  private jwtTocken = null;
 
-  constructor(private httpCli: HttpClient) { this.jwtTocken = localStorage.getItem('token'); }
+  constructor(private httpCli: HttpClient) {}
 
   //Partie réservé pour CloturePeriodiq
 
   getAllCloturePeriodiq(){
-    return this.httpCli.get<CloturePeriodiq[]>(this.host+'/commune/cloturePeriodiq/list', {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.httpCli.get<CloturePeriodiq[]>(this.host+'/commune/cloturePeriodiq/list');
 
   }
 
   getCloturePeriodiqById(code:String){
-    return this.httpCli.get<CloturePeriodiq>(this.host+'/commune/cloturePeriodiq/byCodCloPer/'+code, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.httpCli.get<CloturePeriodiq>(this.host+'/commune/cloturePeriodiq/byCodCloPer/'+code);
   }
 
   editACloturePeriodiq(code:String, corps:CloturePeriodiq){
-    return this.httpCli.put<CloturePeriodiq>(this.host+'/commune/cloturePeriodiq/byCodCloPer/'+code, corps, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.httpCli.put<CloturePeriodiq>(this.host+'/commune/cloturePeriodiq/byCodCloPer/'+code, corps);
   }
 
   addACloturePeriodiq(corps:CloturePeriodiq){
-    return this.httpCli.post<CloturePeriodiq>(this.host+'/commune/cloturePeriodiq/list', corps, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.httpCli.post<CloturePeriodiq>(this.host+'/commune/cloturePeriodiq/list', corps);
   }
 
   deleteACloturePeriodiq(code:String){
-    return this.httpCli.delete<Boolean>(this.host+'/commune/cloturePeriodiq/byCodCloPer/'+code, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.httpCli.delete<Boolean>(this.host+'/commune/cloturePeriodiq/byCodCloPer/'+code);
+  }
+  isPeriodeCloturedByDate(corps:Date){
+    return this.httpCli.post<Boolean>(this.host+'/commune/cloturePeriodiq/isCloturedByDate', {date:corps});
   }
 
 

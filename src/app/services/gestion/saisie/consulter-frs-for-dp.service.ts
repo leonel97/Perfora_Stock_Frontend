@@ -9,31 +9,30 @@ import { environment } from 'src/environments/environment';
 export class ConsulterFrsForDpService {
 
   host: string = environment.backend2;
-  private jwtTocken = null;
 
-  constructor(private httpCli: HttpClient) { this.jwtTocken = localStorage.getItem('token'); }
+  constructor(private httpCli: HttpClient) {}
 
   //Partie réservé pour ConsulterFrsForDp
 
   getAllConsulterFrsForDp(){
-    return this.httpCli.get<ConsulterFrsForDp[]>(this.host+'/stock/consulterFrsForDp/list', {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.httpCli.get<ConsulterFrsForDp[]>(this.host+'/stock/consulterFrsForDp/list');
 
   }
 
   getConsulterFrsForDpById(code:String){
-    return this.httpCli.get<ConsulterFrsForDp>(this.host+'/stock/consulterFrsForDp/byCodConFrsForDp/'+code, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.httpCli.get<ConsulterFrsForDp>(this.host+'/stock/consulterFrsForDp/byCodConFrsForDp/'+code);
   }
 
   editAConsulterFrsForDp(code:String, corps:ConsulterFrsForDp){
-    return this.httpCli.put<ConsulterFrsForDp>(this.host+'/stock/consulterFrsForDp/byCodConFrsForDp/'+code, corps, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.httpCli.put<ConsulterFrsForDp>(this.host+'/stock/consulterFrsForDp/byCodConFrsForDp/'+code, corps);
   }
 
   addAConsulterFrsForDp(corps:ConsulterFrsForDp){
-    return this.httpCli.post<ConsulterFrsForDp>(this.host+'/stock/consulterFrsForDp/list', corps, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.httpCli.post<ConsulterFrsForDp>(this.host+'/stock/consulterFrsForDp/list', corps);
   }
 
   deleteAConsulterFrsForDp(code:String){
-    return this.httpCli.delete<Boolean>(this.host+'/stock/consulterFrsForDp/byCodConFrsForDp/'+code, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.httpCli.delete<Boolean>(this.host+'/stock/consulterFrsForDp/byCodConFrsForDp/'+code);
   }
 
 

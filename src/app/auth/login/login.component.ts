@@ -147,11 +147,20 @@ export class LoginComponent implements OnInit {
 
           //console.log('user Details', decodedToken);
 
+          let userConnected = decodedToken.user
+         // console.log('user conected', userConnected);
+
+          if (userConnected.activeUtilisateur == true) {
+  
           this.auth.saveToken(token);
           this.router.navigateByUrl('/gestion/accueil');
-        
-          
-          
+         
+          } else if (userConnected.activeUtilisateur == false || userConnected.activeUtilisateur == null || userConnected.activeUtilisateur == undefined ) {
+
+            this.authenticationFailError = 'Erreur: Votre Compte n\'est pas actif. Veuillez contacter votre administrateur !!!';
+            
+          }
+         
         },
         (erreur) => {
           console.log('Erreur lors de la connexion au serveur', erreur);

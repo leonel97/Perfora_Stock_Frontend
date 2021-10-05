@@ -201,8 +201,8 @@
 
                     <div class="col-md form-group mb-3">
                       <label >Magasin</label>
-                      <ng-select formControlName="magasin" (ngModelChange)="getInfosOnMagasinSelected()" [readonly]="detailView">
-                        <ng-option *ngFor="let mag of magasinList" [value]="mag.numMagasin">{{mag.codeMagasin}} - {{mag.libMagasin}}</ng-option>
+                      <ng-select formControlName="magasin" (ngModelChange)="emptyLigneShow()" [readonly]="detailView">
+                        <ng-option *ngFor="let mag of magasinList2" [value]="mag.numMagasin">{{mag.codeMagasin}} - {{mag.libMagasin}}</ng-option>
                       </ng-select>
                     </div>
 
@@ -241,7 +241,10 @@
                                       </td>
                                       <td>
                                         <input type="number" class="form-control" [(ngModel)] = "lig.ligneAppro.quantiteLigneAppro"
-                                        [ngStyle]="{'background-color': (lig.concernedStocker?.quantiterStocker < (lig.ligneAppro.quantiteLigneAppro*lig.concernedLigneDa?.uniter.poids) || lig.concernedLigneDa?.quantiteDemandee < lig.ligneAppro.quantiteLigneAppro || lig.qteRest < lig.ligneAppro.quantiteLigneAppro) ? 'rgb(255, 172, 172)': null}"
+                                        [ngStyle]="{'background-color': (lig.concernedStocker?.quantiterStocker < (lig.ligneAppro.quantiteLigneAppro*lig.concernedLigneDa?.uniter.poids) 
+                                        || lig.concernedLigneDa?.quantiteDemandee < lig.ligneAppro.quantiteLigneAppro 
+                                        || lig.qteRest < lig.ligneAppro.quantiteLigneAppro)
+                                        || lig.ligneAppro.quantiteLigneAppro <= 0 ? 'rgb(255, 172, 172)': null}"
                                             placeholder="Quantité" (change)="calculTotaux()" [readOnly]="detailView">
                                       </td>
                                       <td>

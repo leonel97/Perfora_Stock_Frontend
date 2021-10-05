@@ -127,7 +127,7 @@
                 </div>
 
                 <div class="row">
-                  <div class="col-md-6 form-group mb-3">
+                  <div class="col-md-4 form-group mb-3">
                     <label for="profession">Corps de l'utilisateur</label>
                     <ng-select bindLabel="libProfession" formControlName="profession" id="profession" placeholder="-- sélectionner --">
                       <!--ng-option *ngFor="let corps of corpsList" [value]="corps.id">{{corps.libelle}}</ng-option-->
@@ -135,40 +135,64 @@
                     </ng-select>
                   </div>
 
-                  <div class="col-md-6 form-group mb-3">
+                  <div class="col-md-5 form-group mb-3">
                     <label for="fonction">Fonction de l'utilisateur</label>
                     <ng-select bindLabel="libFonction"  formControlName="fonction" id="fonction" placeholder="-- sélectionner --">
                       <!--ng-option *ngFor="let fonction of fonctionList" [value]="fonction.id">{{fonction.libelle}}</ng-option-->
                       <ng-option *ngFor="let fonction of fonctionList" [value]="fonction">{{fonction.codeFonction}} - {{fonction.libFonction}}</ng-option>
                     </ng-select>
                   </div>
-                </div>
 
-                <div class="row">
-           
-                  <div class="col-md-4 form-group mb-3">
+                  
+                  <div class="col-md-3 form-group mb-3">
                     <label for="login">Login  <span class="required-field">*</span></label>
                     <input type="text" class="form-control" id="login"placeholder="Entrer le login de l'utilisateur"  formControlName="login" autocomplete="off">
                     <div class="error-field"*ngIf="validateForm.controls.login.errors && (validateForm.controls.login.dirty || validateForm.controls.login.touched)">
                       Ce champs est obligatoire !
                     </div>
                   </div>
+                </div>
 
-                  <div class="col-md-4 form-group mb-3" *ngIf=" !validateForm.value.idUtilisateur">
+                <div class="row">
+           
+
+                  <div class="col-md-3 form-group mb-3" *ngIf=" !validateForm.value.idUtilisateur">
                     <label for="motDePass">Mot de passe</label>
                     <input type="password" class="form-control" id="motDePass" placeholder="Entrer le mot de passe de l'utilisateur"  formControlName="motDePass" autocomplete="off">
                   </div>
 
-                  <div class="col-md-4 form-group mb-3" *ngIf=" !validateForm.value.idUtilisateur">
+                  <div class="col-md-3 form-group mb-3" *ngIf=" !validateForm.value.idUtilisateur">
                     <label for="password_confirmation">Mot de passe (Confirmation)</label>
                     <input type="password" class="form-control" id="password_confirmation" placeholder="Confirmer le mot de passe"  formControlName="password_confirmation" autocomplete="off">
+                  </div>
+
+                  <div class="form-check form-check-inline mr-3">
+                    <input class="form-check-input" type="checkbox" id="activeUtilisateur"
+                      formControlName="activeUtilisateur">
+                    <label class="form-check-label" for="activeUtilisateur">Activer Compte</label>
+                  </div>
+
+                  <div class="form-check form-check-inline mr-3">
+                    <input class="form-check-input" type="checkbox" id="askMdp1erLance"
+                      formControlName="askMdp1erLance">
+                    <label class="form-check-label" for="askMdp1erLance">Mot de Passe (Prémière connexion)</label>
+                  </div>
+
+                  <div class="form-check form-check-inline mr-3">
+                    <input class="form-check-input" type="checkbox" id="accesChildService"
+                      formControlName="accesChildService">
+                    <label class="form-check-label" for="accesChildService">Accès Centre Conso. enfants </label>
                   </div>
                  
                 </div>
 
                 <!--div class="row">
 
-                  
+                  <div class="form-check form-check-inline mr-5">
+                    <input class="form-check-input" type="checkbox" id="activeUtilisateur"
+                      formControlName="activeUtilisateur">
+                    <label class="form-check-label" for="activeUtilisateur">Stockable</label>
+                  </div>
 
                 </div-->
 

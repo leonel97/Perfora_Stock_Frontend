@@ -45,6 +45,8 @@ import { Utils } from 'src/app/utilitaires/utils';
 import { NumberToLetter } from 'convertir-nombre-lettre';
 import { InventaireService } from 'src/app/services/gestion/saisie/inventaire.service';
 import { AuthService } from 'src/app/services/common/auth.service';
+import { SalTools } from 'src/app/utilitaires/salTools';
+import { CloturePeriodiqService } from 'src/app/services/gestion/saisie/cloture-periodiq.service';
 
 
 export interface modelLigneRecept{
@@ -85,6 +87,7 @@ export class EntreeArticleComponent  implements OnInit {
   fpfaList: FactureProFormAcha[] = [];
   selectedLigneReceptList: LigneReception[] = [];
   magasinList: Magasin[] = [];
+  magasinList2: Magasin[] = [];
   articleList: Article[] = [];
   uniterList: Uniter[] = [];
   stockerList: Stocker[] = [];
@@ -121,6 +124,7 @@ export class EntreeArticleComponent  implements OnInit {
     private exerciceService: ExerciceService,
     private stockerService: StockerService,
     private inventaireService: InventaireService,
+    private clotureService: CloturePeriodiqService,
     private fb: FormBuilder,
     private router: Router,
     private toastr: ToastrService,
@@ -131,15 +135,7 @@ export class EntreeArticleComponent  implements OnInit {
 
   ngOnInit(): void {
 
-    this.receptionService.getAllReception().subscribe(
-      (data) => {
-        this.receptionList = [...data];
-        this.receptionFiltered = this.receptionList.sort((a, b) => a.numReception.localeCompare(b.numReception.valueOf()));
-        console.log(this.receptionList);
-      },
-      (error: HttpErrorResponse) => {
-        console.log('Echec status ==> ' + error.status);
-      });
+    this.getAllReception();
 
     this.makeForm(null);
 
@@ -164,6 +160,19 @@ export class EntreeArticleComponent  implements OnInit {
       this.getAllConsulterFrsForDp();
       this.getAllInventaire();
 
+      this.magasinList2 = SalTools.getConnectedUser().magasins;
+
+  }
+
+  isAllowedMagasin(ligne:Reception):boolean{
+    let b:boolean = false;
+    for (const mag of this.magasinList2) {
+      if(ligne.magasin.numMagasin == mag.numMagasin){
+        b = true;
+        break;
+      }
+    }
+    return b;
   }
 
   getAllInventaire(){
@@ -289,9 +298,9 @@ export class EntreeArticleComponent  implements OnInit {
   getAllReception(){
     this.receptionService.getAllReception().subscribe(
       (data) => {
-        this.receptionList = [...data];
+        this.receptionList = [...data.filter( l => this.isAllowedMagasin(l))];
         this.receptionFiltered = this.receptionList.sort((a, b) => a.numReception.localeCompare(b.numReception.valueOf()));
-        console.log(this.receptionList);
+        //console.log(this.receptionList);
       },
       (error: HttpErrorResponse) => {
         console.log('Echec status ==> ' + error.status);
@@ -697,13 +706,21 @@ export class EntreeArticleComponent  implements OnInit {
   }
 
   submit(): void {
+
     for (const i in this.validateForm.controls) {
       this.validateForm.controls[i].markAsDirty();
       this.validateForm.controls[i].updateValueAndValidity();
     }
 
-    let lignShowValid: boolean = true;
+    const formData = this.validateForm.value;
 
+    let lignShowValid: boolean = true;
+    /*let dateValid: boolean = true;
+    const i = this.commandeList.findIndex(l => l.numCommande == formData.numComm);
+    let comman:Commande = null;
+    if (i > -1) {
+       comman = this.commandeList[i];
+    }*/
     for(const lig of this.ligneShow){
       if(lig.ligneReception.quantiteLigneReception > lig.qteRest || lig.ligneReception.quantiteLigneReception <= 0){
         lignShowValid = false;
@@ -727,12 +744,19 @@ export class EntreeArticleComponent  implements OnInit {
         this.toastr.error('Veuillez Renseigner les Quantités Convenablement.', ' Erreur !', {progressBar: true});
 
       }, 3000);
+    } else if (this.ligneShow[0].concernedLigneCom.numCommande.dateCommande.valueOf() > formData.dateReception.valueOf()) {
+      this.loading = true;
+      setTimeout(() => {
+        this.loading = false;
+        this.toastr.error('La date de la réception est antérieur à la date de la commande.', ' Erreur !', {progressBar: true});
+
+      }, 3000);
     } else {
-      const formData = this.validateForm.value;
+      
 
     const i = this.commandeList.findIndex(l => l.numCommande == formData.numComm);
     if (i > -1) {
-      formData.numDA = this.commandeList[i];
+      formData.numComm = this.commandeList[i];
     }
 
     const m = this.magasinList.findIndex(l => l.numMagasin == formData.magasin);
@@ -744,7 +768,6 @@ export class EntreeArticleComponent  implements OnInit {
       const recept = new Reception(formData.numReception, formData.observation, formData.dateReception,
         false, 0, formData.description, formData.refBordLivraiRecept, this.exerciceService.selectedExo,
         formData.magasin);
-
 
       let lignesRecept: LigneReception[] = [];
       this.ligneShow.forEach((element, inde) => {
@@ -861,7 +884,19 @@ export class EntreeArticleComponent  implements OnInit {
       //this.confirmResut = `Closed with: ${result}`;
       this.receptionService.deleteAReception2(reception?.numReception).subscribe(
         (data) => {
-
+          this.getAllLigneReception();
+          this.getAllArticle();
+          this.getAllUniter();
+          this.getAllMagasin();
+          this.getAllStocker();
+          this.getAllAppelOffre();
+          this.getAllBondTravail();
+          this.getAllCommandeAchat();
+          this.getAllLettreCommande();
+          this.getAllLigneCommande();
+          this.getAllDemandePrix();
+          this.getAllFactureProFormAcha();
+          this.getAllConsulterFrsForDp();
           console.log(data);
           const i = this.receptionList.findIndex(l => l.numReception == reception.numReception);
           if (i > -1) {
@@ -978,62 +1013,79 @@ export class EntreeArticleComponent  implements OnInit {
     }
     else{
 
-      this.etatVali = eta;
+      this.clotureService.isPeriodeCloturedByDate(reception.dateReception).subscribe(
+        (data) => {
+          if(data == false){
+  
+            this.etatVali = eta;
 
-      this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', centered: true})
-        .result.then((result) => {
-        //this.confirmResut = `Closed with: ${result}`;
-        reception.valideRecep = eta;
+            this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', centered: true})
+              .result.then((result) => {
 
-        this.receptionService.editAReception3(reception.numReception, reception).subscribe(
-          (data) => {
-    
-            const i = this.receptionList.findIndex(l => l.numReception == data.numReception);
-                if (i > -1) {
-                  this.receptionList[i] = data;
-                  this.receptionFiltered = [...this.receptionList.sort((a, b) => a.numReception.localeCompare(b.numReception.valueOf()))];
+              //this.confirmResut = `Closed with: ${result}`;
+              reception.valideRecep = eta;
+
+              this.receptionService.editAReception3(reception.numReception, reception).subscribe(
+                (data) => {
+          
+                  const i = this.receptionList.findIndex(l => l.numReception == data.numReception);
+                      if (i > -1) {
+                        this.receptionList[i] = data;
+                        this.receptionFiltered = [...this.receptionList.sort((a, b) => a.numReception.localeCompare(b.numReception.valueOf()))];
+                      }
+          
+                      this.getAllLigneReception();
+                      this.getAllArticle();
+                      this.getAllUniter();
+                      this.getAllMagasin();
+                      this.getAllStocker();
+                      this.getAllAppelOffre();
+                      this.getAllBondTravail();
+                      this.getAllCommandeAchat();
+                      this.getAllLettreCommande();
+                      this.getAllLigneCommande();
+                      this.getAllDemandePrix();
+                      this.getAllFactureProFormAcha();
+                      this.getAllConsulterFrsForDp();
+          
+                      if(data.valideRecep == reception.valideRecep){
+                        let msg: String = 'Validation'
+                        if(eta == false) msg = 'Annulation';
+                        this.toastr.success(msg+' effectuée avec succès.', 'Success', { timeOut: 5000 });
+                      } else {
+                        let msg: String = 'Erreur lors de l\'entrée de l\'Article dans le Magasin.'
+                        if(eta == false) msg = 'Erreur lors du Retour de l\'Article dans le Magasin Annulation';
+                        this.toastr.error(msg.valueOf(), 'Erreur !', { timeOut: 5000 });
+                      }
+          
+          
+                },
+                (error: HttpErrorResponse) => {
+                  console.log('Echec status ==> ' + error.status);
+                  this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000 });
+          
                 }
-    
-                this.getAllLigneReception();
-                this.getAllArticle();
-                this.getAllUniter();
-                this.getAllMagasin();
-                this.getAllStocker();
-                this.getAllAppelOffre();
-                this.getAllBondTravail();
-                this.getAllCommandeAchat();
-                this.getAllLettreCommande();
-                this.getAllLigneCommande();
-                this.getAllDemandePrix();
-                this.getAllFactureProFormAcha();
-                this.getAllConsulterFrsForDp();
-    
-                if(data.valideRecep == reception.valideRecep){
-                  let msg: String = 'Validation'
-                  if(eta == false) msg = 'Annulation';
-                  this.toastr.success(msg+' effectuée avec succès.', 'Success', { timeOut: 5000 });
-                } else {
-                  let msg: String = 'Erreur lors de l\'entrée de l\'Article dans le Magasin.'
-                  if(eta == false) msg = 'Erreur lors du Retour de l\'Article dans le Magasin Annulation';
-                  this.toastr.error(msg.valueOf(), 'Erreur !', { timeOut: 5000 });
-                }
-    
-    
-          },
-          (error: HttpErrorResponse) => {
-            console.log('Echec status ==> ' + error.status);
-            this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000 });
-    
+              );
+          
+
+
+            }, (reason) => {
+              console.log(`Dismissed with: ${reason}`);
+            });
+            
           }
-        );
-    
+          else{
+            this.toastr.error('Période Cloturée ', 'Erreur !', { timeOut: 5000, progressBar:true });
+          }
+        },
+        (error: HttpErrorResponse) => {
+          console.log('Echec atatus ==> ' + error.status);
+          this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000, progressBar:true });
+          
+        }
+      );
 
-
-      }, (reason) => {
-        console.log(`Dismissed with: ${reason}`);
-      });
-
-
+      
     }
 
   }

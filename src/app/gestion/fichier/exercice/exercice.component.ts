@@ -44,6 +44,13 @@ export class ExerciceComponent implements OnInit {
 
   ngOnInit(): void {
 
+    /*let  token = localStorage.getItem('token');
+
+    const helper = new JwtHelperService();
+    const decodedToken :any[] = helper.decodeToken(token);
+    console.log('user Details', decodedToken);
+    console.log('user Details1', 210);*/
+
     this.disabledBtnCloturer = true;
 
     this.exerciceService.list().subscribe(

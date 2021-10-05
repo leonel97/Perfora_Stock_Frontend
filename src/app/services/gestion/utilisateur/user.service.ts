@@ -13,46 +13,45 @@ export class UserService {
 
   
   host: string = environment.backend2 +'/commune/user';
-  host1: string = environment.backend2 +'/commune/aug'; //aug/userGroup/{id}
-  private jwtTocken = null;
+  host1: string = environment.backend2 +'/commune/aug'; 
 
   //url: string = environment.backend + '/users';
 
-  constructor(private http: HttpClient) { this.jwtTocken = localStorage.getItem('token'); }
+  constructor(private http: HttpClient) {  }
 
   createUser(user: User): Observable<Object> {
-    return this.http.post(`${this.host}/list`, user, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.http.post(`${this.host}/list`, user);
   }
   createUser2(corps:EncapUserGroup){
-    return this.http.post<EncapUserGroup>(`${this.host}/list2`, corps, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.http.post<EncapUserGroup>(`${this.host}/list2`, corps);
   }
 
   createUser3(corps:User[]){
-    return this.http.post<User[]>(`${this.host}/list3`, corps, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.http.post<User[]>(`${this.host}/list3`, corps);
   }
 
   deleteUser(id: number): Observable<Object> {
-    return this.http.delete(`${this.host}/byCodUser/${id}`, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.http.delete(`${this.host}/byCodUser/${id}`);
   }
 
   deleteUser2(code:String){
-    return this.http.delete<boolean>(this.host+'/byCodUser2/'+code, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.http.delete<boolean>(this.host+'/byCodUser2/'+code);
   }
 
   updateUser2(code:String, corps:EncapUserGroup){
-    return this.http.put<EncapUserGroup>(this.host+'/byCodUser2/'+code, corps, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.http.put<EncapUserGroup>(this.host+'/byCodUser2/'+code, corps);
   }
 
   updateUser(idUser: string, user: User): Observable<Object> {
-    return this.http.put(`${this.host}/byCodUser/${idUser}`, user, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.http.put(`${this.host}/byCodUser/${idUser}`, user);
   }
 
   list(): Observable<Object> {
-    return this.http.get(`${this.host}/list`, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.http.get(`${this.host}/list`);
   }
 
   getAllGroupUserForUser(id: number){
-    return this.http.get(this.host1+'/userGroup/'+id, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.http.get(this.host1+'/userGroup/'+id);
   }
 
 }

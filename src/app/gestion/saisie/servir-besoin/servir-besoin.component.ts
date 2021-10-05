@@ -31,6 +31,8 @@ import { Utils } from 'src/app/utilitaires/utils';
 import { NumberToLetter } from 'convertir-nombre-lettre';
 import { InventaireService } from 'src/app/services/gestion/saisie/inventaire.service';
 import { AuthService } from 'src/app/services/common/auth.service';
+import { SalTools } from 'src/app/utilitaires/salTools';
+import { CloturePeriodiqService } from 'src/app/services/gestion/saisie/cloture-periodiq.service';
 
 
 export interface modelLigneAppro{
@@ -64,6 +66,7 @@ export class ServirBesoinComponent  implements OnInit {
   demandeApproList: DemandeApprovisionnement[] = [];
   selectedLigneApproList: LigneAppro[] = [];
   magasinList: Magasin[] = [];
+  magasinList2: Magasin[] = [];
   articleList: Article[] = [];
   uniterList: Uniter[] = [];
   stockerList: Stocker[] = [];
@@ -93,6 +96,7 @@ export class ServirBesoinComponent  implements OnInit {
     private exerciceService: ExerciceService,
     private stockerService: StockerService,
     private inventaireService: InventaireService,
+    private clotureService: CloturePeriodiqService,
     private fb: FormBuilder,
     private router: Router,
     private toastr: ToastrService,
@@ -103,7 +107,7 @@ export class ServirBesoinComponent  implements OnInit {
 
   ngOnInit(): void {
 
-    this.approService.getAllAppro().subscribe(
+    /*this.approService.getAllAppro().subscribe(
       (data) => {
         this.approList = [...data];
         this.approFiltered = this.approList.sort((a, b) => a.numAppro.localeCompare(b.numAppro.valueOf()));
@@ -111,7 +115,9 @@ export class ServirBesoinComponent  implements OnInit {
       },
       (error: HttpErrorResponse) => {
         console.log('Echec status ==> ' + error.status);
-      });
+      });*/
+
+    this.getAllAppro();
 
     this.makeForm(null);
 
@@ -129,7 +135,20 @@ export class ServirBesoinComponent  implements OnInit {
       this.getAllMagasin();
       this.getAllStocker();
       this.getAllInventaire();
+      
+      this.magasinList2 = SalTools.getConnectedUser().magasins;
 
+  }
+
+  isAllowedMagasin(ligne:Approvisionnement):boolean{
+    let b:boolean = false;
+    for (const mag of this.magasinList2) {
+      if(ligne.magasin.numMagasin == mag.numMagasin){
+        b = true;
+        break;
+      }
+    }
+    return b;
   }
 
   
@@ -180,7 +199,7 @@ export class ServirBesoinComponent  implements OnInit {
   getAllAppro(){
     this.approService.getAllAppro().subscribe(
       (data) => {
-        this.approList = [...data];
+        this.approList = [...data.filter( l => this.isAllowedMagasin(l))];
         this.approFiltered = this.approList.sort((a, b) => a.numAppro.localeCompare(b.numAppro.valueOf()));
         console.log(this.approList);
       },
@@ -317,7 +336,7 @@ export class ServirBesoinComponent  implements OnInit {
         }
       }
 
-      this.getInfosOnDaSelected();
+      this.getInfosOnDaSelected(true);
       this.getInfosOnMagasinSelected();
 
       this.calculTotaux();
@@ -338,9 +357,12 @@ export class ServirBesoinComponent  implements OnInit {
 
   }
 
-  getInfosOnDaSelected(){
-    let articlesOfDa = [];
-
+  getInfosOnDaSelected(modif:boolean = false){
+    if(!modif){
+      this.emptyLigneShow();
+      this.getNotUsedArticle();
+    } 
+    let articlesOfDa = [];    
     for(const lig1 of this.ligneDemandeApproList){
       if(lig1.appro.numDA == this.validateForm.value.numDA){
         articlesOfDa.push(lig1.article);
@@ -349,6 +371,11 @@ export class ServirBesoinComponent  implements OnInit {
 
     this.articleList = articlesOfDa;
 
+  }
+
+  emptyLigneShow(){
+    this.getAllStocker();
+    this.ligneShow = [];
   }
 
   getInfosOnMagasinSelected(){
@@ -425,6 +452,8 @@ export class ServirBesoinComponent  implements OnInit {
       this.validateForm.controls[i].updateValueAndValidity();
     }
 
+    const formData = this.validateForm.value;
+
     let lignShowValid: boolean = true;
 
     for(const lig of this.ligneShow){
@@ -452,8 +481,15 @@ export class ServirBesoinComponent  implements OnInit {
         this.toastr.error('Veuillez Renseigner les Quantités Convenablement.', ' Erreur !', {progressBar: true});
 
       }, 3000);
+    } else if (this.ligneShow[0].concernedLigneDa.appro.dateDA.valueOf() > formData.dateAppro.valueOf()) {
+      this.loading = true;
+      setTimeout(() => {
+        this.loading = false;
+        this.toastr.error('La date de l\'Ordre de Sortie est antérieur à la date de la Demande de besoin.', ' Erreur !', {progressBar: true});
+
+      }, 3000);
     } else {
-      const formData = this.validateForm.value;
+      
 
     const i = this.demandeApproList.findIndex(l => l.numDA == formData.numDA);
     if (i > -1) {
@@ -598,6 +634,7 @@ export class ServirBesoinComponent  implements OnInit {
   }
 
   pushALigneAppro(){
+    if(this.getNotUsedArticle().length != 0)
     this.ligneShow.push({
       ligneAppro: new LigneAppro(0, 0, null, null),
       listArticle: this.getNotUsedArticle(),
@@ -610,11 +647,12 @@ export class ServirBesoinComponent  implements OnInit {
       qteRest: 0,
 
     });
+    else this.toastr.error('Aucune Ligne Trouvée.', ' Erreur !', {progressBar: true, timeOut: 5000});
   }
 
   getNotUsedArticle(): Article[]{
     let tab: Article[] = [];
-    this.articleList.forEach(element => {
+    this.articleList.filter(l => (this.validateForm.value.magasin && l.famille.magasin.numMagasin == this.validateForm.value.magasin)).forEach(element => {
       let finded: boolean = false;
       for(const lig of this.ligneShow){
         if(lig.selectedArticl == element.numArticle){
@@ -637,7 +675,7 @@ export class ServirBesoinComponent  implements OnInit {
 
   onArticleSelectClicked(inde: number){
     let tab: Article[] = [];
-    this.articleList.forEach(element => {
+    this.articleList.filter(l => (this.validateForm.value.magasin && l.famille.magasin.numMagasin == this.validateForm.value.magasin)).forEach(element => {
       let finded: boolean = false;
       for(const lig of this.ligneShow){
         if(lig.selectedArticl == element.numArticle &&  this.ligneShow[inde].selectedArticl != element.numArticle){
@@ -691,67 +729,84 @@ export class ServirBesoinComponent  implements OnInit {
     }
     else{
 
-      this.etatVali = eta;
+      this.clotureService.isPeriodeCloturedByDate(appro.dateAppro).subscribe(
+        (data) => {
+          if(data == false){
+           
+            this.etatVali = eta;
 
-      this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', centered: true})
-      .result.then((result) => {
-      //this.confirmResut = `Closed with: ${result}`;
-      
-        this.stockerService.getAllStocker().subscribe(
-          (data2) => {
+            this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', centered: true})
+            .result.then((result) => {
+            //this.confirmResut = `Closed with: ${result}`;
+            
+              this.stockerService.getAllStocker().subscribe(
+                (data2) => {
 
-          },
-          (error: HttpErrorResponse) => {
-            console.log('Echec status ==> ' + error.status);
-            this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000 });
-  
-          }
-
-        );
-
-        appro.valideAppro = eta;
-  
-        this.approService.editAAppro3(appro.numAppro, appro).subscribe(
-          (data) => {
-  
-            const i = this.approList.findIndex(l => l.numAppro == data.numAppro);
-                if (i > -1) {
-                  this.approList[i] = data;
-                  this.approFiltered = [...this.approList.sort((a, b) => a.numAppro.localeCompare(b.numAppro.valueOf()))];
+                },
+                (error: HttpErrorResponse) => {
+                  console.log('Echec status ==> ' + error.status);
+                  this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000 });
+        
                 }
-  
-                if(data.valideAppro == appro.valideAppro){
-                  let msg: String = 'Validation'
-                  if(eta == false) msg = 'Annulation';
-                  this.toastr.success(msg+' effectuée avec succès.', 'Success', { timeOut: 5000 });
-                } else {
-                  let msg: String = 'Erreur lors de la Sortie de d\'Article du Magasin, la quantité disponible de l\'un des articles dans ce magasin n\'est pas satisfaisante.'
-                  if(eta == false) msg = 'Erreur lors du Retour de l\'Article dans le Magasin Annulation';
-                  this.toastr.error(msg.valueOf(), 'Erreur !', { timeOut: 5000 });
+
+              );
+
+              appro.valideAppro = eta;
+        
+              this.approService.editAAppro3(appro.numAppro, appro).subscribe(
+                (data) => {
+        
+                  const i = this.approList.findIndex(l => l.numAppro == data.numAppro);
+                      if (i > -1) {
+                        this.approList[i] = data;
+                        this.approFiltered = [...this.approList.sort((a, b) => a.numAppro.localeCompare(b.numAppro.valueOf()))];
+                      }
+        
+                      if(data.valideAppro == appro.valideAppro){
+                        let msg: String = 'Validation'
+                        if(eta == false) msg = 'Annulation';
+                        this.toastr.success(msg+' effectuée avec succès.', 'Success', { timeOut: 5000 });
+                      } else {
+                        let msg: String = 'Erreur lors de la Sortie de d\'Article du Magasin, la quantité disponible de l\'un des articles dans ce magasin n\'est pas satisfaisante.'
+                        if(eta == false) msg = 'Erreur lors du Retour de l\'Article dans le Magasin Annulation';
+                        this.toastr.error(msg.valueOf(), 'Erreur !', { timeOut: 5000 });
+                      }
+        
+                      this.getAllArticle();
+                      this.getAllUniter();
+                      this.getAllLigneAppro();
+                      this.getAllDemandeAppro();
+                      this.getAllLigneDemandeAppro();
+                      this.getAllMagasin();
+                      this.getAllStocker();
+        
+        
+                },
+                (error: HttpErrorResponse) => {
+                  console.log('Echec status ==> ' + error.status);
+                  this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000 });
+        
                 }
-  
-                this.getAllArticle();
-                this.getAllUniter();
-                this.getAllLigneAppro();
-                this.getAllDemandeAppro();
-                this.getAllLigneDemandeAppro();
-                this.getAllMagasin();
-                this.getAllStocker();
-  
-  
-          },
-          (error: HttpErrorResponse) => {
-            console.log('Echec status ==> ' + error.status);
-            this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000 });
-  
+              );
+        
+        
+            }, (reason) => {
+              console.log(`Dismissed with: ${reason}`);
+            });
+        
+
+            
           }
-        );
-  
-  
-  
-      }, (reason) => {
-        console.log(`Dismissed with: ${reason}`);
-      });
+          else{
+            this.toastr.error('Période Cloturée ', 'Erreur !', { timeOut: 5000, progressBar:true });
+          }
+        },
+        (error: HttpErrorResponse) => {
+          console.log('Echec atatus ==> ' + error.status);
+          this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000, progressBar:true });
+          
+        }
+      );
   
 
     }

@@ -11,24 +11,22 @@ import {CauseAnomalie} from "../../../models/gestion/definition/causeAnomalie";
 export class CauseAnomalieService {
 
   url: string = environment.backend2 + '/commune/causeAnomalie';
-  private jwtTocken = null;
-
-  constructor(private http: HttpClient) { this.jwtTocken = localStorage.getItem('token'); }
+  constructor(private http: HttpClient) { }
 
   createCauseAnomalie(causeAnomalie: CauseAnomalie): Observable<Object> {
-    return this.http.post(`${this.url}/list`, causeAnomalie, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.http.post(`${this.url}/list`, causeAnomalie);
   }
 
   deleteCauseAnomalie(id: String): Observable<Object> {
-    return this.http.delete(`${this.url}/byCodCauAno/`+ id, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.http.delete(`${this.url}/byCodCauAno/`+ id);
   }
 
   updateCauseAnomalie(id : String, causeAnomalie: CauseAnomalie): Observable<Object> {
-    return this.http.put(`${this.url}/byCodCauAno/${id}`, causeAnomalie, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.http.put(`${this.url}/byCodCauAno/${id}`, causeAnomalie);
   }
 
   list(): Observable<Object> {
-    return this.http.get(`${this.url}/list`, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.http.get(`${this.url}/list`);
   }
 
 }

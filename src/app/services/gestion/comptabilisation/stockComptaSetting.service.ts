@@ -11,24 +11,23 @@ import { StockComptaSetting } from 'src/app/models/gestion/comptabilisation/stoc
 export class StockComptaSettingService {
 
   url: string = environment.backend2 + '/compta/stockComptaSetting';
-  private jwtTocken = null;
 
-  constructor(private http: HttpClient) { this.jwtTocken = localStorage.getItem('token'); }
+  constructor(private http: HttpClient) {}
 
   createStockComptaSetting(stockComptaSetting: StockComptaSetting): Observable<Object> {
-    return this.http.post(`${this.url}/list`, stockComptaSetting, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.http.post(`${this.url}/list`, stockComptaSetting);
   }
 
   addAListStockComptaSetting(corps: StockComptaSetting[]){
-    return this.http.post<StockComptaSetting[]>(`${this.url}/list2`, corps, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.http.post<StockComptaSetting[]>(`${this.url}/list2`, corps);
   }
 
   deleteStockComptaSetting(id: number): Observable<Object> {
-    return this.http.delete(`${this.url}/byNum/`+ id, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.http.delete(`${this.url}/byNum/`+ id);
   }
 
   updateStockComptaSetting(id : number, stockComptaSetting: StockComptaSetting): Observable<Object> {
-    return this.http.put(`${this.url}/byNum/${id}`, stockComptaSetting, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.http.put(`${this.url}/byNum/${id}`, stockComptaSetting);
   }
 
  /* list(): Observable<Object> {
@@ -36,7 +35,7 @@ export class StockComptaSettingService {
   }*/
 
   list(){
-    return this.http.get<StockComptaSetting[]>(`${this.url}/list`, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.http.get<StockComptaSetting[]>(`${this.url}/list`);
   }
 
 }

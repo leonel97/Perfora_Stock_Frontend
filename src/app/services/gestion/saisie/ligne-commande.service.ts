@@ -9,30 +9,29 @@ import { environment } from 'src/environments/environment';
 export class LigneCommandeService {
 
   host: string = environment.backend2;
-  private jwtTocken = null;
 
-  constructor(private httpCli: HttpClient) { this.jwtTocken = localStorage.getItem('token'); }
+  constructor(private httpCli: HttpClient) { }
 
 
   //Partie réservé pour ligne commande
   getAllLigneCommande(){
-    return this.httpCli.get<LigneCommande[]>(this.host+'/stock/ligneCommande/list', {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.httpCli.get<LigneCommande[]>(this.host+'/stock/ligneCommande/list');
   }
 
   getALigneCommandeById(code:String){
-    return this.httpCli.get<LigneCommande>(this.host+'/stock/ligneCommande/byCodLigCom/'+code, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.httpCli.get<LigneCommande>(this.host+'/stock/ligneCommande/byCodLigCom/'+code);
   }
 
   addALigneCommande(corps:LigneCommande){
-    return this.httpCli.post<LigneCommande>(this.host+'/stock/ligneCommande/list', corps, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.httpCli.post<LigneCommande>(this.host+'/stock/ligneCommande/list', corps);
   }
 
   editALigneCommande(code:String, corps:LigneCommande){
-    return this.httpCli.put<LigneCommande>(this.host+'/stock/ligneCommande/byCodLigCom/'+code, corps, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.httpCli.put<LigneCommande>(this.host+'/stock/ligneCommande/byCodLigCom/'+code, corps);
   }
 
   deleteALigneCommande(code:String){
-    return this.httpCli.delete<boolean>(this.host+'/stock/ligneCommande/byCodLigCom/'+code, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.httpCli.delete<boolean>(this.host+'/stock/ligneCommande/byCodLigCom/'+code);
   }
 
 

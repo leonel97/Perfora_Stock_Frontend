@@ -11,28 +11,27 @@ import { OperationJournal } from 'src/app/models/gestion/comptabilisation/operJo
 export class OperationJournalService {
 
   url: string = environment.backend2 + '/compta/opeJournalSetting';
-  private jwtTocken = null;
 
-  constructor(private http: HttpClient) { this.jwtTocken = localStorage.getItem('token'); }
+  constructor(private http: HttpClient) {}
 
   createOperationJournal(operationJournal: OperationJournal): Observable<Object> {
-    return this.http.post(`${this.url}/list`, operationJournal, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.http.post(`${this.url}/list`, operationJournal);
   }
 
   addAListOperationJournal(corps: OperationJournal[]){
-    return this.http.post<OperationJournal[]>(`${this.url}/list2`, corps, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.http.post<OperationJournal[]>(`${this.url}/list2`, corps);
   }
 
   deleteOperationJournal(id: number): Observable<Object> {
-    return this.http.delete(`${this.url}/byNum/`+ id, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.http.delete(`${this.url}/byNum/`+ id);
   }
 
   updateOperationJournal(id : number, operationJournal: OperationJournal): Observable<Object> {
-    return this.http.put(`${this.url}/byNum/${id}`, operationJournal, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.http.put(`${this.url}/byNum/${id}`, operationJournal);
   }
 
   list(): Observable<Object> {
-    return this.http.get(`${this.url}/list`, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.http.get(`${this.url}/list`);
   }
 
 }

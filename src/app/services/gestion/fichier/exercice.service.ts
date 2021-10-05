@@ -37,19 +37,19 @@ export class ExerciceService {
   }
 
   createExercice(exercice: Exercice): Observable<Object> {
-    return this.http.post(`${this.url}/list`, exercice, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.http.post(`${this.url}/list`, exercice);
   }
 
   deleteExercice(id: String): Observable<Object> {
-    return this.http.delete(`${this.url}/byCodExe/`+ id, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.http.delete(`${this.url}/byCodExe/`+ id);
   }
 
   updateExercice(id : String, exercice: Exercice): Observable<Object> {
-    return this.http.put(`${this.url}/byCodExe/${id}`, exercice, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.http.put(`${this.url}/byCodExe/${id}`, exercice);
   }
 
   list(): Observable<Object> {
-    return this.http.get(`${this.url}/list`, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.http.get(`${this.url}/list`);
   }
 
 }

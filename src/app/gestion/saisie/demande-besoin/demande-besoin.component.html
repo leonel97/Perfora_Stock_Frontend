@@ -199,10 +199,15 @@
                                       </td>
                                       <td>
                                         <input type="number" class="form-control" [(ngModel)] = "lig.ligneDemandeAppro.quantiteDemandee"
-                                            placeholder="Quantité" >
+                                            placeholder="Quantité" 
+                                            [ngStyle]="{'background-color': lig.ligneDemandeAppro.quantiteDemandee <= 0 ? 'rgb(255, 172, 172)': null}"
+                                          >
                                       </td>
                                       <td>
-                                        <ng-select [(ngModel)]="lig.selectedUniter" style="min-width: 180px;" >
+                                        <ng-select [(ngModel)]="lig.selectedUniter" style="min-width: 180px;" 
+                                        [ngStyle]="{'border': (lig.selectedUniter == null) ? '2px solid rgb(255, 172, 172)': null,
+                                                    'background-color': (lig.selectedUniter == null) ? '2px solid rgb(255, 172, 172)': null,
+                                                    'border-radius':  (lig.selectedUniter == null) ? '5px': null}">
                                           <ng-option *ngFor="let unit of lig.listUniter" [value]="unit.numUniter"
                                            >{{unit.codeUniter}} - {{unit.libUniter}}</ng-option>
                                         </ng-select>

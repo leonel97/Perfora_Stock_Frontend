@@ -9,33 +9,32 @@ import { environment } from 'src/environments/environment';
 export class FamilleService {
 
   host: string = environment.backend2;
-  private jwtTocken = null;
 
-  constructor(private httpCli: HttpClient) { this.jwtTocken = localStorage.getItem('token'); }
+  constructor(private httpCli: HttpClient) {}
 
    //Partie réservée pour les familles
    getAllFamille(){
-    return this.httpCli.get<Famille[]>(this.host+'/stock/famille/list', {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.httpCli.get<Famille[]>(this.host+'/stock/famille/list');
   }
 
   getFamilleById(code:String){
-    return this.httpCli.get<Famille>(this.host+'/stock/famille/byCodFam/'+code, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.httpCli.get<Famille>(this.host+'/stock/famille/byCodFam/'+code);
   }
 
   addAFamille(corps:Famille){
-    return this.httpCli.post<Famille>(this.host+'/stock/famille/list', corps, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.httpCli.post<Famille>(this.host+'/stock/famille/list', corps);
   }
 
   addAListFamille(corps:Famille[]){
-    return this.httpCli.post<Famille[]>(this.host+'/stock/famille/list2', corps, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.httpCli.post<Famille[]>(this.host+'/stock/famille/list2', corps);
   }
 
   editAFamille(code:String, corps: Famille){
-    return this.httpCli.put<Famille>(this.host+'/stock/famille/byCodFam/'+code,corps, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})})
+    return this.httpCli.put<Famille>(this.host+'/stock/famille/byCodFam/'+code,corps)
   }
 
   deleteAFamille(code:String){
-    return this.httpCli.delete<Boolean>(this.host+'/stock/famille/byCodFam/'+code, {headers: new HttpHeaders({'Authorization' :this.jwtTocken})});
+    return this.httpCli.delete<Boolean>(this.host+'/stock/famille/byCodFam/'+code);
   }
 
 

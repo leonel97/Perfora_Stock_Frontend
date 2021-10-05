@@ -29,6 +29,8 @@ import * as moment from  'moment';
 import { Utils } from 'src/app/utilitaires/utils';
 import { NumberToLetter } from 'convertir-nombre-lettre';
 import { AuthService } from 'src/app/services/common/auth.service';
+import { SalTools } from 'src/app/utilitaires/salTools';
+import { CloturePeriodiqService } from 'src/app/services/gestion/saisie/cloture-periodiq.service';
 
 
 @Component({
@@ -73,6 +75,7 @@ export class LettreCommandeComponent implements OnInit {
     private commandeService: CommandeService,
     private exerciceService: ExerciceService,
     private affectUniterToArticleService: AffectUniterToArticleService,
+    private clotureService: CloturePeriodiqService,
     private fb: FormBuilder,
     private router: Router,
     private toastr: ToastrService,
@@ -302,6 +305,8 @@ export class LettreCommandeComponent implements OnInit {
       frs: [lettreCommande != null ? lettreCommande.commande.frs.numFournisseur : null,
         [Validators.required]],
       numComm: [lettreCommande != null ? lettreCommande.commande.numCommande : null],
+    }, {
+      validators : SalTools.validatorDateOrdre('dateCommande', 'dateRemise', false)
     });
     //cette condition permet de basculer vers la tab contenant le formulaire lors d'une modification
     if (lettreCommande?.numLettreComm !=null){
@@ -346,17 +351,43 @@ export class LettreCommandeComponent implements OnInit {
       this.validateForm.controls[i].updateValueAndValidity();
     }
 
+    let lignShowValid: boolean = true;
+    
+    
+    for(const lig of this.ligneShow){
+      if(lig.lignesCommande.puLigneCommande <=0 || lig.selectedUniter == null
+        || lig.lignesCommande.qteLigneCommande <=0 || lig.lignesCommande.tva < 0){
+        lignShowValid = false;
+        break;
+      }
+    }
+
     if (this.validateForm.valid == false) {
       this.loading = true;
       setTimeout(() => {
         this.loading = false;
-        this.toastr.error('Veuillez remplir le Formulaire convenablement.', ' Erreur !', {progressBar: true});
+        let msgForm:String = '\n';
+        for (const key in this.validateForm.errors) {
+          if (Object.prototype.hasOwnProperty.call(this.validateForm.errors, key)) {
+            const element = this.validateForm.errors[key];
+            msgForm += element.value+'\n';
+          }
+        }
+
+        this.toastr.error('Veuillez remplir le Formulaire convenablement.'+msgForm, ' Erreur !', {progressBar: true});
       }, 3000);
     } else if (this.ligneShow.length == 0) {
       this.loading = true;
       setTimeout(() => {
         this.loading = false;
         this.toastr.error('Veuillez Ajouter au moins une Ligne.', ' Erreur !', {progressBar: true});
+      }, 3000);
+    }else if (lignShowValid == false) {
+      this.loading = true;
+      setTimeout(() => {
+        this.loading = false;
+        this.toastr.error('Veuillez Renseigner les Lignes Convenablement.', ' Erreur !', {progressBar: true});
+
       }, 3000);
     } else {
       const formData = this.validateForm.value;
@@ -609,43 +640,61 @@ export class LettreCommandeComponent implements OnInit {
 
   valider(lettreCommande: LettreCommande, eta: boolean, content){
 
-
-    this.etatVali = eta;
-
-    this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', centered: true})
-      .result.then((result) => {
-      //this.confirmResut = `Closed with: ${result}`;
-
-    lettreCommande.commande.valide = eta;
-
-    this.commandeService.editACommande(lettreCommande.commande.numCommande.toString(), lettreCommande.commande).subscribe(
+    this.clotureService.isPeriodeCloturedByDate(lettreCommande.commande.dateCommande).subscribe(
       (data) => {
+        if(data == false){
+          
 
-        lettreCommande.commande = data;
+          this.etatVali = eta;
 
-        const i = this.lettreCommandeList.findIndex(l => l.numLettreComm == lettreCommande.numLettreComm);
-            if (i > -1) {
-              this.lettreCommandeList[i] = lettreCommande;
-              this.lettreCommandeFiltered = [...this.lettreCommandeList.sort((a, b) => a.numLettreComm.localeCompare(b.numLettreComm.valueOf()))];
+          this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', centered: true})
+            .result.then((result) => {
+            //this.confirmResut = `Closed with: ${result}`;
+      
+          lettreCommande.commande.valide = eta;
+      
+          this.commandeService.editACommande(lettreCommande.commande.numCommande.toString(), lettreCommande.commande).subscribe(
+            (data) => {
+      
+              lettreCommande.commande = data;
+      
+              const i = this.lettreCommandeList.findIndex(l => l.numLettreComm == lettreCommande.numLettreComm);
+                  if (i > -1) {
+                    this.lettreCommandeList[i] = lettreCommande;
+                    this.lettreCommandeFiltered = [...this.lettreCommandeList.sort((a, b) => a.numLettreComm.localeCompare(b.numLettreComm.valueOf()))];
+                  }
+      
+                  let msg: String = 'Validation'
+                  if(eta == false) msg = 'Annulation';
+                  this.toastr.success(msg+' effectuée avec succès.', 'Success', { timeOut: 5000 });
+      
+            },
+            (error: HttpErrorResponse) => {
+              console.log('Echec status ==> ' + error.status);
+              this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000 });
+      
             }
-
-            let msg: String = 'Validation'
-            if(eta == false) msg = 'Annulation';
-            this.toastr.success(msg+' effectuée avec succès.', 'Success', { timeOut: 5000 });
-
+          );
+      
+      
+      
+          }, (reason) => {
+            console.log(`Dismissed with: ${reason}`);
+          });
+      
+          
+        }
+        else{
+          this.toastr.error('Période Cloturée ', 'Erreur !', { timeOut: 5000, progressBar:true });
+        }
       },
       (error: HttpErrorResponse) => {
-        console.log('Echec status ==> ' + error.status);
-        this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000 });
-
+        console.log('Echec atatus ==> ' + error.status);
+        this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000, progressBar:true });
+        
       }
     );
-
-
-
-    }, (reason) => {
-      console.log(`Dismissed with: ${reason}`);
-    });
+    
 
 
   }
