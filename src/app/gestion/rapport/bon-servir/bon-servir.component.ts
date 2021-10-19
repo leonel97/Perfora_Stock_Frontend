@@ -15,6 +15,7 @@ import {jsPDF} from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import * as moment from  'moment';
 import { Utils } from 'src/app/utilitaires/utils';
+import { SalTools } from 'src/app/utilitaires/salTools';
 
 @Component({
   selector: 'app-bon-servir',
@@ -248,7 +249,7 @@ export class BonServirComponent implements OnInit {
 
                     });
 
-                    lig.push(Math.round(tota));
+                    lig.push(SalTools.salRound(tota));
                     
                     lignes.push(lig);
                   }

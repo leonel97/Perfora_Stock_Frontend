@@ -106,7 +106,7 @@
                           Montant Total
                         </ng-template>
                         <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
-                          {{ getTotalOfARecept(row) }}
+                          {{ salToolsService.salRound(getTotalOfARecept(row)) }}
                         </ng-template>
                       </ngx-datatable-column>
 
@@ -320,13 +320,13 @@
                                         {{lig.concernedLigneCom?.uniter?.codeUniter}} - {{lig.concernedLigneCom?.uniter?.libUniter}}
                                       </td>
                                       <td>
-                                        {{lig.qteRest - lig.ligneReception.quantiteLigneReception}}
+                                        {{salToolsService.salRound(lig.qteRest - lig.ligneReception.quantiteLigneReception)}}
                                       </td>
                                       <td>
                                         {{lig.ligneReception.puLigneReception }}
                                       </td>
                                       <td>
-                                        {{lig.ligneReception.puLigneReception * lig.ligneReception.quantiteLigneReception * (1+(lig.ligneReception?.ligneCommande?.tva/100))}}
+                                        {{ salToolsService.salRound(lig.ligneReception.puLigneReception * lig.ligneReception.quantiteLigneReception * (1+(lig.ligneReception?.ligneCommande?.tva/100))) }}
                                       </td>
                                       <td>
                                           <button class="btn btn-outline-secondary float-right" (click)="popALigneAppro(i)" *ngIf="!detailView">Retirer</button>
@@ -340,9 +340,9 @@
 
                       <div class="col-md-12">
                         <div class="float-right">
-                            <p>Total Montant HT &nbsp; : &nbsp; <span> {{ totaux[0] }} </span> &nbsp; F CFA</p>
-                            <p class="d-flex align-items-center">Total Montant TVA &nbsp; : &nbsp; <span> {{ totaux[1] }} </span> &nbsp; F CFA</p>
-                            <h5 class="font-weight-bold d-flex align-items-center">Total Montant TTC &nbsp; : &nbsp; <span> {{ totaux[2] }} </span> &nbsp; F CFA</h5>
+                            <p>Total Montant HT &nbsp; : &nbsp; <span> {{ salToolsService.salRound(totaux[0]) }} </span> &nbsp; F CFA</p>
+                            <p class="d-flex align-items-center">Total Montant TVA &nbsp; : &nbsp; <span> {{ salToolsService.salRound(totaux[1]) }} </span> &nbsp; F CFA</p>
+                            <h5 class="font-weight-bold d-flex align-items-center">Total Montant TTC &nbsp; : &nbsp; <span> {{ salToolsService.salRound(totaux[2]) }} </span> &nbsp; F CFA</h5>
                         </div>
                       </div>
 

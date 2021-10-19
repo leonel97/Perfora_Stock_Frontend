@@ -97,6 +97,7 @@ export class ServirBesoinComponent  implements OnInit {
     private stockerService: StockerService,
     private inventaireService: InventaireService,
     private clotureService: CloturePeriodiqService,
+    public salToolsService: SalTools,
     private fb: FormBuilder,
     private router: Router,
     private toastr: ToastrService,
@@ -905,9 +906,9 @@ export class ServirBesoinComponent  implements OnInit {
         lig.push(element2.ligneDA.article.libArticle);
         lig.push(element2.quantiteLigneAppro);
         lig.push(element2.ligneDA.uniter.libUniter);
-        lig.push(element2.puligneAppro*element2.ligneDA.uniter.poids);
+        lig.push(this.salToolsService.salRound(element2.puligneAppro*element2.ligneDA.uniter.poids));
         let ht = element2.quantiteLigneAppro*element2.puligneAppro*element2.ligneDA.uniter.poids;
-        lig.push(ht);
+        lig.push(this.salToolsService.salRound(ht));
         lignes.push(lig);
 
         totalTTC+= ht;
@@ -954,7 +955,7 @@ export class ServirBesoinComponent  implements OnInit {
         0: { fillColor: [41, 128, 185], textColor: 255, fontStyle: 'bold' },
       },
       body: [
-        ['Total TTC', totalTTC]
+        ['Total TTC', this.salToolsService.salRound(totalTTC)]
       ]
       ,
     });
@@ -966,7 +967,7 @@ export class ServirBesoinComponent  implements OnInit {
         0: { textColor: 0, fontStyle: 'bold', halign: 'left' },
       },
       body: [
-        ["Arrêté le présent Ordre de Sortie à la Somme de : "+NumberToLetter(totalTTC)+' Francs CFA']
+        ["Arrêté le présent Ordre de Sortie à la Somme de : "+this.salToolsService.salNumberToLetter(this.salToolsService.salRound(totalTTC))+' Francs CFA']
       ]
       ,
     });

@@ -33,6 +33,7 @@ import { LigneAppro } from 'src/app/models/gestion/saisie/ligneAppro.model';
 import { LigneInventaireService } from 'src/app/services/gestion/saisie/ligneInventaire.service';
 import { LigneInventaire } from 'src/app/models/gestion/saisie/ligneInventaire.model';
 import { Inventaire } from 'src/app/models/gestion/saisie/inventaire.model';
+import { SalTools } from 'src/app/utilitaires/salTools';
 
 @Component({
   selector: 'app-stock',
@@ -545,6 +546,17 @@ export class StockComponent implements OnInit {
                     ]
                     ,
                   });
+
+                  lignes.forEach((elementArrond, inde) => {
+
+                    elementArrond[3] = SalTools.salRound(elementArrond[3]);
+                    elementArrond[6] = SalTools.salRound(elementArrond[6]);
+                    elementArrond[7] = SalTools.salRound(elementArrond[7]);
+                    elementArrond[9] = SalTools.salRound(elementArrond[9]);
+
+                    lignes[inde] = elementArrond;
+                    
+                  });
     
                   autoTable(doc, {
                     theme: 'grid',
@@ -889,6 +901,14 @@ export class StockComponent implements OnInit {
 
                             lignes.push(lig);
 
+                          });
+
+                          lignes.forEach((elementArrond, inde) => {
+                            
+                            elementArrond[3] = SalTools.salRound(elementArrond[3]);
+                            elementArrond[4] = SalTools.salRound(elementArrond[4]);
+
+                            lignes[inde]
                           });
                                         
                           autoTable(doc, {

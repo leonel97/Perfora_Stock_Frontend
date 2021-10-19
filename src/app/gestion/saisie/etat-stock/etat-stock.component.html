@@ -119,7 +119,7 @@
                 CUMP
               </ng-template>
               <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
-                {{ row.concernedStocker?.cmup }}
+                {{ salToolsService.salRound(row.concernedStocker?.cmup) }}
               </ng-template>
             </ngx-datatable-column>
 
@@ -128,7 +128,7 @@
                 Montant
               </ng-template>
               <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
-                {{ row.concernedStocker?.quantiterStocker * row.concernedStocker?.cmup}}
+                {{ salToolsService.salRound(row.concernedStocker?.quantiterStocker * row.concernedStocker?.cmup)}}
               </ng-template>
             </ngx-datatable-column>
 

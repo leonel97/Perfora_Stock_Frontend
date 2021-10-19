@@ -22,6 +22,7 @@ import { ExerciceService } from 'src/app/services/gestion/fichier/exercice.servi
 import { InventaireService } from 'src/app/services/gestion/saisie/inventaire.service';
 import { LigneInventaireService } from 'src/app/services/gestion/saisie/ligneInventaire.service';
 import { AuthService } from 'src/app/services/common/auth.service';
+import { SalTools } from 'src/app/utilitaires/salTools';
 
 
 export interface modelLigneEtatStock{
@@ -73,7 +74,10 @@ export class InventaireComponent implements OnInit {
     private exerciceService: ExerciceService,
     private inventaireService: InventaireService,
     private ligneInventaireService: LigneInventaireService,
-    public authService: AuthService) { }
+    public authService: AuthService,
+    public salToolsService: SalTools,) { 
+
+    }
 
   ngOnInit(): void {
 
@@ -515,9 +519,9 @@ export class InventaireComponent implements OnInit {
         lig.push(element2.article.libArticle);
         lig.push(element2.stockTheoriq);
         lig.push(element2.stockreel);
-        lig.push(element2.pu);
+        lig.push(SalTools.salRound(element2.pu));
         lig.push(element2.stockreel - element2.stockTheoriq );
-        lig.push( (element2.stockreel*element2.pu) - (element2.stockTheoriq*element2.pu) );
+        lig.push( SalTools.salRound((element2.stockreel*element2.pu) - (element2.stockTheoriq*element2.pu)) );
         //let ht = element2.quantiteLigneReception*element2.ligneCommande.puLigneCommande;
         //lig.push(ht*(1+(element2.ligneCommande.tva/100)));
         lignes.push(lig);

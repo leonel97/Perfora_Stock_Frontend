@@ -125,6 +125,7 @@ export class EntreeArticleComponent  implements OnInit {
     private stockerService: StockerService,
     private inventaireService: InventaireService,
     private clotureService: CloturePeriodiqService,
+    public salToolsService: SalTools,
     private fb: FormBuilder,
     private router: Router,
     private toastr: ToastrService,
@@ -1248,7 +1249,7 @@ export class EntreeArticleComponent  implements OnInit {
       body: [
         ['N° Générique :', ''+(element.refBordLivraiRecept ? element.refBordLivraiRecept : '')],
         ['Ref B/L :', ''+(element.observation ? element.observation : '')],
-        
+        ['Mode :', 'Commande '+(this.isAFilleComSitisfaied(numFille) ? 'Totalement' : 'Partiellement')+' Satisfaite'],
       ]
       ,
     });
@@ -1278,7 +1279,7 @@ export class EntreeArticleComponent  implements OnInit {
         lig.push(element2.ligneCommande.puLigneCommande);
         lig.push(element2.ligneCommande.tva);
         let ht = element2.quantiteLigneReception*element2.ligneCommande.puLigneCommande;
-        lig.push(ht*(1+(element2.ligneCommande.tva/100)));
+        lig.push(this.salToolsService.salRound(ht*(1+(element2.ligneCommande.tva/100))));
         lignes.push(lig);
 
         totalHT+= ht;
@@ -1309,9 +1310,9 @@ export class EntreeArticleComponent  implements OnInit {
         0: { fillColor: [41, 128, 185], textColor: 255, fontStyle: 'bold' },
       },
       body: [
-        ['Total HT', totalHT],
-        ['Total Montant TVA', totalTVA],
-        ['Total TTC', totalTTC]
+        ['Total HT', this.salToolsService.salRound(totalHT)],
+        ['Total Montant TVA', this.salToolsService.salRound(totalTVA)],
+        ['Total TTC', this.salToolsService.salRound(totalTTC)]
       ]
       ,
     });
@@ -1323,7 +1324,7 @@ export class EntreeArticleComponent  implements OnInit {
         0: { textColor: 0, fontStyle: 'bold', halign: 'left' },
       },
       body: [
-        ["Arrêté le présent Ordre d'Entrée à la Somme de : "+NumberToLetter(totalTTC)+' Francs CFA']
+        ["Arrêté le présent Ordre d'Entrée à la Somme de : "+this.salToolsService.salNumberToLetter(this.salToolsService.salRound(totalTTC))+' Francs CFA']
       ]
       ,
     });

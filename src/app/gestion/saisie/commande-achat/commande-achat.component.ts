@@ -89,6 +89,7 @@ export class CommandeAchatComponent implements OnInit {
     private exerciceService: ExerciceService,
     private affectUniterToArticleService: AffectUniterToArticleService,
     private clotureService: CloturePeriodiqService,
+    public salToolsService: SalTools,
     private fb: FormBuilder,
     private router: Router,
     private toastr: ToastrService,
@@ -130,6 +131,8 @@ export class CommandeAchatComponent implements OnInit {
       this.getAllAffecterUniterToArticle();
       this.getAllFournisseur();
 
+     
+      
   }
 
   getAllArticle(){
@@ -776,7 +779,7 @@ export class CommandeAchatComponent implements OnInit {
         lig.push(element2.puLigneCommande);
         lig.push(element2.tva);
         let ht = element2.qteLigneCommande*element2.puLigneCommande;
-        lig.push(ht*(1+(element2.tva/100)));
+        lig.push(this.salToolsService.salRound(ht*(1+(element2.tva/100))));
         lignes.push(lig);
 
         totalHT+= ht;
@@ -806,9 +809,9 @@ export class CommandeAchatComponent implements OnInit {
         0: { fillColor: [41, 128, 185], textColor: 255, fontStyle: 'bold' },
       },
       body: [
-        ['Total HT', totalHT],
-        ['Total Montant TVA', totalTVA],
-        ['Total TTC', totalTTC]
+        ['Total HT', this.salToolsService.salRound(totalHT)],
+        ['Total Montant TVA', this.salToolsService.salRound(totalTVA)],
+        ['Total TTC', this.salToolsService.salRound(totalTTC)]
       ]
       ,
     });
@@ -820,7 +823,7 @@ export class CommandeAchatComponent implements OnInit {
         0: { textColor: 0, fontStyle: 'bold', halign: 'left' },
       },
       body: [
-        ['Arrêté le présent Bon de Commande à la somme de : '+NumberToLetter(totalTTC)+' Francs CFA']
+        ['Arrêté le présent Bon de Commande à la somme de : '+this.salToolsService.salNumberToLetter(this.salToolsService.salRound(totalTTC))+' Francs CFA']
       ]
       ,
     });

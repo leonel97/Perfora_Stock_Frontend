@@ -73,6 +73,16 @@
 
                       <ngx-datatable-column>
                         <ng-template ngx-datatable-header-template>
+                          Date de Livraison
+                        </ng-template>
+                        <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                          {{ row.commande.delaiLivraison }} Jour(s)
+                          <span *ngIf="row.commande.dateRemise"><br> Soit le {{ salToolsService.addDayToDate(row.commande.dateRemise, row.commande.delaiLivraison) | date: "dd-MM-yyyy"}}</span>
+                        </ng-template>
+                      </ngx-datatable-column>
+
+                      <ngx-datatable-column>
+                        <ng-template ngx-datatable-header-template>
                           Fournisseur
                         </ng-template>
                         <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
@@ -85,7 +95,7 @@
                           Total TTC
                         </ng-template>
                         <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
-                          {{ getTotalTtcOfACom(row) }}
+                          {{ salToolsService.salRound(getTotalTtcOfACom(row)) }}
                         </ng-template>
                       </ngx-datatable-column>
 
@@ -243,7 +253,7 @@
                                         </ng-select>
                                       </td>
                                       <td>
-                                        {{ lig.lignesCommande.puLigneCommande * lig.lignesCommande.qteLigneCommande }}
+                                        {{ salToolsService.salRound(lig.lignesCommande.puLigneCommande * lig.lignesCommande.qteLigneCommande) }}
                                       </td>
                                       <td>
                                           <input type="number" class="form-control" [(ngModel)] = "lig.lignesCommande.tva"
@@ -252,7 +262,7 @@
                                               >
                                       </td>
                                       <td>
-                                        {{ lig.lignesCommande.puLigneCommande * lig.lignesCommande.qteLigneCommande*(1+(lig.lignesCommande.tva/100)) }}
+                                        {{ salToolsService.salRound(lig.lignesCommande.puLigneCommande * lig.lignesCommande.qteLigneCommande*(1+(lig.lignesCommande.tva/100))) }}
                                       </td>
                                       <td>
                                           <button class="btn btn-outline-secondary float-right" (click)="popALigneComAcha(i)">Retirer</button>
@@ -266,9 +276,9 @@
                       <div class="col-md-12">
 
                           <div class="float-right">
-                              <p>Total Montant HT : <span> {{ totaux[0] }} </span>  F CFA</p>
-                              <p class="d-flex align-items-center">Total Montant TVA : <span> {{ totaux[1] }} </span>  F CFA</p>
-                              <h5 class="font-weight-bold d-flex align-items-center">Total Montant TTC : <span> {{ totaux[2] }} </span>  F CFA</h5>
+                              <p>Total Montant HT : <span> {{ salToolsService.salRound(totaux[0]) }} </span>  F CFA</p>
+                              <p class="d-flex align-items-center">Total Montant TVA : <span> {{ salToolsService.salRound(totaux[1]) }} </span>  F CFA</p>
+                              <h5 class="font-weight-bold d-flex align-items-center">Total Montant TTC : <span> {{ salToolsService.salRound(totaux[2]) }} </span>  F CFA</h5>
                           </div>
                       </div>
 

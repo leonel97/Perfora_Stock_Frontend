@@ -1,14 +1,53 @@
 import { ValueConverter } from '@angular/compiler/src/render3/view/template';
+import { Injectable } from '@angular/core';
 import { AbstractControl, FormGroup, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { JwtHelperService } from '@auth0/angular-jwt';
-import { Magasin } from '../models/gestion/definition/magasin.model';
 import { User } from '../models/gestion/utilisateur/user';
+import { NumberToLetter } from 'convertir-nombre-lettre';
 
+@Injectable({
+    providedIn: "root"
+  })
 export class SalTools {
     constructor() {
         
     }
 
+    public salRound(valeur: number, nbrChiffr: number = 4): number {
+        return SalTools.salRound(valeur, nbrChiffr);
+    }
+
+    public salNumberToLetter(valeur: Number): String {
+        return SalTools.salNumberToLetter(valeur);
+    }
+
+    public static salNumberToLetter(valeur: Number): String {
+        let res: String = '';
+        let valString = valeur.toString().split('.');
+        if(valString.length == 1){
+            res = NumberToLetter(Number.parseInt(valString[0]));
+        }else if(valString.length == 2){
+            res = NumberToLetter(Number.parseInt(valString[0]))+' virgule '+NumberToLetter(Number.parseInt(valString[1]));
+        }
+        //console.log('sall', valString, res);
+        return res;
+    }
+
+    public static salRound(valeur: number, nbrChiffr: number = 4): number {
+        
+        return Math.round(valeur*Math.pow(10, nbrChiffr))/Math.pow(10, nbrChiffr);
+    }
+
+    public addDayToDate(date: Date, days: number): Date{
+        
+        return SalTools.addDayToDate(date, days);
+    }
+
+    public static addDayToDate(date: Date, days: number): Date{
+        let nbr:number = 0;
+        nbr = days*24*60*60*1000;
+        return new Date(new Date(date).valueOf()+nbr);
+    }
     
     public static validatorQteArticle(): ValidatorFn {
         return (controle: AbstractControl): ValidationErrors | null => {
@@ -16,6 +55,8 @@ export class SalTools {
             return (typeof(controle.value) != 'number' || controle.value <= 0) ? { qteArticleInvalid : {value : 'Quantité invalide'}} : null;
         }
     }
+
+    
     /*
     public static validatorDateOrdre(dateRef:any, after : boolean = true): ValidatorFn{
         

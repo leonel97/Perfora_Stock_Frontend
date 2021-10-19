@@ -107,7 +107,7 @@
                           Montant Total
                         </ng-template>
                         <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
-                          {{ getTotalOfAAppro(row) }}
+                          {{ salToolsService.salRound(getTotalOfAAppro(row)) }}
                         </ng-template>
                       </ngx-datatable-column>
 
@@ -260,10 +260,10 @@
                                         {{lig.concernedStocker?.quantiterStocker}}
                                       </td>
                                       <td>
-                                        {{lig.ligneAppro.puligneAppro}}
+                                        {{salToolsService.salRound(lig.ligneAppro.puligneAppro)}}
                                       </td>
                                       <td>
-                                        {{lig.ligneAppro.puligneAppro * lig.ligneAppro.quantiteLigneAppro*lig.concernedLigneDa?.uniter.poids}}
+                                        {{salToolsService.salRound(lig.ligneAppro.puligneAppro * lig.ligneAppro.quantiteLigneAppro*lig.concernedLigneDa?.uniter.poids)}}
                                       </td>
                                       <td>
                                           <button class="btn btn-outline-secondary float-right" (click)="popALigneAppro(i)" *ngIf="!detailView">Retirer</button>
@@ -279,7 +279,7 @@
 
                         <div class="float-right">
 
-                            <h5 class="font-weight-bold d-flex align-items-center">Total Montant TTC &nbsp; : &nbsp; <span> {{ totaux[0] }} </span> &nbsp; F CFA</h5>
+                            <h5 class="font-weight-bold d-flex align-items-center">Total Montant TTC &nbsp; : &nbsp; <span> {{ salToolsService.salRound(totaux[0]) }} </span> &nbsp; F CFA</h5>
                         </div>
                     </div>
 

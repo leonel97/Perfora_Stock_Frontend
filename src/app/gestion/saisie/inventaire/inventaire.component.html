@@ -219,13 +219,13 @@
                                               placeholder="Stock Réel"  [readonly]="detailView">
                                         </td>
                                         <td>
-                                          {{ ligInventaire.pu  }}
+                                          {{ salToolsService.salRound(ligInventaire.pu)  }}
                                         </td>
                                         <td>
                                           {{ligInventaire.stockreel - ligInventaire.stockTheoriq}}
                                         </td>
                                         <td>
-                                          {{ (ligInventaire.stockreel*ligInventaire.pu) - (ligInventaire.stockTheoriq*ligInventaire.pu) }}
+                                          {{ salToolsService.salRound((ligInventaire.stockreel*ligInventaire.pu) - (ligInventaire.stockTheoriq*ligInventaire.pu)) }}
                                         </td>
                                         <td>
                                           <input type="text" class="form-control" [(ngModel)] = "ligInventaire.observation"

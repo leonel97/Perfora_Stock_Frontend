@@ -37,6 +37,7 @@ export class EtatStockComponent implements OnInit {
     private stockerService: StockerService,
     private magasinService: MagasinService,
     private articleService: ArticleService,
+    public salToolsService: SalTools,
     private fb: FormBuilder,
     private toastr: ToastrService,
     private modalService: NgbModal

@@ -31,6 +31,7 @@ export class CloturePeriodiqueComponent implements OnInit {
    }
 
   ngOnInit(): void {
+    this.resetForm();
   }
 
   getLastCloture(){
@@ -101,19 +102,19 @@ export class CloturePeriodiqueComponent implements OnInit {
         this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', centered: true})
         .result.then((result) => {
           console.log(new CloturePeriodiq(this.validateForm.value.dateDebut, this.validateForm.value.dateFin, this.exerciceService.selectedExo));
-        this.loading = true;
-        this.cloturePeriodiquService.addACloturePeriodiq(new CloturePeriodiq(this.validateForm.value.dateDebut, this.validateForm.value.dateFin, this.exerciceService.selectedExo)).subscribe(
+          this.loading = true;
+          this.cloturePeriodiquService.addACloturePeriodiq(new CloturePeriodiq(this.validateForm.value.dateDebut, this.validateForm.value.dateFin, this.exerciceService.selectedExo)).subscribe(
           (data) => {
 
             console.log(data);
             
             this.resetForm();
-            this.toastr.success('Suppression effectué avec succès.', 'Success!', { timeOut: 5000 });
+            this.toastr.success('Clôture effectuée avec succès.', 'Success!', { timeOut: 5000, progressBar: true});
             this.loading = false;
           },
           (error: HttpErrorResponse) => {
             console.log('Echec status ==> ' + error.status);
-            this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000 });
+            this.toastr.error(error.error.text, 'Erreur '+error.status+' !', { timeOut: 5000, progressBar:true});
             this.loading = false;
           });
       }, (reason) => {

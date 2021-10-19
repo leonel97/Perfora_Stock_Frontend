@@ -27,6 +27,7 @@ import { FournisseurService } from 'src/app/services/gestion/definition/fourniss
 import { LigneReceptionService } from 'src/app/services/gestion/saisie/ligne-reception.service';
 import { LigneReception } from 'src/app/models/gestion/saisie/ligneReception.model';
 import { element } from 'protractor';
+import { SalTools } from 'src/app/utilitaires/salTools';
 
 
 @Component({
@@ -314,7 +315,7 @@ export class CommandeEngagementArticleComponent implements OnInit {
                                                 lig.push(moment(element.commande.dateCommande).format('DD/MM/YYYY'));
                                                 lig.push(element.commande.description);
                                                 lig.push(element.commande.frs.codeFrs+' - '+element.commande.frs.identiteFrs);
-                                                lig.push(this.getTotalByCommandeAndLigne(element.commande, data7));
+                                                lig.push(SalTools.salRound(this.getTotalByCommandeAndLigne(element.commande, data7)));
 
                                                 lignes.push(lig);
                                               }
@@ -335,7 +336,7 @@ export class CommandeEngagementArticleComponent implements OnInit {
                                                 lig.push(moment(element.commande.dateCommande).format('DD/MM/YYYY'));
                                                 lig.push(element.commande.description);
                                                 lig.push(element.commande.frs.codeFrs+' - '+element.commande.frs.identiteFrs);
-                                                lig.push(this.getTotalByCommandeAndLigne(element.commande, data7));
+                                                lig.push(SalTools.salRound(this.getTotalByCommandeAndLigne(element.commande, data7)));
 
                                                 lignes.push(lig);
                                               }
@@ -354,7 +355,7 @@ export class CommandeEngagementArticleComponent implements OnInit {
                                                 lig.push(moment(element.commande.dateCommande).format('DD/MM/YYYY'));
                                                 lig.push(element.commande.description);
                                                 lig.push(element.commande.frs.codeFrs+' - '+element.commande.frs.identiteFrs);
-                                                lig.push(this.getTotalByCommandeAndLigne(element.commande, data7));
+                                                lig.push(SalTools.salRound(this.getTotalByCommandeAndLigne(element.commande, data7)));
 
                                                 lignes.push(lig);
                                               }
@@ -373,7 +374,7 @@ export class CommandeEngagementArticleComponent implements OnInit {
                                                 lig.push(moment(element.commande.dateCommande).format('DD/MM/YYYY'));
                                                 lig.push(element.commande.description);
                                                 lig.push(element.commande.frs.codeFrs+' - '+element.commande.frs.identiteFrs);
-                                                lig.push(this.getTotalByCommandeAndLigne(element.commande, data7));
+                                                lig.push(SalTools.salRound(this.getTotalByCommandeAndLigne(element.commande, data7)));
                                                 
                                                 lignes.push(lig);
                                               }
@@ -585,7 +586,7 @@ export class CommandeEngagementArticleComponent implements OnInit {
                                                         lig.push(moment(element.dateDemandePrix).format('DD/MM/YYYY'));
                                                         lig.push(element.designationDemandePrix);
                                                         lig.push( frs ? frs.codeFrs+' - '+frs.identiteFrs : '');
-                                                        lig.push(this.getTotalByCommandeAndLigne(fpfa.commande, data7));
+                                                        lig.push(SalTools.salRound(this.getTotalByCommandeAndLigne(fpfa.commande, data7)));
 
                                                         let lignesCom:LigneCommande[] = data7.filter((l) => l.numCommande.numCommande == fpfa.commande.numCommande);
 
@@ -603,7 +604,7 @@ export class CommandeEngagementArticleComponent implements OnInit {
                                                           dee.push(element2.puLigneCommande);
                                                           dee.push(element2.tva);
                                                           let ht = element2.qteLigneCommande*element2.puLigneCommande;
-                                                          dee.push(ht*(1+(element2.tva/100)));
+                                                          dee.push(SalTools.salRound(ht*(1+(element2.tva/100))));
                                                           totalTtc += ht*(1+(element2.tva/100));
 
                                                           let qteLivr: number = 0;
@@ -621,7 +622,7 @@ export class CommandeEngagementArticleComponent implements OnInit {
 
                                                         });
 
-                                                        deepLig.push([{ content: 'TOTAL', colSpan: 6, styles: { halign: 'center' } }, totalTtc, { content: '', colSpan: 2}]);
+                                                        deepLig.push([{ content: 'TOTAL', colSpan: 6, styles: { halign: 'center' } }, SalTools.salRound(totalTtc), { content: '', colSpan: 2}]);
                                                         
                                                         lig.push(deepLig);
                                                         
@@ -653,7 +654,7 @@ export class CommandeEngagementArticleComponent implements OnInit {
                                                     lig.push(moment(element.commande.dateCommande).format('DD/MM/YYYY'));
                                                     lig.push(element.commande.description);
                                                     lig.push(element.commande.frs.codeFrs+' - '+element.commande.frs.identiteFrs);
-                                                    lig.push(this.getTotalByCommandeAndLigne(element.commande, data7));
+                                                    lig.push(SalTools.salRound(this.getTotalByCommandeAndLigne(element.commande, data7)));
 
                                                     let lignesCom:LigneCommande[] = data7.filter((l) => l.numCommande.numCommande == element.commande.numCommande);
 
@@ -671,7 +672,7 @@ export class CommandeEngagementArticleComponent implements OnInit {
                                                       dee.push(element2.puLigneCommande);
                                                       dee.push(element2.tva);
                                                       let ht = element2.qteLigneCommande*element2.puLigneCommande;
-                                                      dee.push(ht*(1+(element2.tva/100)));
+                                                      dee.push(SalTools.salRound(ht*(1+(element2.tva/100))));
                                                       totalTtc += ht*(1+(element2.tva/100));
 
                                                       let qteLivr: number = 0;
@@ -689,7 +690,7 @@ export class CommandeEngagementArticleComponent implements OnInit {
 
                                                     });
 
-                                                    deepLig.push([{ content: 'TOTAL', colSpan: 6, styles: { halign: 'center' } }, totalTtc, { content: '', colSpan: 2}]);
+                                                    deepLig.push([{ content: 'TOTAL', colSpan: 6, styles: { halign: 'center' } }, SalTools.salRound(totalTtc), { content: '', colSpan: 2}]);
                                                     
                                                     lig.push(deepLig);
                                                     
@@ -716,7 +717,7 @@ export class CommandeEngagementArticleComponent implements OnInit {
                                                     lig.push(moment(element.commande.dateCommande).format('DD/MM/YYYY'));
                                                     lig.push(element.commande.description);
                                                     lig.push(element.commande.frs.codeFrs+' - '+element.commande.frs.identiteFrs);
-                                                    lig.push(this.getTotalByCommandeAndLigne(element.commande, data7));
+                                                    lig.push(SalTools.salRound(this.getTotalByCommandeAndLigne(element.commande, data7)));
 
                                                     let lignesCom:LigneCommande[] = data7.filter((l) => l.numCommande.numCommande == element.commande.numCommande);
 
@@ -734,7 +735,7 @@ export class CommandeEngagementArticleComponent implements OnInit {
                                                       dee.push(element2.puLigneCommande);
                                                       dee.push(element2.tva);
                                                       let ht = element2.qteLigneCommande*element2.puLigneCommande;
-                                                      dee.push(ht*(1+(element2.tva/100)));
+                                                      dee.push(SalTools.salRound(ht*(1+(element2.tva/100))));
                                                       totalTtc += ht*(1+(element2.tva/100));
 
                                                       let qteLivr: number = 0;
@@ -752,7 +753,7 @@ export class CommandeEngagementArticleComponent implements OnInit {
 
                                                     });
 
-                                                    deepLig.push([{ content: 'TOTAL', colSpan: 6, styles: { halign: 'center' } }, totalTtc, { content: '', colSpan: 2}]);
+                                                    deepLig.push([{ content: 'TOTAL', colSpan: 6, styles: { halign: 'center' } }, SalTools.salRound(totalTtc), { content: '', colSpan: 2}]);
                                                     
                                                     lig.push(deepLig);
                                                     
@@ -776,7 +777,7 @@ export class CommandeEngagementArticleComponent implements OnInit {
                                                     lig.push(moment(element.commande.dateCommande).format('DD/MM/YYYY'));
                                                     lig.push(element.commande.description);
                                                     lig.push(element.commande.frs.codeFrs+' - '+element.commande.frs.identiteFrs);
-                                                    lig.push(this.getTotalByCommandeAndLigne(element.commande, data7));
+                                                    lig.push(SalTools.salRound(this.getTotalByCommandeAndLigne(element.commande, data7)));
 
                                                     let lignesCom:LigneCommande[] = data7.filter((l) => l.numCommande.numCommande == element.commande.numCommande);
 
@@ -794,7 +795,7 @@ export class CommandeEngagementArticleComponent implements OnInit {
                                                       dee.push(element2.puLigneCommande);
                                                       dee.push(element2.tva);
                                                       let ht = element2.qteLigneCommande*element2.puLigneCommande;
-                                                      dee.push(ht*(1+(element2.tva/100)));
+                                                      dee.push(SalTools.salRound(ht*(1+(element2.tva/100))));
                                                       totalTtc += ht*(1+(element2.tva/100));
 
                                                       let qteLivr: number = 0;
@@ -812,7 +813,7 @@ export class CommandeEngagementArticleComponent implements OnInit {
 
                                                     });
 
-                                                    deepLig.push([{ content: 'TOTAL', colSpan: 6, styles: { halign: 'center' } }, totalTtc, { content: '', colSpan: 2}]);
+                                                    deepLig.push([{ content: 'TOTAL', colSpan: 6, styles: { halign: 'center' } }, SalTools.salRound(totalTtc), { content: '', colSpan: 2}]);
                                                     
                                                     lig.push(deepLig);
                                                     
@@ -836,7 +837,7 @@ export class CommandeEngagementArticleComponent implements OnInit {
                                                     lig.push(moment(element.commande.dateCommande).format('DD/MM/YYYY'));
                                                     lig.push(element.commande.description);
                                                     lig.push(element.commande.frs.codeFrs+' - '+element.commande.frs.identiteFrs);
-                                                    lig.push(this.getTotalByCommandeAndLigne(element.commande, data7));
+                                                    lig.push(SalTools.salRound(this.getTotalByCommandeAndLigne(element.commande, data7)));
 
                                                     let lignesCom:LigneCommande[] = data7.filter((l) => l.numCommande.numCommande == element.commande.numCommande);
 
@@ -854,7 +855,7 @@ export class CommandeEngagementArticleComponent implements OnInit {
                                                       dee.push(element2.puLigneCommande);
                                                       dee.push(element2.tva);
                                                       let ht = element2.qteLigneCommande*element2.puLigneCommande;
-                                                      dee.push(ht*(1+(element2.tva/100)));
+                                                      dee.push(SalTools.salRound(ht*(1+(element2.tva/100))));
                                                       totalTtc += ht*(1+(element2.tva/100));
 
                                                       let qteLivr: number = 0;
@@ -872,7 +873,7 @@ export class CommandeEngagementArticleComponent implements OnInit {
 
                                                     });
 
-                                                    deepLig.push([{ content: 'TOTAL', colSpan: 6, styles: { halign: 'center' } }, totalTtc, { content: '', colSpan: 2}]);
+                                                    deepLig.push([{ content: 'TOTAL', colSpan: 6, styles: { halign: 'center' } }, SalTools.salRound(totalTtc), { content: '', colSpan: 2}]);
                                                     
                                                     lig.push(deepLig);
                                                     
