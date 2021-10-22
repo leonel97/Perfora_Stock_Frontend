@@ -188,20 +188,20 @@ export class UserGroupComponent implements OnInit {
       (data: any) => {
 
         
-        /*console.log(data);
+        console.log(data);
         this.userGroupList.unshift(data);
-        this.userGroupFiltered = [...this.userGroupList];*/
+        this.userGroupFiltered = [...this.userGroupList];
 
         this.getAllGroupUser();
-        this.resetForm();
         this.loading = true;
         setTimeout(() => {
           this.loading = false;
+          //basculer vers la tab contenant la liste apres enregistrement
+          this.activeTabsNav = 1;
+          this.resetForm();
           this.toastr.success('Enregistrement effectué avec succès.', 'Success!', {progressBar: true});
         }, 3000);
 
-        //basculer vers la tab contenant la liste apres enregistrement
-        this.activeTabsNav = 1;
       },
       (error: HttpErrorResponse) => {
         console.log('Echec atatus ==> ' + error.status);
@@ -226,11 +226,11 @@ export class UserGroupComponent implements OnInit {
         this.loading = true;
         setTimeout(() => {
           this.loading = false;
+          //basculer vers la tab contenant la liste apres modification
+          this.activeTabsNav = 1;
+          this.resetForm();
           this.toastr.success('Enregistrement effectué avec succès.', 'Success!', {progressBar: true});
         }, 3000);
-        this.resetForm();
-        //basculer vers la tab contenant la liste apres modification
-        this.activeTabsNav = 1;
       },
       (error: HttpErrorResponse) => {
         console.log('Echec atatus ==> ' + error.status);
@@ -255,16 +255,20 @@ export class UserGroupComponent implements OnInit {
             this.userGroupList.splice(i, 1);
             this.userGroupFiltered = [...this.userGroupList];
           }
-          setTimeout(() => {
+          /*setTimeout(() => {
             this.toastr.success('Suppression effectuée avec succès.', 'Success!', {progressBar: true});
           }, 3000);
-          this.resetForm();
+          this.resetForm();*/
+          
+          this.toastr.success('Suppression effectuée avec succès.', 'Success!', {progressBar: true});
         },
         (error: HttpErrorResponse) => {
           console.log('Echec status ==> ' + error.status);
-          setTimeout(() => {
+          
+          this.toastr.error('Erreur avec le status ' + error.status, ' Erreur !', {progressBar: true});
+          /*setTimeout(() => {
             this.toastr.error('Erreur avec le status ' + error.status, ' Erreur !', {progressBar: true});
-          }, 3000);
+          }, 3000);*/
         });
     }, (reason) => {
       console.log(`Dismissed with: ${reason}`);

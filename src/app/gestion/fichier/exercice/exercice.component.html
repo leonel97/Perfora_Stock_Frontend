@@ -20,7 +20,7 @@
                 <div class="col-md-5">
                   <div class="form-group">
                     <input [formControl]="searchControl" class="form-control form-control-rounded" id="email"
-                           placeholder="Rechercher un Exercice" type="email">
+                           placeholder="Rechercher un Exercice" type="text" autocomplete="off">
                   </div>
                   
                 </div>
@@ -41,7 +41,7 @@
                       [messages]="{emptyMessage: 'Aucune donnée à afficher !!!'}"
                       [rows]="exerciceFiltered"
                       [limit]="4"
-                      class="material striped"
+                      class="material fullscreen"
                       style="height: 500px; box-shadow: none; overflow-y:visible">
 
                       
@@ -173,7 +173,7 @@
                     </div>
   
                     <div class="col-md-12">
-                      <btn-loading [loading]="loading" btnClass="btn-save">Enrégistrer</btn-loading>
+                      <btn-loading [loading]="loading" btnClass="btn-primary btn-save">Enregistrer</btn-loading>
                       <button (click)="resetForm()" class="btn m-1 ml-2 btn-cancel" type="button"> Annuler</button>
                     </div>
                   </div>
