@@ -26,16 +26,11 @@
                 <div class="col-md-12">
                   <div class="o-hidden">
                     <ngx-datatable
-                      [columnMode]="'force'"
-                      [footerHeight]="50"
-                      [headerHeight]="50"
-                      [rowHeight]="'auto'"
-                      [messages]="{emptyMessage: 'Aucune donnée à afficher !!!'}"
-                      [rows]="typeCentreConsommationFiltered"
-                      [limit]="4"
-                      class="material striped"
-                      style="height: 500px; box-shadow: none; overflow-y:visible">
-                      <ngx-datatable-column name="codeTypService">
+                    [columnMode]="'force'" [footerHeight]="50"
+                    [messages]="{emptyMessage: 'Aucune donnée à afficher!'}"
+                    [headerHeight]="50" [rowHeight]="60" [rows]="typeCentreConsommationFiltered" [scrollbarV]="true" class="material fullscreen" style="height: 500px; box-shadow: none">
+
+                      <ngx-datatable-column name="codeTypService"> 
                         <ng-template ngx-datatable-header-template>
                           Code
                         </ng-template>

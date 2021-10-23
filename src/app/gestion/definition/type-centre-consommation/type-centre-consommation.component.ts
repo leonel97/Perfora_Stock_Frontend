@@ -26,7 +26,7 @@ export class TypeCentreConsommationComponent implements OnInit {
   typeCentreConsommation: TypeCentreConsommation = null;
 
   //pour les tabs navs
-  activeTabsNav;
+  activeTabsNav = 1;
   //end
 
   constructor(
@@ -44,14 +44,15 @@ export class TypeCentreConsommationComponent implements OnInit {
     this.typeCentreConsommationService.list().subscribe(
       (data: any) => {
         this.typeCentreConsommationList = [...data];
-        this.typeCentreConsommationFiltered = this.typeCentreConsommationList.sort((a, b) => a.codeTypService.localeCompare(b.codeTypService));
+        //this.typeCentreConsommationFiltered = this.typeCentreConsommationList.sort((a, b) => a.codeTypService.localeCompare(b.codeTypService));
+        this.typeCentreConsommationFiltered = this.typeCentreConsommationList;
         console.log(this.typeCentreConsommationList);
       },
       (error: HttpErrorResponse) => {
         console.log('Echec atatus ==> ' + error.status);
       });
 
-    this.makeForm(null);
+      this.makeForm(null);
 
     this.searchControl.valueChanges
       .pipe(debounceTime(200))
@@ -65,7 +66,8 @@ export class TypeCentreConsommationComponent implements OnInit {
     if (val) {
       val = val.toLowerCase();
     } else {
-      return this.typeCentreConsommationFiltered = [...this.typeCentreConsommationList.sort((a, b) => a.codeTypService.localeCompare(b.codeTypService))];
+      //return this.typeCentreConsommationFiltered = [...this.typeCentreConsommationList.sort((a, b) => a.codeTypService.localeCompare(b.codeTypService))];
+      return this.typeCentreConsommationFiltered  = [...this.typeCentreConsommationList];
     }
 
     const columns = Object.keys(this.typeCentreConsommationList[0]);
@@ -94,7 +96,7 @@ export class TypeCentreConsommationComponent implements OnInit {
         [Validators.required]],
     });
     //cette condition permet de basculer vers la tab contenant le formulaire lors d'une modification
-    if (typeCentreConsommation?.numTypService !=null){
+    if (typeCentreConsommation?.numTypService != null){
       this.activeTabsNav = 2;
     }
   }
@@ -138,14 +140,15 @@ export class TypeCentreConsommationComponent implements OnInit {
         console.log(data);
         this.loading = true;
         this.typeCentreConsommationList.unshift(data);
-        this.typeCentreConsommationFiltered = [...this.typeCentreConsommationList.sort((a, b) => a.codeTypService.localeCompare(b.codeTypService))];
-
+        //this.typeCentreConsommationFiltered = [...this.typeCentreConsommationList.sort((a, b) => a.codeTypService.localeCompare(b.codeTypService))];
+        this.typeCentreConsommationFiltered = [...this.typeCentreConsommationList];
         setTimeout(() => {
           this.loading = false;
           this.activeTabsNav = 1;
           this.resetForm();
           this.toastr.success('Enregistrement effectué avec succès.', 'Success!', {progressBar: true});
         }, 3000);
+
       },
       (error: HttpErrorResponse) => {
         console.log('Echec atatus ==> ' + error.status);
@@ -162,13 +165,15 @@ export class TypeCentreConsommationComponent implements OnInit {
     this.typeCentreConsommationService.updateTypecentreConsommation(id, typeCentreConsommation).subscribe(
       (data: any) => {
         console.log(data);
-        this.loading = true;
+
         const i = this.typeCentreConsommationList.findIndex(l => l.numTypService == data.numTypService);
         if (i > -1) {
           this.typeCentreConsommationList[i] = data;
-          this.typeCentreConsommationFiltered = [...this.typeCentreConsommationList.sort((a, b) => a.codeTypService.localeCompare(b.codeTypService))];
+          //this.typeCentreConsommationFiltered = [...this.typeCentreConsommationList.sort((a, b) => a.codeTypService.localeCompare(b.codeTypService))];
+          this.typeCentreConsommationFiltered = [...this.typeCentreConsommationList];
         }
-        
+
+        this.loading = true;
         setTimeout(() => {
           this.loading = false;
           //basculer vers la tab contenant la liste apres modification
@@ -200,7 +205,8 @@ export class TypeCentreConsommationComponent implements OnInit {
           const i = this.typeCentreConsommationList.findIndex(l => l.numTypService == typeCentreConsommation.numTypService);
           if (i > -1) {
             this.typeCentreConsommationList.splice(i, 1);
-            this.typeCentreConsommationFiltered = [...this.typeCentreConsommationList.sort((a, b) => a.codeTypService.localeCompare(b.codeTypService))];
+           // this.typeCentreConsommationFiltered = [...this.typeCentreConsommationList.sort((a, b) => a.codeTypService.localeCompare(b.codeTypService))];
+           this.typeCentreConsommationFiltered = [...this.typeCentreConsommationList];
           }
           /*setTimeout(() => {
             this.toastr.success('Suppression effectuée avec succès.', 'Success!', {progressBar: true});
