@@ -294,7 +294,7 @@ export class UserComponent implements OnInit {
       //formData.magasins = tab2;
 
       let userObject = new User(this.validateForm.value.login, this.validateForm.value.motDePass, this.validateForm.value.nomUtilisateur, 
-        this.validateForm.value.prenomUtilisateur, true, null, true, true, this.validateForm.value.civilite, this.validateForm.value.profession,
+        this.validateForm.value.prenomUtilisateur,this.validateForm.value.activeUtilisateur, null,  this.validateForm.value.askMdp1erLance,this.validateForm.value.accesChildService, this.validateForm.value.civilite, this.validateForm.value.profession,
         this.validateForm.value.fonction, this.validateForm.value.service, tab2);
 
 

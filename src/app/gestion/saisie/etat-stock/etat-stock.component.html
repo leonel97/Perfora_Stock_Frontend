@@ -14,7 +14,7 @@
       <div class="col-md">
         <div class="form-group">
           <input [formControl]="searchControl" class="form-control form-control-rounded"
-                 placeholder="Rechercher un Article">
+                 placeholder="Rechercher un Article" type="text" autocomplete="off">
         </div>
       </div>
       <div style="margin: auto;" class="col-md">
@@ -32,7 +32,7 @@
           <div class="spinner spinner-success mr-3"></div>
         </div-->
         <div class="col-md-1" style="padding-bottom: 3%;">
-          <btn-loading [loading]="loading" btnClass="btn-save">Actualiser</btn-loading>
+          <btn-loading [loading]="loading" btnClass="btn-primary btn-save">Actualiser</btn-loading>
         </div>
         
       </form>
@@ -47,6 +47,7 @@
             [headerHeight]="50"
             [rowHeight]="'auto'"
             [rows]="ligneShowFiltered"
+            [messages]="{emptyMessage: 'Aucune donnée à afficher !!!'}"
             [limit]="6"
             class="material fullscreen"
             style="box-shadow: none; overflow-y:visible">

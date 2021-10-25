@@ -22,7 +22,7 @@
                 <div class="col-md-4">
                   <div class="form-group">
                     <input [formControl]="searchControl" class="form-control form-control-rounded" id="email"
-                           placeholder="Rechercher Article" type="email">
+                           placeholder="Rechercher Article" type="text">
                   </div>
                 </div>
                 <div class="col-md-12">
@@ -195,7 +195,7 @@
 
                   <div class="row">
                     <div class="col-md-12">
-                      <btn-loading [loading]="loading" btnClass="btn-save"  *ngIf="authService.hasAccess('def_articl_new')">Enrégistrer</btn-loading>
+                      <btn-loading [loading]="loading" btnClass="btn-primary btn-save"  *ngIf="authService.hasAccess('def_articl_new')">Enregistrer</btn-loading>
                       <button (click)="resetForm()" class="btn m-1 ml-2 btn-cancel" type="button"> Annuler</button>
                     </div>
                   </div>

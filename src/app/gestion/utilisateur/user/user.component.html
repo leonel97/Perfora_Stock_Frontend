@@ -214,7 +214,7 @@
                     </ng-select>
                   </div>
                   <div class="col-md-12">
-                    <btn-loading [loading]="loading" btnClass="btn-save" *ngIf="authService.hasAccess('param_user_new')">Enregistrer</btn-loading>
+                    <btn-loading [loading]="loading" btnClass="btn-primary btn-save" *ngIf="authService.hasAccess('param_user_new')">Enregistrer</btn-loading>
                     <button (click)="resetForm()" class="btn m-1 ml-2 btn-cancel" type="button"> Annuler</button>
                   </div>
                 </div>

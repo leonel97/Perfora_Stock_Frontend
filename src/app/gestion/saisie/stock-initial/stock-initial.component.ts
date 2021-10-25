@@ -147,17 +147,20 @@ export class StockInitialComponent implements OnInit {
     this.articleListOfMagSelected = [];
     this.articleService.getAllArticleForMagasin(numMag).subscribe(
       (data: Article[]) => {
+        this.loading = true;
         //this.magasinList = data;
         data.forEach(element => {
           element.exo = this.exerciceService.selectedExo
 
         });
 
+
         this.articleListOfMagSelected = data;
         console.log('Article for Magasin ==>');
         //console.log(data);
         console.log(this.articleListOfMagSelected);
-      
+        this.loading = false;
+        
       },
       (error: HttpErrorResponse) => {
         console.log('Echec status ==> ' + error.status);
@@ -165,7 +168,7 @@ export class StockInitialComponent implements OnInit {
     );
   }
 
-  getLignShowOfSelectedMagasin(){
+  /*getLignShowOfSelectedMagasin(){
     let arti = null;
     this.articleInitial = [];
     this.ligneShow = [];
@@ -185,9 +188,9 @@ export class StockInitialComponent implements OnInit {
                 concernedStocker : element,
               })
    
-              /*this.articleInitial.push(new Article(element.article.codeArticle,element.article.libArticle,false,false,false,
+              this.articleInitial.push(new Article(element.article.codeArticle,element.article.libArticle,false,false,false,
                 false,null,'',0,element.cmup,new Date(),'','','','',0,0,null,element.cmup,element.stockMinimal,0,
-                0,this.exerciceService.selectedExo,element.article.famille,null,null));*/
+                0,this.exerciceService.selectedExo,element.article.famille,null,null));
 
                  arti = new Article(element.article.codeArticle, element.article.libArticle, false, false, false,
                   false, null,'',0,element.cmup, new Date(),'','','','',0 ,0 ,null,element.cmup,element.stockMinimal,0,
@@ -217,7 +220,7 @@ export class StockInitialComponent implements OnInit {
     );
     
 
-  }
+  }*/
 
   //Saved stock initial
 
@@ -227,16 +230,22 @@ export class StockInitialComponent implements OnInit {
    
     this.articleService.addAListArticleForStockInit(this.articleListOfMagSelected).subscribe(
       (data) => {
+        //this.loading2 =  true;
        console.log('objet', data);
        
-        setTimeout(() => {
-          this.toastr.success('Stock Initial ajouté avec succès.', ' Success !', {progressBar: true});
-        }, 3000);
+          this.toastr.success('Stock Initial enregistré avec succès.', ' Success !', {progressBar: true});
+     
+        //Remettre le tableau d'affichage à vide
+        this.articleListOfMagSelected = [];
         
       },
       (error: HttpErrorResponse) => {
         console.log('Echec status ==> ' + error.status);
-        this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000 });
+        this.loading2 =  true;
+        setTimeout(() => {
+          this.loading2 =  false;
+          this.toastr.success( error.statusText, ' Erreur !', {progressBar: true});
+        }, 3000);
       }
     );
 

@@ -20,7 +20,7 @@
               <div class="col-md-4">
                 <div class="form-group">
                   <input [formControl]="searchControl" class="form-control form-control-rounded" id="email"
-                         placeholder="Rechercher civilité" type="email" autocomplete="off">
+                         placeholder="Rechercher civilité" type="text" autocomplete="off">
                 </div>
               </div>
               <div class="col-md-12">
@@ -50,12 +50,11 @@
                       </ng-template>
                       <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
                         <!--<strong>{{ row.code }}</strong>-->
-                        <button (click)="makeForm(row)" class="btn btn-primary m-1" type="button" ngbTooltip="Modifier" 
-                        placement="bottom" *ngIf="authService.hasAccess('param_civi_edit')">
+                        <button (click)="makeForm(row)" class="btn btn-primary m-1" type="button" title="Modifier" *ngIf="authService.hasAccess('param_civi_edit')">
                           <i class="i-Pen-5"> </i>
                         </button>
                         <button (click)="confirm(modalConfirm, row)" class="btn btn-outline-danger m-1"
-                                type="button" ngbTooltip="Supprimer" placement="bottom" *ngIf="authService.hasAccess('param_civi_delete')">
+                                type="button" title="Supprimer" *ngIf="authService.hasAccess('param_civi_delete')">
                           <i class="i-Folder-Trash"> </i>
                         </button>
                       </ng-template>
@@ -96,7 +95,7 @@
                   </div>
 
                   <div class="col-md-12">
-                    <btn-loading [loading]="loading" btnClass="btn-save" *ngIf="authService.hasAccess('param_civi_new')">Enregistrer</btn-loading>
+                    <btn-loading [loading]="loading" btnClass="btn-primary btn-save" *ngIf="authService.hasAccess('param_civi_new')">Enregistrer</btn-loading>
                     <button (click)="resetForm()" class="btn m-1 ml-2 btn-cancel" type="button"> Annuler</button>
                   </div>
                 </div>

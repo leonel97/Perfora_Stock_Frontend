@@ -20,7 +20,7 @@
                 <div class="col-md-4">
                   <div class="form-group">
                     <input [formControl]="searchControl" class="form-control form-control-rounded" id="email"
-                           placeholder="Rechercher une Nationalité" type="email">
+                           placeholder="Rechercher une Nationalité" type="text" autocomplete="off">
                   </div>
                 </div>
                 <div class="col-md-12">
@@ -97,7 +97,7 @@
                     </div>
 
                     <div class="col-md-12">
-                      <btn-loading [loading]="loading" btnClass="btn-save" *ngIf="authService.hasAccess('param_nation_new')">Enrégistrer</btn-loading>
+                      <btn-loading [loading]="loading" btnClass="btn-primary btn-save" *ngIf="authService.hasAccess('param_nation_new')">Enregistrer</btn-loading>
                       <button (click)="resetForm()" class="btn m-1 ml-2 btn-cancel" type="button"> Annuler</button>
                     </div>
                   </div>

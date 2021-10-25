@@ -5,12 +5,15 @@ import {AuthService} from "../../services/common/auth.service";
 import { User } from 'src/app/models/gestion/utilisateur/user';
 import { HttpResponse } from '@angular/common/http';
 import {JwtHelperService} from "@auth0/angular-jwt";
+import { SharedAnimations } from 'src/app/animations/shared-animations';
+
 
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
+  styleUrls: ['./login.component.css'],
+  animations: [SharedAnimations]
 })
 export class LoginComponent implements OnInit {
   loading: boolean;

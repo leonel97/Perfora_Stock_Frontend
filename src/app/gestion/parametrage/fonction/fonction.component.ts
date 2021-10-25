@@ -138,9 +138,10 @@ export class FonctionComponent implements OnInit {
         this.loading = true;
         setTimeout(() => {
           this.loading = false;
+          this.activeTabsNav = 1;
+          this.resetForm();
           this.toastr.success('Enregistrement effectué avec succès.', 'Success!', {progressBar: true});
         }, 3000);
-        this.activeTabsNav = 1;
       },
       (error: HttpErrorResponse) => {
         console.log('Echec atatus ==> '+error.status);
@@ -156,18 +157,19 @@ export class FonctionComponent implements OnInit {
     this.fonctionService.updateFonction(id, fonction).subscribe(
       (data: any) => {
         console.log(data);
+        this.loading = true;
         const i = this.fonctionList.findIndex(l => l.numFonction == data.numFonction);
         if(i > -1) {
           this.fonctionList[i]= data;
           this.fonctionFiltered = [...this.fonctionList];
         }
-        this.loading = true;
+
         setTimeout(() => {
           this.loading = false;
+          this.activeTabsNav = 1;
+          this.resetForm();
           this.toastr.success('Modification effectué avec succès.', 'Success!', {progressBar: true});
         }, 3000);
-        this.resetForm();
-        this.activeTabsNav = 1;
       },
       (error: HttpErrorResponse) => {
         console.log('Echec atatus ==> '+error.status);
@@ -192,16 +194,18 @@ export class FonctionComponent implements OnInit {
             this.fonctionList.splice(i, 1);
             this.fonctionFiltered = [...this.fonctionList];
           }
-          setTimeout(() => {
+         /* setTimeout(() => {
             this.toastr.success('Suppression effectuée avec succès.', 'Success!', {progressBar: true});
-          }, 3000);
+          }, 3000);*/
           this.resetForm();
+          this.toastr.success('Suppression effectuée avec succès.', 'Success!', {progressBar: true});
         },
         (error: HttpErrorResponse) => {
           console.log('Echec status ==> '+error.status);
-          setTimeout(() => {
+          this.toastr.error('Erreur avec le status '+error.status, ' Erreur !', {progressBar: true});
+          /*setTimeout(() => {
             this.toastr.error('Erreur avec le status '+error.status, ' Erreur !', {progressBar: true});
-          }, 3000);
+          }, 3000);*/
         });
     }, (reason) => {
       console.log(`Dismissed with: ${reason}`);

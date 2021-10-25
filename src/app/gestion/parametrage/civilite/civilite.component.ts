@@ -130,14 +130,14 @@ export class CiviliteComponent implements OnInit {
         console.log(data);
         this.civiliteList.unshift(data);
         this.civiliteFiltered = [...this.civiliteList];
-        this.resetForm();
         this.loading = true;
         setTimeout(() => {
           this.loading = false;
+          //basculer vers la tab contenant la liste apres enregistrement
+          this.activeTabsNav = 1;
+          this.resetForm();
           this.toastr.success('Enregistrement effectué avec succès.', 'Success!', {progressBar: true});
         }, 3000);
-        //basculer vers la tab contenant la liste apres enregistrement
-        this.activeTabsNav = 1;
       },
       (error: HttpErrorResponse) => {
         console.log('Echec atatus ==> '+error.status);
@@ -160,12 +160,13 @@ export class CiviliteComponent implements OnInit {
         }
         this.loading = true;
         setTimeout(() => {
-          this.toastr.success('Modification effectué avec succès.', 'Success!', {progressBar: true});
+          
           this.loading = false;
-        }, 3000);
          //basculer vers la tab contenant la liste apres enregistrement
          this.activeTabsNav = 1;
-        this.resetForm();
+         this.resetForm();
+          this.toastr.success('Modification effectué avec succès.', 'Success!', {progressBar: true});
+        }, 3000);
       },
       (error: HttpErrorResponse) => {
         console.log('Echec atatus ==> '+error.status);
@@ -190,17 +191,19 @@ export class CiviliteComponent implements OnInit {
             this.civiliteList.splice(i, 1);
             this.civiliteFiltered = [...this.civiliteList];
           }
-          setTimeout(() => {
+          /*setTimeout(() => {
             this.toastr.success('Suppression effectuée avec succès.', 'Success!', {progressBar: true});
-          }, 3000);
+          }, 3000);*/
           
           this.resetForm();
+          this.toastr.success('Suppression effectuée avec succès.', 'Success!', {progressBar: true});
         },
         (error: HttpErrorResponse) => {
           console.log('Echec atatus ==> '+error.status);
-          setTimeout(() => {
+          this.toastr.error('Erreur avec le status '+error.status, ' Erreur !', {progressBar: true});
+          /*setTimeout(() => {
             this.toastr.error('Erreur avec le status '+error.status, ' Erreur !', {progressBar: true});
-          }, 3000);
+          }, 3000);*/
         });
     }, (reason) => {
       console.log(`Dismissed with: ${reason}`);

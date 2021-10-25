@@ -51,11 +51,10 @@
                                   </ng-template>
                                   <ng-template let-rowIndex="rowIndex" let-row="row" ngx-datatable-cell-template>
                                     <!--<strong>{{ row.code }}</strong>-->
-                                    <button type="button"  class="btn btn-primary m-1" (click)="makeForm(row)"  ngbTooltip="Modifier" 
-                                    placement="bottom" *ngIf="authService.hasAccess('param_fonct_edit')">
+                                    <button type="button"  class="btn btn-primary m-1" (click)="makeForm(row)" title="Modifier" *ngIf="authService.hasAccess('param_fonct_edit')">
                                       <i class="i-Pen-5"> </i>
                                     </button>
-                                    <button type="button"  ngbTooltip="Supprimer" placement="bottom" class="btn btn-outline-danger m-1"
+                                    <button type="button"  title="Supprimer" class="btn btn-outline-danger m-1"
                                             (click)="confirm(modalConfirm, row)" *ngIf="authService.hasAccess('param_fonct_delete')">
                                       <i class="i-Folder-Trash"> </i>
                                     </button>
@@ -97,8 +96,8 @@
                               </div>
                 
                               <div class="col-md-12">
+                                <btn-loading btnClass="btn-primary btn-save"  [loading]="loading" *ngIf="authService.hasAccess('param_fonct_new')">Enregistrer</btn-loading>
                                 <button type="button" class="btn btn-secondary m-1 btn-rounded" (click)="resetForm()"> Annuler </button>
-                                <btn-loading btnClass="btn-primary btn-rounded" [loading]="loading" *ngIf="authService.hasAccess('param_fonct_new')">Enregistrer</btn-loading>
                               </div>
                             </div>
                           </form>

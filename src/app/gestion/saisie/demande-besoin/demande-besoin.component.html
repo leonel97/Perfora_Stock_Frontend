@@ -22,7 +22,7 @@
                 <div class="col-md-4">
                   <div class="form-group">
                     <input [formControl]="searchControl" class="form-control form-control-rounded" id="email"
-                           placeholder="Rechercher Demande de Besoin">
+                           placeholder="Rechercher Demande de Besoin" type="text" autocomplete="off">
                   </div>
                 </div>
                 <div class="col-md-12">
@@ -33,6 +33,7 @@
                       [headerHeight]="50"
                       [rowHeight]="'auto'"
                       [rows]="demandeApproFiltered"
+                      [messages]="{emptyMessage: 'Aucune donnée à afficher !!!'}"
                       [limit]="4"
                       class="material fullscreen"
                       style="height: 500px; box-shadow: none; overflow-y:visible">
@@ -128,7 +129,7 @@
                 <div class="d-flex mb-5" style="margin-bottom: 0;">
                   <span class="m-auto"></span>
                   <button class="btn btn-outline-secondary mr-3" (click)="resetForm()">Annuler</button>
-                  <btn-loading btnClass="btn-primary" [loading]="loading" (click)="submit()" *ngIf="authService.hasAccess('saisie_dem_bes_new')" >Enrégistrer</btn-loading>
+                  <btn-loading btnClass="btn-primary btn-save" [loading]="loading" (click)="submit()" *ngIf="authService.hasAccess('saisie_dem_bes_new')" >Enregistrer</btn-loading>
                 </div>
                 <form [formGroup]="validateForm">
                   <h4 class="font-weight-bold">Informations sur la Demande de Besoin</h4>
@@ -162,7 +163,7 @@
                     <div class="col-md form-group mb-3">
                       <label >Centre de Consommation</label>
                       <ng-select formControlName="service">
-                        <ng-option *ngFor="let serv of serviceList" [value]="serv.numService">{{serv.codeService}} - {{serv.libService}}</ng-option>
+                        <ng-option *ngFor="let serv of serviceList" [value]="serv?.numService">{{serv?.codeService}} - {{serv?.libService}}</ng-option>
                       </ng-select>
                     </div>
 

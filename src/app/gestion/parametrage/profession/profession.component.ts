@@ -131,15 +131,16 @@ export class ProfessionComponent implements OnInit {
     this.professionService.createProfession(profession).subscribe(
       (data: any) => {
         console.log(data);
+        this.loading = true;
         this.professionList.unshift(data);
         this.professionFiltered = [...this.professionList];
-        this.resetForm();
-        this.loading = true;
+
         setTimeout(() => {
           this.loading = false;
+          this.activeTabsNav = 1;
+          this.resetForm();
           this.toastr.success('Enregistrement effectué avec succès.', 'Success!', {progressBar: true});
         }, 3000);
-        this.activeTabsNav = 1;
       },
       (error: HttpErrorResponse) => {
         console.log('Echec atatus ==> '+error.status);
@@ -155,18 +156,18 @@ export class ProfessionComponent implements OnInit {
     this.professionService.updateProfession(id, profession).subscribe(
       (data: any) => {
         console.log(data);
+        this.loading = true;
         const i = this.professionList.findIndex(p => p.numProfession == data.numProfession);
         if(i > -1) {
           this.professionList[i]= data;
           this.professionFiltered = [...this.professionList];
         }
-        this.loading = true;
         setTimeout(() => {
           this.loading = false;
+          this.activeTabsNav = 1;
+          this.resetForm();
           this.toastr.success('Modification effectué avec succès.', 'Success!', {progressBar: true});
         }, 3000);
-        this.resetForm();
-        this.activeTabsNav = 1;
       },
       (error: HttpErrorResponse) => {
         console.log('Echec atatus ==> '+error.status);
@@ -191,16 +192,19 @@ export class ProfessionComponent implements OnInit {
             this.professionList.splice(i, 1);
             this.professionFiltered = [...this.professionList];
           }
-          setTimeout(() => {
+          /*setTimeout(() => {
             this.toastr.success('Suppression effectuée avec succès.', 'Success!', {progressBar: true});
-          }, 3000);
+          }, 3000);*/
           this.resetForm();
+          this.toastr.success('Suppression effectuée avec succès.', 'Success!', {progressBar: true});
         },
         (error: HttpErrorResponse) => {
           console.log('Echec atatus ==> '+error.status);
-          setTimeout(() => {
+          
+          this.toastr.error('Erreur avec le status '+error.status, ' Erreur !', {progressBar: true});
+          /*setTimeout(() => {
             this.toastr.error('Erreur avec le status '+error.status, ' Erreur !', {progressBar: true});
-          }, 3000);
+          }, 3000);*/
         });
     }, (reason) => {
       console.log(`Dismissed with: ${reason}`);
