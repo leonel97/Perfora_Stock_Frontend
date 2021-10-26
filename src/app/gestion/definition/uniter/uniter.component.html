@@ -33,7 +33,7 @@
                       [rowHeight]="'auto'"
                       [rows]="uniteFiltered"
                       [limit]="4"
-                      class="material fullscreen"
+                      class="material striped"
                       style="height: 500px; box-shadow: none; overflow-y:visible">
                       <ngx-datatable-column name="codeUniter">
                         <ng-template ngx-datatable-header-template>
@@ -72,7 +72,7 @@
             </ng-template>
           </li>
           <li [ngbNavItem]="2">
-            <a ngbNavLink>Nouvelle Unité de Comptage</a>
+            <a ngbNavLink><span *ngIf="! validateForm.value.numUniter">Nouvelle</span><span *ngIf="validateForm.value.numUniter" span>Modifier</span> Unité de Comptage</a>
             <ng-template ngbNavContent>
 
               <div class="mb-2">

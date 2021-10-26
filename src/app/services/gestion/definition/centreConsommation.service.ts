@@ -33,5 +33,8 @@ export class CentreConsommationService {
   list(): Observable<Object> {
     return this.http.get(`${this.url}/list`);
   }
+  listServiceFilleForService(codeService: String): Observable<Object> {
+    return this.http.get(`${this.url}/list-by-codeServ/${codeService}`);
+  }
 
 }

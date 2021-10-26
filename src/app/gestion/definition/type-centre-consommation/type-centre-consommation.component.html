@@ -69,7 +69,7 @@
             </ng-template>
           </li>
           <li [ngbNavItem]="2">
-            <a ngbNavLink>Nouvelle Catégorie de Centre de Consommation</a>
+            <a ngbNavLink>  <span *ngIf="! validateForm.value.numTypService">Nouvelle</span><span *ngIf="validateForm.value.numTypService" span>Modifier</span> Catégorie de Centre de Consommation</a>
             <ng-template ngbNavContent>
 
               <div class="mb-2">

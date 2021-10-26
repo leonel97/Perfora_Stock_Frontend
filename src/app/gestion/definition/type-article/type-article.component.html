@@ -22,7 +22,7 @@
                 <div class="col-md-4">
                   <div class="form-group">
                     <input [formControl]="searchControl" class="form-control form-control-rounded" id="email"
-                           placeholder="Rechercher Catégorie Article" type="email">
+                           placeholder="Rechercher Catégorie Article" type="text" autocomplete="off">
                   </div>
                 </div>
                 <div class="col-md-12">
@@ -33,6 +33,7 @@
                       [headerHeight]="50"
                       [rowHeight]="'auto'"
                       [rows]="typeArticleFiltered"
+                      [messages]="{emptyMessage: 'Aucune donnée à afficher !!!'}"
                       [limit]="4"
                       class="material fullscreen"
                       style="height: 500px; box-shadow: none; overflow-y:visible">
@@ -69,7 +70,7 @@
             </ng-template>
           </li>
           <li [ngbNavItem]="2">
-            <a ngbNavLink>Nouvelle Catégorie d'Article</a>
+            <a ngbNavLink><span *ngIf="! validateForm.value.numTypeArt">Nouvelle</span><span *ngIf="validateForm.value.numTypeArt" span>Modifier</span> Catégorie d'Article</a>
             <ng-template ngbNavContent>
 
               <div class="mb-2">
@@ -98,7 +99,7 @@
                     </div>
 
                     <div class="col-md-12">
-                      <btn-loading [loading]="loading" btnClass="btn-save" *ngIf="authService.hasAccess('def_categ_art_new')">Enrégistrer</btn-loading>
+                      <btn-loading [loading]="loading" btnClass="btn-primary btn-save" *ngIf="authService.hasAccess('def_categ_art_new')">Enregistrer</btn-loading>
                       <button (click)="resetForm()" class="btn m-1 ml-2 btn-cancel" type="button"> Annuler</button>
                     </div>
                   </div>

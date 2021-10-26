@@ -229,7 +229,7 @@ export class UserGroupComponent implements OnInit {
           //basculer vers la tab contenant la liste apres modification
           this.activeTabsNav = 1;
           this.resetForm();
-          this.toastr.success('Enregistrement effectué avec succès.', 'Success!', {progressBar: true});
+          this.toastr.success('Modification effectuée avec succès.', 'Success!', {progressBar: true});
         }, 3000);
       },
       (error: HttpErrorResponse) => {

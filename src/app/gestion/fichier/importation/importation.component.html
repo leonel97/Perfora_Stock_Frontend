@@ -17,16 +17,16 @@
               <div class="row" style="min-height: 300px;">
                 <div class="col-md-5 form-group mb-3">
                   <label >Eléments</label>
-                  <ng-select tabindex="0" formControlName="rep1Element">
-                    <ng-option [value]="0">Directions</ng-option>
-                    <ng-option [value]="1">Types de Centre de Consommation</ng-option>
+                  <ng-select tabindex="1" formControlName="rep1Element">
+                    <!--ng-option [value]="0">Directions</ng-option-->
+                    <ng-option [value]="1">Catégorie de Centre de Consommation</ng-option>
                     <ng-option [value]="2">Centres de Consommation</ng-option>
                     <ng-option [value]="3">Magasins</ng-option>
                     <ng-option [value]="4">Familles d'Article</ng-option>
-                    <ng-option [value]="5">Types d'Article</ng-option>
+                    <ng-option [value]="5">Catégorie d'Article</ng-option>
                     <ng-option [value]="6">Articles</ng-option>
-                    <ng-option [value]="7">Types de Fournisseur</ng-option>
-                    <ng-option [value]="8">Fournisseurs</ng-option>
+                    <!--ng-option [value]="7">Types de Fournisseur</ng-option-->
+                    <!--ng-option [value]="8">Fournisseurs</ng-option-->
                     <ng-option [value]="9">Unités de Comptage</ng-option>
                   </ng-select>
                 </div>
@@ -45,7 +45,7 @@
                   -->
                   
                   <btn-loading btnClass="btn-primary"  ngbAutofocus [loading]="loading">Importer</btn-loading>
-                  <button class="btn m-1 ml-2 btn-cancel" type="button" [disabled]="!this.file"
+                  <button class="btn m-1 ml-2 btn-cancel" type="button" 
                   (click)="showFileContent(modalLong)"> Afficher</button>
                 </div>
               </div>

@@ -205,11 +205,11 @@ export class CauseAnnomalieComponent implements OnInit {
             this.toastr.success('Suppression effectuée avec succès.', 'Success!', {progressBar: true});
           }, 3000);*/
           this.resetForm();
-          this.toastr.success('Suppression effectué avec succès.', 'Success!', { timeOut: 5000 });
+          this.toastr.success('Suppression effectuée avec succès.', 'Success!', {progressBar: true});
         },
         (error: HttpErrorResponse) => {
           console.log('Echec status ==> ' + error.status);
-          this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000 });
+          this.toastr.error('Erreur avec le status '+error.status, ' Erreur !', {progressBar: true});
           /*setTimeout(() => {
             this.toastr.error('Erreur avec le status ' + error.status, ' Erreur !', {progressBar: true});
           }, 3000);*/

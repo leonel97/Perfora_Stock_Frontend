@@ -29,6 +29,7 @@ export class CentreConsommationComponent implements OnInit {
 
   validateForm: FormGroup;
   centreConsommationList: CentreConsommation[] = [];
+  centreConsommationFilleList: CentreConsommation[] = [];
   typeCentreConsommationList: TypeCentreConsommation[] = [];
   directionList: Direction[] = [];
   loading: boolean;
@@ -51,6 +52,8 @@ export class CentreConsommationComponent implements OnInit {
   }
 
   ngOnInit(): void {
+
+
 
     //list des directions
     this.directionService.list().subscribe(
@@ -252,5 +255,40 @@ export class CentreConsommationComponent implements OnInit {
       console.log(`Dismissed with: ${reason}`);
     });
   }
+
+  // modal add menu to groupe
+addMenuToGroup(contentfille, centreConso) {
+  //this.activeTabsNav= 3;
+  //this.userGroup = userGroup;
+  
+  //console.log('id group', this.userGroup.id);
+
+    //this.listMenuOfGroup(this.userGroup?.id);
+    //this.listMenuNotOfGroup(this.userGroup?.id);
+    this.centreConsommationFilleList = [];
+
+    
+    this.centreConsommationService.listServiceFilleForService(centreConso).subscribe(
+      (data: CentreConsommation[]) => {
+        console.log('Service Fille ==>');
+        console.log(data);
+        this.centreConsommationFilleList = data;
+        
+      },
+      (error: HttpErrorResponse) => {
+        console.log('Echec atatus ==> '+error.status);
+      });
+
+  
+  this.modalService.open(contentfille, {ariaLabelledBy: 'modal-basic-title', centered: true})
+    .result.then((result) => {
+    
+      
+  
+  }, (reason) => {
+    console.log(`Dismissed with: ${reason}`);
+    //this.resetFormMenu();
+  });
+}
 
 }

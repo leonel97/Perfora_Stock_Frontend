@@ -21,7 +21,7 @@
                 <div class="col-md-4">
                   <div class="form-group">
                     <input [formControl]="searchControl" class="form-control form-control-rounded" id="email"
-                           placeholder="Rechercher Magasin" type="email">
+                           placeholder="Rechercher une famille" type="text" autocomplete="off">
                   </div>
                 </div>
                 <div class="col-md-12">
@@ -32,6 +32,7 @@
                       [headerHeight]="50"
                       [rowHeight]="'auto'"
                       [rows]="familleFiltered"
+                      [messages]="{emptyMessage: 'Aucune donnée à afficher !!!'}"
                       [limit]="4"
                       class="material fullscreen"
                       style="height: 500px; box-shadow: none; overflow-y:visible">
@@ -67,12 +68,11 @@
                         </ng-template>
                         <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
                           <!--<strong>{{ row.code }}</strong>-->
-                          <button (click)="makeForm(row)" class="btn btn-primary m-1 btn-sm" ngbTooltip="Modifier" 
-                          placement="bottom" type="button" *ngIf="authService.hasAccess('def_fami_art_edit')">
+                          <button (click)="makeForm(row)" class="btn btn-primary m-1 btn-sm" title="Modifier" type="button" *ngIf="authService.hasAccess('def_fami_art_edit')">
                             <i class="i-Pen-5"> </i>
                           </button>
                           <button (click)="confirm(modalConfirm, row)" class="btn btn-outline-danger m-1 btn-sm"
-                                  type="button" ngbTooltip="Supprimer" placement="bottom" *ngIf="authService.hasAccess('def_fami_art_delete')">
+                                  type="button" title="Supprimer" *ngIf="authService.hasAccess('def_fami_art_delete')">
                             <i class="i-Folder-Trash"> </i>
                           </button>
                         </ng-template>
@@ -84,7 +84,7 @@
             </ng-template>
           </li>
           <li [ngbNavItem]="2">
-            <a ngbNavLink>Nouvelle Famille d'Article</a>
+            <a ngbNavLink> <span *ngIf="! validateForm.value.numFamille">Nouvelle</span><span *ngIf="validateForm.value.numFamille" span>Modifier</span> Famille d'Article</a>
             <ng-template ngbNavContent>
 
               <div class="mb-2">
@@ -125,7 +125,7 @@
                   </div>
                   <div class="row">
                     <div class="col-md-12">
-                      <btn-loading [loading]="loading" btnClass="btn-save" *ngIf="authService.hasAccess('def_fami_art_new')">Enrégistrer</btn-loading>
+                      <btn-loading [loading]="loading" btnClass="btn-primary btn-save" *ngIf="authService.hasAccess('def_fami_art_new')">Enregistrer</btn-loading>
                       <button (click)="resetForm()" class="btn m-1 ml-2 btn-cancel" type="button"> Annuler</button>
                     </div>
                   </div>

@@ -55,7 +55,7 @@ export class ImportationComponent implements OnInit {
     public authService: AuthService
     ) {
     this.repport1FormsGroup = this.formBulder.group({
-      rep1Element:0,
+      rep1Element:1,
       rep1File:''
     });
    }

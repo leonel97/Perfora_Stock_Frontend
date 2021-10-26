@@ -138,15 +138,21 @@ export class TypeArticleComponent implements OnInit {
         this.loading = true;
         this.typeArticleList.unshift(data);
         this.typeArticleFiltered = [...this.typeArticleList.sort((a, b) => a.codeTypeArt.localeCompare(b.codeTypeArt.valueOf()))];
-        this.resetForm();
-        this.toastr.success('Enregistrement effectué avec succès.', 'Success', { timeOut: 5000 });
-        this.loading = false;
-        //basculer vers la tab contenant la liste apres modification
-        this.activeTabsNav = 1;
+
+        setTimeout(() => {
+          this.loading = false;
+          this.activeTabsNav = 1;
+          this.resetForm();
+          this.toastr.success('Enregistrement effectué avec succès.', 'Success!', {progressBar: true});
+        }, 3000);
       },
       (error: HttpErrorResponse) => {
         console.log('Echec atatus ==> ' + error.status);
-        this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000 });
+        this.loading = true;
+        setTimeout(() => {
+          this.loading = false;
+          this.toastr.error('Erreur avec le status '+error.status, ' Erreur !', {progressBar: true});
+        }, 3000);
 
       });
   }
@@ -162,17 +168,20 @@ export class TypeArticleComponent implements OnInit {
           this.typeArticleFiltered = [...this.typeArticleList.sort((a, b) => a.codeTypeArt.localeCompare(b.codeTypeArt.valueOf()))];
         }
 
-        this.resetForm();
-        this.toastr.success('Modification effectué avec succès.', 'Success', { timeOut: 5000 });
-
-        //basculer vers la tab contenant la liste apres modification
-        this.loading = false;
-        this.activeTabsNav = 1;
+        setTimeout(() => {
+          this.loading = false;
+          this.activeTabsNav = 1;
+          this.resetForm();
+          this.toastr.success('Modification effectué avec succès.', 'Success', { timeOut: 5000 });
+        }, 3000);
       },
       (error: HttpErrorResponse) => {
         console.log('Echec atatus ==> ' + error.status);
-
-        this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000 });
+        this.loading = true;
+        setTimeout(() => {
+          this.loading = false;
+          this.toastr.error('Erreur avec le status '+error.status, ' Erreur !', {progressBar: true});
+        }, 3000);
 
       });
   }
@@ -194,11 +203,11 @@ export class TypeArticleComponent implements OnInit {
             this.toastr.success('Suppression effectuée avec succès.', 'Success!', {progressBar: true});
           }, 3000);*/
           this.resetForm();
-          this.toastr.success('Suppression effectué avec succès.', 'Success!', { timeOut: 5000 });
+          this.toastr.success('Suppression effectuée avec succès.', 'Success!', {progressBar: true});
         },
         (error: HttpErrorResponse) => {
           console.log('Echec status ==> ' + error.status);
-          this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000 });
+          this.toastr.error('Erreur avec le status ' + error.status, ' Erreur !', {progressBar: true});
           /*setTimeout(() => {
             this.toastr.error('Erreur avec le status ' + error.status, ' Erreur !', {progressBar: true});
           }, 3000);*/

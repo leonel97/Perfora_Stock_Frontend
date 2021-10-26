@@ -168,7 +168,7 @@ export class StockInitialComponent implements OnInit {
     );
   }
 
-  /*getLignShowOfSelectedMagasin(){
+  getLignShowOfSelectedMagasin(){
     let arti = null;
     this.articleInitial = [];
     this.ligneShow = [];
@@ -220,7 +220,7 @@ export class StockInitialComponent implements OnInit {
     );
     
 
-  }*/
+  }
 
   //Saved stock initial
 

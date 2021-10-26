@@ -32,6 +32,7 @@
                       [headerHeight]="50"
                       [rowHeight]="'auto'"
                       [rows]="magasinFiltered"
+                      [messages]="{emptyMessage: 'Aucune donnée à afficher !!!'}"
                       [limit]="4"
                       class="material fullscreen"
                       style="height: 500px; box-shadow: none; overflow-y:visible">
@@ -79,7 +80,7 @@
             </ng-template>
           </li>
           <li [ngbNavItem]="2">
-            <a ngbNavLink>Nouveau Magasin</a>
+            <a ngbNavLink> <span *ngIf="! validateForm.value.numMagasin">Nouveau</span><span *ngIf="validateForm.value.numMagasin" span>Modifier</span> Magasin</a>
             <ng-template ngbNavContent>
 
               <div class="mb-2">

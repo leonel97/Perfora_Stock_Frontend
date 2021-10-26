@@ -67,7 +67,7 @@
             </ng-template>
           </li>
           <li [ngbNavItem]="2">
-            <a ngbNavLink>Nouvelle Cause & Anomalie</a>
+            <a ngbNavLink><span *ngIf="! validateForm.value.numCauseAno">Nouvelle</span><span *ngIf="validateForm.value.numCauseAno" span>Modifier</span> Cause & Anomalie</a>
             <ng-template ngbNavContent>
 
               <div class="mb-2">

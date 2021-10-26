@@ -81,13 +81,17 @@
                         </ng-template>
                         <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
                           <!--<strong>{{ row.code }}</strong>-->
-                          <button (click)="makeForm(row)" class="btn btn-primary m-1 btn-sm" ngbTooltip="Modifier" placement="bottom" type="button"  *ngIf="authService.hasAccess('def_centr_cons_edit')">
+                          <button (click)="makeForm(row)" class="btn btn-primary m-1 " title="Modifier" type="button"  *ngIf="authService.hasAccess('def_centr_cons_edit')">
                             <i class="i-Pen-5"> </i>
                           </button>
-                          <button (click)="confirm(modalConfirm, row)" class="btn btn-outline-danger m-1 btn-sm"
-                                  type="button" ngbTooltip="Supprimer" placement="bottom"  *ngIf="authService.hasAccess('def_centr_cons_delete')">
+                          <button (click)="confirm(modalConfirm, row)" class="btn btn-outline-danger m-1 "
+                                  type="button" title="Supprimer"  *ngIf="authService.hasAccess('def_centr_cons_delete')">
                             <i class="i-Folder-Trash"> </i>
                           </button>
+                          <button (click)="addMenuToGroup(modalMenu, row.codeService)" title="Sous centre de consommation"
+                          class="btn btn-outline-secondary m-1" type="button">
+                          <i class="i-Gears"> </i>
+                        </button>
                         </ng-template>
                       </ngx-datatable-column>
                     </ngx-datatable>
@@ -97,7 +101,7 @@
             </ng-template>
           </li>
           <li [ngbNavItem]="2">
-            <a ngbNavLink>Nouveau centre de consommation</a>
+            <a ngbNavLink> <span *ngIf="! validateForm.value.numService">Nouveau</span><span *ngIf="validateForm.value.numService" span>Modifier</span> centre de consommation</a>
             <ng-template ngbNavContent>
 
               <div class="mb-2">
@@ -180,7 +184,7 @@
 
   </div>
 
-
+  
   <ng-template #modalConfirm let-modal>
     <div class="modal-header">
       <h4 class="modal-title" id="modal-title">Suppression</h4>
@@ -203,3 +207,61 @@
       </button>
     </div>
   </ng-template>
+
+
+
+<!--Modal liste audience by programmeId-->
+<ng-template #modalMenu let-modal>
+  <div class="modal-header">
+      <h4 class="modal-title" id="modal-title">Liste des sous centre de consommation</h4>
+      <button type="button" class="close" aria-label="Close button" aria-describedby="modal-title" (click)="modal.dismiss('Cross click')">
+      <span aria-hidden="true">&times;</span> 
+    </button>
+  </div>
+  <div class="row">
+  <!--div class="modal-body"-->
+    
+      <div class="col-md-12">
+          <div class="o-hidden">
+              <ngx-datatable 
+             
+              [columnMode]="'flex'"
+              [footerHeight]="60"
+              [headerHeight]="60"
+              [rowHeight]="'auto'"
+              [messages]="{emptyMessage: 'Aucune donnée à afficher !!!'}"
+              [rows]="centreConsommationFilleList"
+              [limit]="4"
+              style="height: 500px; box-shadow: none; overflow-y:visible;"
+              class="material fullscreen">
+                  
+                  <ngx-datatable-column >
+                      <ng-template ngx-datatable-header-template>
+                          <span class="font-weight-bold text-14">Code</span>
+                      </ng-template>
+                      <ng-template let-rowIndex="rowIndex" let-row="row" ngx-datatable-cell-template>
+                          <strong>{{ row.codeService}}</strong>
+                      </ng-template>
+                  </ngx-datatable-column>
+                 
+                  <ngx-datatable-column >
+                      <ng-template ngx-datatable-header-template>
+                          <span class="font-weight-bold text-14">Libellé</span>
+                      </ng-template>
+                      <ng-template let-rowIndex="rowIndex" let-row="row" ngx-datatable-cell-template>
+                          <strong>{{ row.libService }}</strong>
+                     
+                      </ng-template>
+                  </ngx-datatable-column>
+              </ngx-datatable>
+          </div>
+    </div>
+     
+  <!--/div-->
+</div>
+  <div class="modal-footer">
+      <button type="button" class="btn m-1 ml-2 btn-cancel" (click)="modal.dismiss('cancel')">Fermer</button>
+      <!--button type="button" ngbAutofocus class="btn btn-danger btn-rounded" (click)="modal.close('Ok')">Ok</button-->
+  </div>
+</ng-template>
+

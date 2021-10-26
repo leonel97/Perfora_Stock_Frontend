@@ -90,7 +90,7 @@
             </ng-template>
           </li>
           <li [ngbNavItem]="2">
-            <a ngbNavLink>Nouveau Fournisseur</a>
+            <a ngbNavLink><span *ngIf="! validateForm.value.numFournisseur">Nouveau</span><span *ngIf="validateForm.value.numFournisseur" span>Modifier</span> Fournisseur</a>
             <ng-template ngbNavContent>
 
               <div class="mb-2">

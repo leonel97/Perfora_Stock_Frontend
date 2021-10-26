@@ -68,7 +68,7 @@
             </ng-template>
           </li>
           <li [ngbNavItem]="2">
-            <a ngbNavLink>Nouvelle Nationalité</a>
+            <a ngbNavLink><span *ngIf="! validateForm.value.numCatFrs">Nouvelle</span><span *ngIf="validateForm.value.numCatFrs" span>Modifier</span> Nationalité</a>
             <ng-template ngbNavContent>
 
               <div class="mb-2">
