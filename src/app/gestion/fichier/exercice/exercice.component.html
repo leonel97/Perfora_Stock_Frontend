@@ -26,9 +26,15 @@
                 </div>
                 <div class="col-md-5"></div>
                   <div class="col-md-1.5">
-                    <button type="button" (click)="gererClotureExercice(modalCloture)" [disabled]="disabledBtnCloturer"  class="btn btn-primary btn-block m-1" 
+                    <button type="button" (click)="gererClotureExercice(modalCloture)" [disabled]="disabledBtnCloturer"  class="btn btn-primary mr-3" 
                     *ngIf="authService.hasAccess('fichier_exo_close')" >
                       Clôturer</button>
+                  </div>
+                  <div class="col-md-1.5">
+                    <button type="button" (click)="gererDeclotureExercice(modalDecloture)" [disabled]="disabledBtnDecloturer"  class="btn btn-primary" 
+                    *ngIf="authService.hasAccess('fichier_exo_close')" >
+                      Déclôturer</button>
+                    
                   </div>
 
                 <div class="col-md-12">
@@ -240,4 +246,29 @@
     </div>
     </form>
   </ng-template>
+
+   <!--Modal décloturer exercice-->
+<ng-template #modalDecloture let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-title">Déclôturer un exercice</h4>
+    <button (click)="modal.dismiss('Cross click')" aria-describedby="modal-title" aria-label="Close button"
+            class="close"
+            type="button">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <form (ngSubmit)="submitDecloturerExercice()">
+      <div class="modal-body">
+          <p>
+            <strong>Confirmez-vous la Déclôture de l'
+              <span class="text-primary"> {{ activeExercice?.libExercice }}</span> ?</strong></p>
+          <p><strong>Cette action est irréversible ...</strong></p>
+        </div>
+  <div class="modal-footer">
+    <button (click)="modal.dismiss('cancel')" class="btn btn-outline-secondary" type="button">Annuler
+    </button>
+    <btn-loading [loading]="loading" btnClass="btn-save" (click)="modal.close('Ok')" ngbAutofocus>Déclôturer</btn-loading>
+  </div>
+  </form>
+</ng-template>
   

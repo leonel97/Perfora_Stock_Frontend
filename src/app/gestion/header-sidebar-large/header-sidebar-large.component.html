@@ -86,7 +86,7 @@
           <div class="dropright dropdown-submenu" >
               <button class="dropdown-item dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#">Consommations Internes</button>
               <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                      <button class="dropdown-item" routerLink="/gestion/saisie/conso-interne-demande-besoin" *ngIf="auth.hasAccess('saisie_dem_bes')" >Demande de Bésoin ( Expression de Bésoin )</button>
+                      <button class="dropdown-item" routerLink="/gestion/saisie/conso-interne-demande-besoin" *ngIf="auth.hasAccess('saisie_dem_bes')" >Demande ( Expression de Bésoin )</button>
                       <button class="dropdown-item" routerLink="/gestion/saisie/conso-interne-servir-besoin" *ngIf="auth.hasAccess('saisie_servir')" >Servir</button>
               </div>
           </div>
@@ -198,7 +198,12 @@
     </div>
 
     <div ngbDropdown [placement]="'bottom-right'" class="user col align-self-end">
-
+      
+      <table style="display:inline-block; text-align: center;margin-right:50px;">
+        <tr>
+          <td>{{userConnected.nomUtilisateur}} {{userConnected.prenomUtilisateur}}  </td>
+        </tr>
+      </table>
       
 
         <img src="./assets/images/faces/iconHommeNoir.jpg" id="userDropdown" ngbDropdownToggle alt="">

@@ -22,7 +22,7 @@
                 <div class="col-md-4">
                   <div class="form-group">
                     <input [formControl]="searchControl" class="form-control form-control-rounded" id="email"
-                           placeholder="Rechercher Commande Achat" type="text" autocomplete="off">
+                           placeholder="Rechercher Commande Achat">
                   </div>
                 </div>
                 <div class="col-md-12">
@@ -33,7 +33,6 @@
                       [headerHeight]="50"
                       [rowHeight]="'auto'"
                       [rows]="commandeAchatFiltered"
-                      [messages]="{emptyMessage: 'Aucune donnée à afficher !!!'}"
                       [limit]="4"
                       class="material fullscreen"
                       style="height: 500px; box-shadow: none; overflow-y:visible">
@@ -144,8 +143,9 @@
               <div class="mb-2">
                 <div class="d-flex mb-5" style="margin-bottom: 0;">
                   <span class="m-auto"></span>
-                  <button class="btn btn-outline-secondary mr-3" (click)="resetForm()">Annuler</button>
-                  <btn-loading btnClass="btn-primary btn-save" [loading]="loading" (click)="submit()" *ngIf="authService.hasAccess('saisie_ca_new')">Enregistrer</btn-loading>
+                  <btn-loading btnClass="btn-primary mr-3" [loading]="loading" (click)="submit()" *ngIf="authService.hasAccess('saisie_ca_new')">Enrégistrer</btn-loading>
+                  <button class="btn btn-outline-secondary" (click)="resetForm()">Annuler</button>
+                  
                 </div>
                 <form [formGroup]="validateForm">
                   <h4 class="font-weight-bold">Informations sur la Commande Achat</h4>
@@ -158,7 +158,7 @@
                           </div>
                       </div>
                       <div class="col-md form-group mb-3">
-                        <label for="picker1">Date</label>
+                        <label for="picker1">Date de commande</label>
                         <div class="input-group">
                             <input formControlName="dateCommande" id="picker1" class="form-control text-right" type="date"
                                 >
@@ -169,7 +169,7 @@
                         <div class="col-md form-group" >
                             <label for="orderNo">Délais de Livraison (en jours)</label>
                             <input formControlName="delaiLivraison" type="number" class="form-control"
-                                placeholder="Numéro">
+                                placeholder="Délais de Livraison">
                         </div>
                       </div>
                       <div class="col-md form-group mb-3">
@@ -185,7 +185,7 @@
                     <div class="col-md form-group">
                       <label for="orderNo">Références</label>
                       <input formControlName="description" type="text" class="form-control"
-                          placeholder="Numéro">
+                          placeholder="Références">
 
                     </div>
                     <div class="col-md form-group mb-3">
@@ -266,7 +266,7 @@
                                         {{ salToolsService.salRound(lig.lignesCommande.puLigneCommande * lig.lignesCommande.qteLigneCommande*(1+(lig.lignesCommande.tva/100))) }}
                                       </td>
                                       <td>
-                                          <button class="btn btn-outline-secondary float-right" (click)="popALigneComAcha(i)">Retirer</button>
+                                          <button class="btn btn-outline-secondary float-right" (click)="modalPopALigneComAcha(i, modalConfirmDelLig)">Retirer</button>
                                       </td>
                                   </tr>
                               </tbody>
@@ -454,3 +454,25 @@
   </div>
 </ng-template>
 
+<ng-template #modalConfirmDelLig let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-title">Suppression</h4>
+    <button (click)="modal.dismiss('Cross click')" aria-describedby="modal-title" aria-label="Close button"
+            class="close"
+            type="button">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <p>
+      <strong>Confirmez-vous le retrait de la ligne d'article
+        <span class="text-primary">{{ ligneCom.article.codeArticle }} - {{ ligneCom.article.libArticle }}</span> ?</strong></p>
+  </div>
+  <div class="modal-footer">
+    <button (click)="modal.dismiss('cancel')" class="btn btn-outline-secondary btn-rounded" type="button">Annuler
+    </button>
+    <button (click)="modal.close('Ok')" class="btn btn-danger btn-rounded" ngbAutofocus
+            type="button">Confirmer
+    </button>
+  </div>
+</ng-template>

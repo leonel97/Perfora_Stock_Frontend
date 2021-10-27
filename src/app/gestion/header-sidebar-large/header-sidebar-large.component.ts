@@ -11,6 +11,7 @@ import {LocalStoreService} from "../../services/common/local-store.service";
 
 import {Exercice} from "../../models/gestion/fichier/exercice";
 import {ExerciceService} from "../../services/gestion/fichier/exercice.service";
+import { JwtHelperService } from '@auth0/angular-jwt';
 
 @Component({
   selector: 'app-header-sidebar-large',
@@ -20,6 +21,7 @@ import {ExerciceService} from "../../services/gestion/fichier/exercice.service";
 export class HeaderSidebarLargeComponent implements OnInit {
 
   exerciceFiltered;
+  userConnected;
   
   exerciceList: Exercice[] = [];
 
@@ -92,6 +94,14 @@ export class HeaderSidebarLargeComponent implements OnInit {
       (error: HttpErrorResponse) => {
         console.log('Echec atatus ==> ' + error.status);
       });
+
+      let token = localStorage.getItem('token');
+      const helper = new JwtHelperService();
+      const decodedToken = helper.decodeToken(token);
+
+      console.log('user profil', decodedToken.user);
+
+       this.userConnected = decodedToken.user;
   }
 
   toggelSidebar() {

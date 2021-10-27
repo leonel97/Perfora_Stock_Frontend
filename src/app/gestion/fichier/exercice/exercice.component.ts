@@ -21,10 +21,11 @@ export class ExerciceComponent implements OnInit {
   validateForm: FormGroup;
   exerciceList: Exercice[] = [];
   loading: boolean;
-  exoCloture: boolean = false ;
+  //exoCloture: boolean = false ;
   exercice: Exercice = null;
 
   disabledBtnCloturer: boolean;
+  disabledBtnDecloturer: boolean;
 
   activeExercice: Exercice = null;
 
@@ -52,6 +53,7 @@ export class ExerciceComponent implements OnInit {
     console.log('user Details1', 210);*/
 
     this.disabledBtnCloturer = true;
+    this.disabledBtnDecloturer = true;
 
     this.exerciceService.list().subscribe(
       (data: any) => {
@@ -105,12 +107,14 @@ export class ExerciceComponent implements OnInit {
 
       if (this.activeExercice.cloturerExo == true){
         this.disabledBtnCloturer = true;
+        this.disabledBtnDecloturer = false;
         console.log("exoCl",exo);
         this.exerciceService.selectedExo = exo;
        
       }
       else{
         this.disabledBtnCloturer = false;
+        this.disabledBtnDecloturer = true;
         console.log("exoCl",exo);
         this.exerciceService.selectedExo = exo;
 
@@ -126,6 +130,7 @@ export class ExerciceComponent implements OnInit {
    
     } else {
       this.disabledBtnCloturer = true;
+      this.disabledBtnDecloturer = true;
       this.activeExercice = null;
     }
   }
@@ -134,14 +139,30 @@ export class ExerciceComponent implements OnInit {
   gererClotureExercice(contentCloture){
     if (this.activeExercice !== null){
       console.log(' Exercice active est ===>', this.activeExercice);
-      //let new_progressionDossier = new ProgressionDossier();
-     // this.makeFormProgressionDossier(new_progressionDossier);
     }
     else {
       console.log('Aucun exercice selectionner');
     }
 
     this.modalService.open(contentCloture, { ariaLabelledBy: 'modal-basic-title', centered: true })
+      .result.then((result) => {
+
+    }, (reason) => {
+      console.log(`Dismissed with: ${reason}`);
+    });
+
+  }
+
+  //show modal decloturer exercice
+  gererDeclotureExercice(contentDecloture){
+    if (this.activeExercice !== null){
+      console.log(' Exercice active est ===>', this.activeExercice);
+    }
+    else {
+      console.log('Aucun exercice selectionner');
+    }
+
+    this.modalService.open(contentDecloture, { ariaLabelledBy: 'modal-basic-title', centered: true })
       .result.then((result) => {
 
     }, (reason) => {
@@ -193,19 +214,21 @@ export class ExerciceComponent implements OnInit {
         console.log("data", formData);
       
         // verification d'un exerce non cloturé lors de la création d'un noouveau exercice
-        this.exerciceFiltered.forEach(element => {
+        /*this.exerciceFiltered.forEach(element => {
           if(element.cloturerExo == false)
           {
             this.exoCloture = true;
           }
           
-        });
-        if ( this.exoCloture == true ){
+        });*/
+       /* if ( this.exoCloture == true ){
           this.toastr.error('Veuillez clôturez l\'exercice encours.', ' Attention !', {progressBar: true});
         }
         else{
           this.enregistrerExercice(formData);
-        }
+        }*/
+        
+        this.enregistrerExercice(formData);
       } else {
         this.modifierExercice(formData.numExercice,formData);
       }
@@ -328,6 +351,43 @@ export class ExerciceComponent implements OnInit {
           
          // this.resetForm();
           this.toastr.success('Exercice clôturé avec succès.', 'Success',  {progressBar: true});
+         this.disabledBtnCloturer = true;
+          
+          //basculer vers la tab contenant la liste apres modification
+          this.loading = false;
+          this.activeTabsNav = 1;
+        },
+        (error: HttpErrorResponse) => {
+          console.log('Echec atatus ==> ' + error.status);
+         
+          this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !',  {progressBar: true});
+          
+        });
+  
+    }
+
+     //clôture de l'exercice
+    submitDecloturerExercice() {
+
+      this.activeExercice.cloturerExo = false;
+      console.log("cloture222",this.activeExercice);
+      
+      //this.modifierExercice(this.activeExercice.numExercice.toString(),this.activeExercice);
+
+     // this.toastr.success('Exercice clôturé avec succès', 'Success!', { timeOut: 5000 });
+
+      this.exerciceService.updateExercice(this.activeExercice.numExercice.toString(), this.activeExercice).subscribe(
+        (data: any) => {
+          console.log(data);
+          this.loading = true;
+          const i = this.exerciceList.findIndex(l => l.numExercice == data.numExercice);
+          if (i > -1) {
+            this.exerciceList[i] = data;
+            this.exerciceFiltered = [...this.exerciceList.sort((a, b) => a.codeExercice.localeCompare(b.codeExercice))];
+          }
+          
+         // this.resetForm();
+          this.toastr.success('Exercice déclôturé avec succès.', 'Success',  {progressBar: true});
          this.disabledBtnCloturer = true;
           
           //basculer vers la tab contenant la liste apres modification
