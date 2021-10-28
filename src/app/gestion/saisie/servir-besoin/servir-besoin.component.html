@@ -122,10 +122,6 @@
                           type="button" *ngIf="row.valideAppro == false && authService.hasAccess('saisie_servir_edit')" ngbTooltip="Modifier" placement="bottom">
                             <i class="i-Pen-5"> </i>
                           </button>
-                          <button (click)="confirm(modalConfirm, row)" class="btn btn-outline-danger m-1 btn-sm"
-                                  type="button" *ngIf="row.valideAppro == false && authService.hasAccess('saisie_servir_delete')" ngbTooltip="Supprimer" placement="bottom">
-                            <i class="i-Folder-Trash"> </i>
-                          </button>
                           <button (click)="valider(row, true, modalValid)" class="btn btn-outline-success m-1 btn-sm"
                                   type="button" *ngIf="row.valideAppro == false && authService.hasAccess('saisie_servir_valid')" ngbTooltip="Valider" placement="bottom">
                             <i class="i-Yes"> </i>
@@ -141,6 +137,11 @@
                           <button (click)="openPdfToPrint(row)" class="btn btn-outline-warning m-1 btn-sm"
                                   type="button" ngbTooltip="Imprimer" placement="bottom" *ngIf="authService.hasAccess('saisie_servir_print')">
                             <i class="i-File-Download"> </i>
+                          </button>
+                          
+                          <button (click)="confirm(modalConfirm, row)" class="btn btn-outline-danger m-1 btn-sm"
+                                  type="button" *ngIf="row.valideAppro == false && authService.hasAccess('saisie_servir_delete')" ngbTooltip="Supprimer" placement="bottom">
+                            <i class="i-Folder-Trash"> </i>
                           </button>
                         </ng-template>
                       </ngx-datatable-column>

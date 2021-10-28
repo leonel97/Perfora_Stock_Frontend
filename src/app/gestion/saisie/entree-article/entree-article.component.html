@@ -121,14 +121,11 @@
                           type="button" *ngIf="row.valideRecep == false && authService.hasAccess('saisie_recept_edit')" title="Modifier">
                             <i class="i-Pen-5"> </i>
                           </button>
-                          <button (click)="confirm(modalConfirm, row)" class="btn btn-outline-danger m-1 btn-sm"
-                                  type="button" *ngIf="row.valideRecep == false && authService.hasAccess('saisie_recept_delete')" title="Supprimer">
-                            <i class="i-Folder-Trash"> </i>
-                          </button>
                           <button (click)="valider(row, true, modalValid)" class="btn btn-outline-success m-1 btn-sm"
                                   type="button" *ngIf="row.valideRecep == false  && authService.hasAccess('saisie_recept_valid')" title="Valider">
                             <i class="i-Yes"> </i>
                           </button>
+                          
                           <!--
                           <button (click)="valider(row, false, modalValid)" class="btn btn-outline-warning m-1 btn-sm"
                                   type="button" *ngIf="row.valideRecep == true" ngbTooltip="Annuler" placement="bottom">
@@ -142,6 +139,11 @@
                           <button (click)="openPdfToPrint(row)" class="btn btn-outline-warning m-1 btn-sm"
                                   type="button" title="Imprimer" *ngIf="authService.hasAccess('saisie_recept_print')">
                             <i class="i-File-Download"> </i>
+                          </button>
+                          
+                          <button (click)="confirm(modalConfirm, row)" class="btn btn-outline-danger m-1 btn-sm"
+                                  type="button" *ngIf="row.valideRecep == false && authService.hasAccess('saisie_recept_delete')" title="Supprimer">
+                            <i class="i-Folder-Trash"> </i>
                           </button>
                         </ng-template>
                       </ngx-datatable-column>

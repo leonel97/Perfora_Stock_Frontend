@@ -22,7 +22,7 @@
                   <div class="col-md-4">
                     <div class="form-group">
                       <input [formControl]="searchControl" class="form-control form-control-rounded" id="email"
-                             placeholder="Rechercher un Inventaire">
+                             placeholder="Rechercher un Inventaire" type="text" autocomplete="off">
                     </div>
                   </div>
                   <div class="col-md-12">
@@ -130,7 +130,7 @@
   
   
             <li [ngbNavItem]="2">
-              <a ngbNavLink><span *ngIf="! validateForm.value.numInv">Nouveau</span><span *ngIf="validateForm.value.numInv  && detailView == false" span>Modifier</span> <span *ngIf="validateForm.value.numInv && detailView == true" span>Détail sur</span> Inventaire</a>
+              <a ngbNavLink><span *ngIf="!validateForm.value.numInv">Nouvel</span><span *ngIf="validateForm.value.numInv  && detailView == false" span>Modifier</span> <span *ngIf="validateForm.value.numInv && detailView == true" span>Détail sur</span> Inventaire</a>
               <ng-template ngbNavContent>
   
                 <div class="mb-2">
@@ -145,8 +145,9 @@
                             <button  ngbDropdownItem (click)="ficheInventaire(true)"> Avec Stock Théorique</button>
                         </div>
                    </div>
-                    <button class="btn btn-outline-secondary mr-3" (click)="resetForm()"><span *ngIf="!detailView">Annuler</span> <span *ngIf="detailView">Fermer</span></button>
-                    <btn-loading btnClass="btn-primary" [loading]="loading" (click)="submit()"  *ngIf="!detailView  && authService.hasAccess('saisie_inv_new')" >Enrégistrer</btn-loading>
+                    <btn-loading btnClass="btn-primary  btn-save mr-3" [loading]="loading" (click)="submit()"  *ngIf="!detailView  && authService.hasAccess('saisie_inv_new')" >Enregistrer</btn-loading>
+                    
+                    <button class="btn btn-outline-secondary" (click)="resetForm()"><span *ngIf="!detailView">Annuler</span> <span *ngIf="detailView">Fermer</span></button>
                   </div>
                   <form [formGroup]="validateForm">
                     <h4 class="font-weight-bold">Informations sur l'inventaire</h4>
@@ -176,9 +177,9 @@
                     </div>
                     <div class="row">
                       <div class="col-md-12 form-group">
-                        <label for="orderNo">Désignation (observation) </label>
+                        <label for="orderNo">Commentaire ou Observation </label>
                         <input formControlName="descrInv" type="text" class="form-control" id="descrInv"  [readonly]="detailView"
-                            placeholder="Description ou observation sur l'inventaire" autocomplete="off">
+                            placeholder="Commentaire ou Observation sur l'inventaire" autocomplete="off">
   
                       </div>
                      
