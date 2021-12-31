@@ -56,7 +56,7 @@
       <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
           <div class="dropright dropdown-submenu">
               <!--button class="dropdown-item dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#">Approvisionnement</button-->
-              <button class="dropdown-item dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#">Passation de Marché</button>
+              <button class="dropdown-item dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#" *ngIf="auth.hasAccess('saisie_marchers')">Passation de Marché</button>
               <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                   <button class="dropdown-item" routerLink="/gestion/saisie/appro-depot-offre-facture-proformat" *ngIf="auth.hasAccess('saisie_fact_prof')" >Factures Proformats (FP)</button>
                   <button class="dropdown-item" routerLink="/gestion/saisie/appro-demande-prix" *ngIf="auth.hasAccess('saisie_dem_cota')" >Demandes de Cotation (DC)</button>
@@ -75,7 +75,7 @@
           <button class="dropdown-item" routerLink="/gestion/saisie/appel-offre" *ngIf="auth.hasAccess('saisie_ao')">Appels d'Offres</button>
 
           <div class="dropright dropdown-submenu">
-              <button class="dropdown-item dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#">Stocks</button>
+              <button class="dropdown-item dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="#" *ngIf="auth.hasAccess('saisie_stck')">Stocks</button>
               <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                       <button class="dropdown-item" routerLink="/gestion/saisie/stock-stock-initial" *ngIf="auth.hasAccess('saisie_stck_init')" >Stock Initial</button>
                       <button class="dropdown-item" routerLink="/gestion/saisie/stock-entree-article" *ngIf="auth.hasAccess('saisie_recept')" >Entrée d'Article</button>
