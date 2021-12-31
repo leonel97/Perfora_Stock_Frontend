@@ -41,6 +41,7 @@ export interface modelLigneCommande{
   selectedArticl: number;
   selectedUniter: number;
   artii?: Article;
+  qteRest?: number;
 
 }
 
@@ -218,6 +219,7 @@ export class CommandeAchatComponent implements OnInit {
     );
   }
 
+
   filerData(val) {
     if (val) {
       val = val.toLowerCase();
@@ -280,6 +282,9 @@ export class CommandeAchatComponent implements OnInit {
       frs: [commandeAchat != null ? commandeAchat.commande.frs.numFournisseur : null,
         [Validators.required]],
       numComm: [commandeAchat != null ? commandeAchat.commande.numCommande : null],
+
+      procesByLc: [commandeAchat != null ? commandeAchat.procesByLc : false],
+
     }, {
       validators : SalTools.validatorDateOrdre('dateCommande', 'dateRemise', false)
     });
@@ -396,7 +401,8 @@ export class CommandeAchatComponent implements OnInit {
         lignesCom.push(element.lignesCommande);
 
       });
-
+      console.log('sal', lignesCom);
+      
       const com = new Commande(formData.dateCommande, formData.dateRemise, formData.description,
         formData.delaiLivraison, false, 0, false, false, formData.frs, this.exerciceService.selectedExo );
         com.numCommande = formData.numComm;
@@ -416,7 +422,7 @@ export class CommandeAchatComponent implements OnInit {
     this.commandeService.addACommande2(new EncapCommande(commande, lignesCo)).subscribe(
       (data2) => {
         this.getAllLigneCommande();
-        this.commandeAchatService.addACommandeAchat(new CommandeAchat(Date.now().toString(), 0, data2.commande, this.exerciceService.selectedExo)).subscribe(
+        this.commandeAchatService.addACommandeAchat(new CommandeAchat(Date.now().toString(), 0, data2.commande, this.exerciceService.selectedExo, this.validateForm.value['procesByLc'])).subscribe(
           (data) => {
             console.log(data);
 
@@ -451,7 +457,7 @@ export class CommandeAchatComponent implements OnInit {
       (data2) => {
         this.getAllLigneCommande();
 
-        this.commandeAchatService.editACommandeAchat(id, new CommandeAchat('', 0, data2.commande, this.exerciceService.selectedExo)).subscribe(
+        this.commandeAchatService.editACommandeAchat(id, new CommandeAchat('', 0, data2.commande, this.exerciceService.selectedExo, this.validateForm.value['procesByLc'])).subscribe(
           (data) => {
             console.log(data);
 
@@ -678,35 +684,82 @@ export class CommandeAchatComponent implements OnInit {
     this.clotureService.isPeriodeCloturedByDate(commandeAchat.commande.dateCommande).subscribe(
       (data) => {
         if(data == false){
-          
           this.etatVali = eta;
-
-          this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', centered: true})
-            .result.then((result) => {
-            //this.confirmResut = `Closed with: ${result}`;
-            commandeAchat.commande.valide = eta;
-
-            this.commandeService.editACommande(commandeAchat.commande.numCommande.toString(), commandeAchat.commande).subscribe(
+          if(!eta){
+            this.commandeService.getIfACommandeHasReceptById(commandeAchat.commande.numCommande.toString()).subscribe(
               (data) => {
+                if(data == true){
+                  this.toastr.error('Impossible car la commande est liée à au moins une réception.', 'Erreur !', { timeOut: 5000, progressBar:true });
+                }
+                else {
+                  this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', centered: true})
+                  .result.then((result) => {
+                  //this.confirmResut = `Closed with: ${result}`;
+                    commandeAchat.commande.valide = eta;
 
-                commandeAchat.commande = data;
+                    this.commandeService.editACommande(commandeAchat.commande.numCommande.toString(), commandeAchat.commande).subscribe(
+                      (data) => {
 
-                const i = this.commandeAchatList.findIndex(l => l.numComAchat == commandeAchat.numComAchat);
-                    if (i > -1) {
-                      this.commandeAchatList[i] = commandeAchat;
-                      this.commandeAchatFiltered = [...this.commandeAchatList.sort((a, b) => a.numComAchat.localeCompare(b.numComAchat.valueOf()))];
-                    }
+                        commandeAchat.commande = data;
 
-                    let msg: String = 'Validation'
-                    if(eta == false) msg = 'Annulation';
-                    this.toastr.success(msg+' effectuée avec succès.', 'Success', { timeOut: 5000 });
+                        const i = this.commandeAchatList.findIndex(l => l.numComAchat == commandeAchat.numComAchat);
+                            if (i > -1) {
+                              this.commandeAchatList[i] = commandeAchat;
+                              this.commandeAchatFiltered = [...this.commandeAchatList.sort((a, b) => a.numComAchat.localeCompare(b.numComAchat.valueOf()))];
+                            }
 
-              },
+                            let msg: String = 'Annulation';
+                            this.toastr.success(msg+' effectuée avec succès.', 'Success', { timeOut: 5000 });
+
+                      },
+                      (error: HttpErrorResponse) => {
+                        console.log('Echec status ==> ' + error.status);
+                        this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000 });
+
+                      }
+                    );
+
+                  }, (reason) => {
+                    console.log(`Dismissed with: ${reason}`);
+                  });
+                  
+                }
+              }, 
               (error: HttpErrorResponse) => {
                 console.log('Echec status ==> ' + error.status);
                 this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000 });
-
               }
+            );
+
+
+          }
+          else {
+            
+            this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', centered: true})
+            .result.then((result) => {
+              //this.confirmResut = `Closed with: ${result}`;
+              commandeAchat.commande.valide = eta;
+
+              this.commandeService.editACommande(commandeAchat.commande.numCommande.toString(), commandeAchat.commande).subscribe(
+                (data) => {
+
+                  commandeAchat.commande = data;
+
+                  const i = this.commandeAchatList.findIndex(l => l.numComAchat == commandeAchat.numComAchat);
+                      if (i > -1) {
+                        this.commandeAchatList[i] = commandeAchat;
+                        this.commandeAchatFiltered = [...this.commandeAchatList.sort((a, b) => a.numComAchat.localeCompare(b.numComAchat.valueOf()))];
+                      }
+
+                      let msg: String = 'Validation'
+                      this.toastr.success(msg+' effectuée avec succès.', 'Success', { timeOut: 5000 });
+
+                },
+                (error: HttpErrorResponse) => {
+                  console.log('Echec status ==> ' + error.status);
+                  this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000 });
+
+                }
             );
 
 
@@ -714,6 +767,9 @@ export class CommandeAchatComponent implements OnInit {
           }, (reason) => {
             console.log(`Dismissed with: ${reason}`);
           });
+          
+
+          }
           
         }
         else{
@@ -736,35 +792,49 @@ export class CommandeAchatComponent implements OnInit {
     let totalTTC : number = 0;
 
     const doc = new jsPDF();
+
+    
     autoTable(doc, {
-      theme: 'plain',
-      margin: { top: 5, left:35, right:9, bottom:100 },
+      //startY: 0,
+      theme: "grid",
+      margin: { top: 5, left:5, right:5, bottom:100 },
       columnStyles: {
-        0: { textColor: 'blue', fontStyle: 'bold', halign: 'left' },
-        1: { textColor: 'blue', fontStyle: 'bold', halign: 'right' },
+        0: { textColor: 'black', fontStyle: 'bold', fontSize:7, font: 'Times New Roman', halign: 'center', cellWidth: 60 },
+        1: { textColor: 'black', fontStyle: 'bold', font: 'Times New Roman', halign: 'left', cellWidth: 50 },
+        2: { textColor: 'blue', fontStyle: 'bold', fontSize: 15, font: 'Times New Roman', halign: 'center', valign: "middle", cellWidth: 90 },
       },
       body: [
-        ['PORT AUTONOME DE LOME\n\nTel.: 22.27.47.42/22.27.33.91/22.27.33.92\nFax: (228) 22.27.26.27\nCARTE N° 950113V',
-        'REPUBLIQUE TOGOLAISE\n\nTravail-Liberté-Patrie       ']
+        [{content: '\n\n\n\nPORT AUTONOME DE LOME\nTel : +228 22 23 77 00\nFax : +228 22 27 26 27 / 22 27 02 48\nE-mail : togoport@togoport.tg\nWebsite : www.togoport.tg\nLomé Togo',
+        rowSpan: 4},
+        'ACH-IDC-47-PAL17', 
+        { content: 'BON DE COMMANDE', rowSpan: 4}],
+        ['Date : 03/12/2021',
+        ],
+        ['Version : 01',
+        ],
+        ['Page: ../..',
+        ]
       ]
       ,
     });
-    doc.addImage(Utils.logoUrlData, 'jpeg', 10, 5, 25, 25);
+    
+    doc.addImage(Utils.logoUrlData, 'jpeg', 28, 7, 11, 11);
 
-    doc.setDrawColor(0);
-    doc.setFillColor(233 , 242, 248);
-    doc.roundedRect(50, 35, 110, 10, 3, 3, 'FD');
-    doc.setFontSize(20);
-    doc.text('BON DE COMMANDE', 67, 43);
     autoTable(doc, {
       theme: 'plain',
       startY:50,
-      margin: { top: 1000 },
+      margin: { },
       columnStyles: {
-        0: { textColor: 0, fontStyle: 'bold', halign: 'center' },
+        0: { textColor: 0, fontStyle: 'bold', halign: 'left', cellWidth: 60 },
+        1: { textColor: 0, fontStyle: 'bold', halign: 'left' },
       },
       body: [
-        ['ACH-ERQ-11-PAL13\n\nBon de Commande N° '+element.numComAchat+' du '+moment(element.commande.dateCommande).format('DD/MM/YYYY')]
+        ['Numéro du bond',': '+element.numComAchat],
+        ['Département',': comming soon'],
+        ['N° DA',': comming soon'],
+        ['Justificatif ',': comming soon '],
+        ['Nom du Fournisseur',': '+element.commande.frs.codeFrs+'\t'+element.commande.frs.identiteFrs],
+        ['Date d\'émission',': '+moment(element.commande.dateCommande).format('DD/MM/YYYY')],
       ]
       ,
     });
@@ -776,7 +846,7 @@ export class CommandeAchatComponent implements OnInit {
         0: { textColor: 0, halign: 'left' },
       },
       body: [
-        ['Le Fournisseur : '+element.commande.frs.codeFrs+'  '+element.commande.frs.identiteFrs+'\n\nest prié de livrer au PORT AUTONOME les matières et objets désignés ci-après :']
+        ['Le FOURNISSEUR est prié de livrer au PORT AUTONOME les matières et objets désignés ci-après :']
       ]
       ,
     });
@@ -802,6 +872,7 @@ export class CommandeAchatComponent implements OnInit {
       }
 
     });
+    
     autoTable(doc, {
       theme: 'grid',
       head: [['Article', 'Désignation', 'Quantité', 'Unité', 'PU', 'TVA(%)', 'Montant']],
@@ -860,18 +931,35 @@ export class CommandeAchatComponent implements OnInit {
       theme: 'plain',
       margin: { top: 100 },
       columnStyles: {
-        0: { textColor: 0, fontStyle: 'bold', halign: 'center' },
-        2: { textColor: 0, fontStyle: 'bold', halign: 'left' },
+        0: { textColor: 0, fontStyle: 'bold', halign: 'center', cellWidth: 80 },
+        
+        2: { textColor: 0, fontStyle: 'bold', halign: 'center', cellWidth: 80 },
       },
       body: [
-        ['Le Directeur Général\n\n\n\n\n',
-        '\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t',
-        'Le Fournisseur\n\n\n\n\n\t\t\t\t\t\t\t\t\t\t\t\t']
+        ['La Personne Responsable des Marchés Publics\n\n\n\n\n\n\n\nPassamani ATCHO',
+        '',
+        'Le Directeur Général\n\n\n\n\n\n\n\n\nContre-Amiral Fogan Kodjo ADEGNON']
       ]
       ,
     });
 
+    for (let index = 0; index < doc.getNumberOfPages(); index++) {
+      doc.setPage(index+1);
+
+      doc.setFontSize(10);
+      doc.setFont('Times New Roman', 'italic', 'bold');
+
+      doc.text('Powered by PerfOra-Stock Web\nLe '+moment(Date.now()).format('DD/MM/YYYY à HH:mm:ss'), 5, 290);
+      
+      doc.text('Page '+(index+1)+' sur '+doc.getNumberOfPages(), 185, 290);
+
+      
+    }
+
+    console.log('sal',doc );
+
     doc.output('dataurlnewwindow');
+
 
   }
 

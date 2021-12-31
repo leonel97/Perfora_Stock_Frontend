@@ -27,6 +27,10 @@ export class CloturePeriodiqService {
     return this.httpCli.put<CloturePeriodiq>(this.host+'/commune/cloturePeriodiq/byCodCloPer/'+code, corps);
   }
 
+  validateACloturePeriodiq(code:String, corps:CloturePeriodiq){
+    return this.httpCli.put<CloturePeriodiq>(this.host+'/commune/cloturePeriodiq/byCodCloPerValid/'+code, corps);
+  }
+
   addACloturePeriodiq(corps:CloturePeriodiq){
     return this.httpCli.post<CloturePeriodiq>(this.host+'/commune/cloturePeriodiq/list', corps);
   }

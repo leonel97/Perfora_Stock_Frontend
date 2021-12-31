@@ -184,14 +184,20 @@
                     <div class="col-md form-group">
                       <label for="orderNo">Références</label>
                       <input formControlName="description" type="text" class="form-control"
-                          placeholder="Numéro">
+                          placeholder="Références">
 
                     </div>
                     <div class="col-md form-group mb-3">
-                      <label >Fournisseur</label>
-                      <ng-select formControlName="frs">
-                        <ng-option *ngFor="let frs of fournisseurList" [value]="frs.numFournisseur">{{frs.codeFrs}} - {{frs.identiteFrs}}</ng-option>
+                      <label >Commande Achat</label>
+                      <ng-select formControlName="numComAchat" (ngModelChange)="selectedComAchatChanged()">
+                        <ng-option *ngFor="let comAch of commandeAchatList" [value]="comAch.numComAchat">{{comAch.numComAchat}} du {{comAch.commande.dateCommande}} ({{ comAch.exercice.codeExercice }})</ng-option>
                       </ng-select>
+                    </div>
+                    <div class="col-md form-group">
+                      <label for="orderNo">Fournisseur</label>
+                      <input formControlName="frs" type="text" class="form-control"
+                          placeholder="Fournisseur" readonly>
+
                     </div>
 
                   </div>
@@ -208,6 +214,7 @@
                                       <th scope="col">Article</th>
                                       <th scope="col">PU HT</th>
                                       <th scope="col">Quantité</th>
+                                      <th scope="col">Quantité Restante</th>
                                       <th scope="col">Unité</th>
                                       <th scope="col">Montant HT</th>
                                       <th scope="col">TVA</th>
@@ -230,35 +237,42 @@
                                         -->
                                       </td>
                                       <td>
-                                          <input type="number" class="form-control" [(ngModel)] = "lig.lignesCommande.puLigneCommande"
+                                          {{lig.lignesCommande.puLigneCommande}}
+                                          <!-- <input type="number" class="form-control" [(ngModel)] = "lig.lignesCommande.puLigneCommande"
                                               placeholder="Prix Unitaire HT" (ngModelChange)="calculTotaux()"
                                               [ngStyle]="{'background-color': (lig.lignesCommande.puLigneCommande <=0) ? 'rgb(255, 172, 172)': null}"  
-                                            >
+                                            > -->
                                       </td>
                                       <td>
                                         <input type="number" class="form-control" [(ngModel)] = "lig.lignesCommande.qteLigneCommande"
                                             placeholder="Quantité" (ngModelChange)="calculTotaux()" 
-                                            [ngStyle]="{'background-color': (lig.lignesCommande.qteLigneCommande <=0) ? 'rgb(255, 172, 172)': null}"
+                                            [ngStyle]="{'background-color': (lig.lignesCommande.qteLigneCommande <=0 || lig.lignesCommande.qteLigneCommande > lig.qteRest) ? 'rgb(255, 172, 172)': null}"
                                             >
                                       </td>
                                       <td>
-                                        <ng-select [(ngModel)]="lig.selectedUniter" style="min-width: 180px;"
+                                        {{lig.qteRest - lig.lignesCommande.qteLigneCommande}}
+                                        
+                                      </td>
+                                      <td>
+                                        {{lig.lignesCommande?.uniter.codeUniter}} - {{lig.lignesCommande?.uniter.libUniter}}
+                                        <!-- <ng-select [(ngModel)]="lig.selectedUniter" style="min-width: 180px;"
                                         [ngStyle]="{'border': (lig.selectedUniter == null) ? '2px solid rgb(255, 172, 172)': null,
                                                     'background-color': (lig.selectedUniter == null) ? '2px solid rgb(255, 172, 172)': null,
                                                     'border-radius':  (lig.selectedUniter == null) ? '5px': null}"
                                         >
                                           <ng-option *ngFor="let unit of lig.listUniter" [value]="unit.numUniter"
                                            >{{unit.codeUniter}} - {{unit.libUniter}}</ng-option>
-                                        </ng-select>
+                                        </ng-select> -->
                                       </td>
                                       <td>
                                         {{ salToolsService.salRound(lig.lignesCommande.puLigneCommande * lig.lignesCommande.qteLigneCommande) }}
                                       </td>
                                       <td>
-                                          <input type="number" class="form-control" [(ngModel)] = "lig.lignesCommande.tva"
+                                          {{lig.lignesCommande.tva}}
+                                          <!-- <input type="number" class="form-control" [(ngModel)] = "lig.lignesCommande.tva"
                                               placeholder="Tva" (ngModelChange)="calculTotaux()" 
                                               [ngStyle]="{'background-color': (lig.lignesCommande.tva < 0) ? 'rgb(255, 172, 172)': null}"
-                                            >
+                                            > -->
                                       </td>
                                       <td>
                                         {{ salToolsService.salRound(lig.lignesCommande.puLigneCommande * lig.lignesCommande.qteLigneCommande*(1+(lig.lignesCommande.tva/100))) }}
@@ -366,7 +380,7 @@
       <div class="col-md-4">
         <div class="form-group">
           <input [formControl]="searchControlArticle" class="form-control form-control-rounded" id="email"
-                 placeholder="Rechercher Article" type="email">
+                 placeholder="Rechercher Article">
         </div>
       </div>
       

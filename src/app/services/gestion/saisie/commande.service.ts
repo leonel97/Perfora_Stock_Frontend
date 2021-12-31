@@ -22,6 +22,10 @@ export class CommandeService {
       return this.httpCli.get<Commande>(this.host+'/stock/commande/byCodCom/'+code);
     }
 
+    getIfACommandeHasReceptById(code:String){
+      return this.httpCli.get<boolean>(this.host+'/stock/commande/hasRecetp/'+code);
+    }
+
     addACommande(corps:Commande){
       return this.httpCli.post<Commande>(this.host+'/stock/commande/list', corps);
     }

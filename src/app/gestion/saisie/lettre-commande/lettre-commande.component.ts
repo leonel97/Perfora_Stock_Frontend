@@ -31,6 +31,8 @@ import { NumberToLetter } from 'convertir-nombre-lettre';
 import { AuthService } from 'src/app/services/common/auth.service';
 import { SalTools } from 'src/app/utilitaires/salTools';
 import { CloturePeriodiqService } from 'src/app/services/gestion/saisie/cloture-periodiq.service';
+import { CommandeAchatService } from 'src/app/services/gestion/saisie/commande-achat.service';
+import { CommandeAchat } from 'src/app/models/gestion/saisie/commandeAchat.model';
 
 
 @Component({
@@ -54,6 +56,7 @@ export class LettreCommandeComponent implements OnInit {
   articleList: Article[] = [];
   uniterList: Uniter[] = [];
   affectUniterToArticleList: AffectUniterToArticle[] = [];
+  commandeAchatList: CommandeAchat[] = [];
   loading: boolean;
   lettreCommande: LettreCommande = null;
   ligneShow: modelLigneCommande[] = [];
@@ -77,6 +80,7 @@ export class LettreCommandeComponent implements OnInit {
     private affectUniterToArticleService: AffectUniterToArticleService,
     private clotureService: CloturePeriodiqService,
     public salToolsService: SalTools,
+    private commandeAchatService: CommandeAchatService,
     private fb: FormBuilder,
     private router: Router,
     private toastr: ToastrService,
@@ -112,7 +116,6 @@ export class LettreCommandeComponent implements OnInit {
         this.filerData(value);
       });
 
-      this.getAllArticle();
       this.getAllUniter();
       this.getAllLigneCommande();
       this.getAllAffecterUniterToArticle();
@@ -144,10 +147,35 @@ export class LettreCommandeComponent implements OnInit {
       });
   }
 
+  getAllCommandeAchat(){
+    this.commandeAchatService.getAllCommandeAchat().subscribe(
+      (data) => {
+        this.commandeAchatList = [...data.filter( l => (l.commande.valide && l.procesByLc && !this.isAComAchatFullProcessed(l)))];
+        
+      },
+      (error: HttpErrorResponse) => {
+        console.log('Echec status ==> ' + error.status);
+      });
+  }
+
+  isAComAchatFullProcessed(commandeAchat: CommandeAchat){
+    
+    for (const lig of this.ligneCommandeList.filter( l => l.numCommande.numCommande == commandeAchat.commande.numCommande)) {
+      if(this.getQteRestanOfALigComAch(lig) > 0){
+        return false;
+      }
+
+    }
+
+    return true;
+
+  }
+
   getAllLigneCommande(){
     this.ligneCommandeService.getAllLigneCommande().subscribe(
       (data) => {
         this.ligneCommandeList = data;
+        this.getAllCommandeAchat();
       },
       (error: HttpErrorResponse) => {
         console.log('Echec status ==> ' + error.status);
@@ -202,6 +230,23 @@ export class LettreCommandeComponent implements OnInit {
     );
   }
 
+  getQteRestanOfALigComAch(ligne: LigneCommande): number {
+    let qute = 0;
+    this.lettreCommandeList.forEach(element => {
+      if(element.commandeAchat && element.commandeAchat.commande.numCommande == ligne.numCommande.numCommande){
+        
+          let lig = this.ligneCommandeList.find(l => (l.numCommande.numCommande == element.commande.numCommande && l.article.numArticle == ligne.article.numArticle));
+          if(lig){
+            qute += lig.qteLigneCommande;
+          }
+
+      }
+    });
+
+    return (ligne.qteLigneCommande - qute);
+
+  }
+
   filerDataArticle(val) {
     if (val) {
       val = val.toLowerCase();
@@ -227,18 +272,33 @@ export class LettreCommandeComponent implements OnInit {
   }
 
   addLignByDialog(article:Article){
-
+    
+    
     if(this.ligneShow.find((l) => l.selectedArticl == article.numArticle)){
+      
       const ind = this.ligneShow.findIndex((l) => l.selectedArticl == article.numArticle);
       if(ind > -1){
         this.ligneShow.splice(ind, 1);
       }      
     }
     else{
+     
       this.pushALigneComAcha();
       this.ligneShow[this.ligneShow.length-1].artii = article;
       this.ligneShow[this.ligneShow.length-1].selectedArticl = article.numArticle;
       this.getUniterOfSelectArt(this.ligneShow.length-1);
+
+      let ligneComAchat = this.ligneCommandeList.find( l => (l.article.numArticle == article.numArticle && l.numCommande.numCommande == this.commandeAchatList.find( m => m.numComAchat == this.validateForm.value['numComAchat'])?.commande.numCommande) );
+
+      this.ligneShow[this.ligneShow.length-1].lignesCommande.puLigneCommande = ligneComAchat.puLigneCommande;
+      this.ligneShow[this.ligneShow.length-1].lignesCommande.tva = ligneComAchat.tva;
+      this.ligneShow[this.ligneShow.length-1].selectedUniter = ligneComAchat.uniter.numUniter;
+      this.ligneShow[this.ligneShow.length-1].lignesCommande.uniter = ligneComAchat.uniter;
+      let qter = this.getQteRestanOfALigComAch(ligneComAchat);
+      this.ligneShow[this.ligneShow.length-1].lignesCommande.qteLigneCommande = qter;
+      this.ligneShow[this.ligneShow.length-1].qteRest = qter;
+      
+
     }
     
 
@@ -266,8 +326,31 @@ export class LettreCommandeComponent implements OnInit {
       //this.selectedCurrentFrsInter = [];
     });
 
+
   }
 
+  selectedComAchatChanged(){
+    let selectedComAchat = this.commandeAchatList.filter( l => l.numComAchat == this.validateForm.value['numComAchat'])[0];
+    this.articleFiltered = [];
+    this.articleList = [];
+    this.ligneShow = [];
+    if(selectedComAchat){
+      this.validateForm.patchValue({frs: selectedComAchat.commande.frs.codeFrs + ' - ' + selectedComAchat.commande.frs.identiteFrs});
+      let lignesSelectedComAcha = this.ligneCommandeList.filter( l => (l.numCommande.numCommande == selectedComAchat.commande.numCommande));
+
+      lignesSelectedComAcha.forEach(element => {
+        this.articleList.push(element.article);
+        this.articleFiltered.push(element.article);
+
+      });
+
+      
+
+    }
+    else {
+      this.validateForm.patchValue({frs: null});
+    }
+  }
 
   filerData(val) {
     if (val) {
@@ -303,9 +386,12 @@ export class LettreCommandeComponent implements OnInit {
       dateRemise: [lettreCommande != null ? lettreCommande.commande.dateRemise : null],
 
       description: [lettreCommande != null ? lettreCommande.commande.description : null],
-      frs: [lettreCommande != null ? lettreCommande.commande.frs.numFournisseur : null,
+      frs: [lettreCommande != null ? lettreCommande.commande.frs.numFournisseur +' - '+ lettreCommande.commande.frs.identiteFrs : null,
         [Validators.required]],
       numComm: [lettreCommande != null ? lettreCommande.commande.numCommande : null],
+
+      numComAchat: [lettreCommande != null ? lettreCommande.commandeAchat.numComAchat : null, 
+        [Validators.required]],
     }, {
       validators : SalTools.validatorDateOrdre('dateCommande', 'dateRemise', false)
     });
@@ -315,13 +401,15 @@ export class LettreCommandeComponent implements OnInit {
 
       for(const ligCo of this.ligneCommandeList){
         if(ligCo.numCommande.numCommande == lettreCommande.commande.numCommande){
+          
           this.ligneShow.push({
-            lignesCommande: ligCo,
+            lignesCommande: {...ligCo},
             listArticle: this.getNotUsedArticle(),
             listUniter: this.getUniterOfAArticle(ligCo.article.numArticle),
             selectedArticl: ligCo.article.numArticle,
             selectedUniter: ligCo.uniter ? ligCo.uniter.numUniter : null,
             artii: ligCo.article,
+            qteRest: ligCo.qteLigneCommande + this.getQteRestanOfALigComAch(this.ligneCommandeList.find(l => (l.numCommande.numCommande == lettreCommande.commandeAchat?.commande?.numCommande && l.article.numArticle == ligCo.article.numArticle))),
 
           });
         }
@@ -357,7 +445,8 @@ export class LettreCommandeComponent implements OnInit {
     
     for(const lig of this.ligneShow){
       if(lig.lignesCommande.puLigneCommande <=0 || lig.selectedUniter == null
-        || lig.lignesCommande.qteLigneCommande <=0 || lig.lignesCommande.tva < 0){
+        || lig.lignesCommande.qteLigneCommande <=0 || lig.lignesCommande.tva < 0
+        || lig.lignesCommande.qteLigneCommande > lig.qteRest){
         lignShowValid = false;
         break;
       }
@@ -393,10 +482,10 @@ export class LettreCommandeComponent implements OnInit {
     } else {
       const formData = this.validateForm.value;
 
-      const i = this.fournisseurList.findIndex(l => l.numFournisseur == formData.frs);
+      const i = this.commandeAchatList.findIndex(l => l.numComAchat == formData.numComAchat);
 
       if (i > -1) {
-        formData.frs = this.fournisseurList[i];
+        formData.frs = this.commandeAchatList[i].commande.frs;
       }
       let lignesCom: LigneCommande[] = [];
       this.ligneShow.forEach((element, inde) => {
@@ -418,6 +507,7 @@ export class LettreCommandeComponent implements OnInit {
 
       });
 
+
       const com = new Commande(formData.dateCommande, formData.dateRemise, formData.description,
         formData.delaiLivraison, false, 0, false, false, formData.frs, this.exerciceService.selectedExo );
         com.numCommande = formData.numComm;
@@ -437,7 +527,7 @@ export class LettreCommandeComponent implements OnInit {
     this.commandeService.addACommande2(new EncapCommande(commande, lignesCo)).subscribe(
       (data2) => {
         this.getAllLigneCommande();
-        this.lettreCommandeService.addALettreCommande(new LettreCommande(Date.now().toString(), 0, data2.commande, this.exerciceService.selectedExo)).subscribe(
+        this.lettreCommandeService.addALettreCommande(new LettreCommande(Date.now().toString(), 0, data2.commande, this.exerciceService.selectedExo, this.commandeAchatList.find( l => this.validateForm.value['numComAchat'] == l.numComAchat))).subscribe(
           (data) => {
             console.log(data);
 
@@ -472,7 +562,7 @@ export class LettreCommandeComponent implements OnInit {
       (data2) => {
         this.getAllLigneCommande();
 
-        this.lettreCommandeService.editALettreCommande(id, new LettreCommande('', 0, data2.commande, this.exerciceService.selectedExo)).subscribe(
+        this.lettreCommandeService.editALettreCommande(id, new LettreCommande('', 0, data2.commande, this.exerciceService.selectedExo, this.commandeAchatList.find( l => this.validateForm.value['numComAchat'] == l.numComAchat))).subscribe(
           (data) => {
             console.log(data);
 
@@ -553,6 +643,8 @@ export class LettreCommandeComponent implements OnInit {
   }
 
   pushALigneComAcha(){
+    
+    
     this.ligneShow.push({
       lignesCommande: new LigneCommande(0, 0, 0, 0, 0, 0, null, null, null),
       listArticle: this.getNotUsedArticle(),
@@ -560,6 +652,9 @@ export class LettreCommandeComponent implements OnInit {
       selectedArticl: null,
       selectedUniter: null,
     });
+
+    
+
   }
 
   getNotUsedArticle(): Article[]{

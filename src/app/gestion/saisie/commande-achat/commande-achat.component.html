@@ -109,17 +109,18 @@
                           type="button" *ngIf="row.commande.valide == false && authService.hasAccess('saisie_ca_edit')" ngbTooltip="Modifier" placement="bottom" >
                             <i class="i-Pen-5"> </i>
                           </button>
+                          
                           <button (click)="valider(row, true, modalValid)" class="btn btn-outline-success m-1 btn-sm"
                                   type="button" *ngIf="row.commande.valide == false && authService.hasAccess('saisie_ca_valid')" ngbTooltip="Valider" placement="bottom">
                             <i class="i-Yes"> </i>
                           </button>
-                          <button (click)="valider(row, false, modalValid)" class="btn btn-outline-warning m-1 btn-sm"
-                                  type="button" *ngIf="row.commande.valide == true && authService.hasAccess('saisie_ca_rollback')" ngbTooltip="Annuler" placement="bottom" >
-                            <i class="i-Reload"> </i>
-                          </button>
                           <button (click)="openPdfToPrint(row)" class="btn btn-outline-warning m-1 btn-sm"
                                   type="button" ngbTooltip="Imprimer" placement="bottom" *ngIf="authService.hasAccess('saisie_ca_print')">
                             <i class="i-File-Download"> </i>
+                          </button>
+                          <button (click)="valider(row, false, modalValid)" class="btn btn-outline-warning m-1 btn-sm"
+                                  type="button" *ngIf="row.commande.valide == true && authService.hasAccess('saisie_ca_rollback')" ngbTooltip="Annuler" placement="bottom" >
+                            <i class="i-Reload"> </i>
                           </button>
                           
                           <button (click)="confirm(modalConfirm, row)" class="btn btn-outline-danger m-1 btn-sm"
@@ -195,6 +196,15 @@
                         <ng-option *ngFor="let frs of fournisseurList" [value]="frs.numFournisseur">{{frs.codeFrs}} - {{frs.identiteFrs}}</ng-option>
                       </ng-select>
                     </div>
+
+                    <div class="col-md form-group mb-3" style="display: flex; flex-direction: column; align-items: center;">
+                      <label class="checkbox checkbox-success" style="margin: auto;">
+                        Traiter la Commande Par Lettre de Commande
+                        <input type="checkbox" formControlName="procesByLc" [checked]="null" (click)="null">
+                        <span class="checkmark"></span>
+                      </label>
+                    </div>
+                    
 
                   </div>
                 </form>
