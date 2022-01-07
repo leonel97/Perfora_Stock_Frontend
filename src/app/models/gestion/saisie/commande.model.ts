@@ -7,7 +7,7 @@ export class Commande {
 
   constructor(public dateCommande: Date, public dateRemise: Date, public description: String,
     public delaiLivraison: number, public valide: boolean, public valeur: number, public liver: boolean,
-    public reporter: boolean, public frs: Fournisseur, public exercice: Exercice){
+    public reporter: boolean, public frs: Fournisseur, public exercice: Exercice, public departement?: String, public numDa?: String, public justif?: String){
 
   }
 

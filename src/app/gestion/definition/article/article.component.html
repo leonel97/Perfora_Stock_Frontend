@@ -94,7 +94,7 @@
                         </ng-template>
                         <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
                           <!--<strong>{{ row.code }}</strong>-->
-                          <span *ngFor="let fa of getUniterOfAArticle(row)" > {{ fa.codeUniter }} - {{ fa.libUniter }} ; </span>
+                          <span *ngFor="let fa of getUniterOfAArticle(row)" > {{ fa.codeUniter }} - {{ fa.libUniter }} ( {{fa.poids}} ) ; </span>
                         </ng-template>
                       </ngx-datatable-column>
 
@@ -188,7 +188,7 @@
                     <div class="col-md-12 form-group mb-3">
                       <label >Unités Associées</label>
                       <ng-select formControlName="uniters" [multiple]="true">
-                        <ng-option *ngFor="let unit of uniterList" [value]="unit.numUniter">{{unit.codeUniter}} - {{unit.libUniter}}</ng-option>
+                        <ng-option *ngFor="let unit of uniterList" [value]="unit.numUniter">{{unit.codeUniter}} - {{unit.libUniter}} ( {{unit.poids}} )</ng-option>
                       </ng-select>
                     </div>
                   </div>

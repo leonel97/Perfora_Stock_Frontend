@@ -52,6 +52,7 @@ export class DemandeBesoinComponent  implements OnInit {
   searchControlArticle: FormControl = new FormControl();
   articleFiltered;
 
+  searchAffForm: FormGroup;
   validateForm: FormGroup;
   demandeApproList: DemandeApprovisionnement[] = [];
   ligneDemandeApproList: LigneDemandeAppro[] = [];
@@ -85,7 +86,7 @@ export class DemandeBesoinComponent  implements OnInit {
     private router: Router,
     private toastr: ToastrService,
     private modalService: NgbModal,
-    public authService: AuthService
+    public authService: AuthService, 
   ) {
   }
 
@@ -100,6 +101,11 @@ export class DemandeBesoinComponent  implements OnInit {
       (error: HttpErrorResponse) => {
         console.log('Echec status ==> ' + error.status);
       });*/
+
+      this.searchAffForm = this.fb.group({
+        radioAffich: [0, [Validators.required]],
+  
+      });
 
     this.makeForm(null);
 
@@ -285,13 +291,29 @@ export class DemandeBesoinComponent  implements OnInit {
 
   }
 
+  searchAffElmtChanged(){
+    //this.filerData(this.searchControl.value);
+    if(this.searchAffForm.value['radioAffich'] == 0){
 
+      this.demandeApproFiltered = [...this.demandeApproFiltered];
+    }
+    else if(this.searchAffForm.value['radioAffich'] == 1){
+      this.demandeApproFiltered = [...this.demandeApproFiltered.filter(l => l.valideDA)];
+    }
+    else{
+      this.demandeApproFiltered = [...this.demandeApproFiltered.filter(l => !l.valideDA)];
+    }
+    //console.log('sall',this.searchAffForm.value['radioAffich']); 
+    
+  }
 
   filerData(val) {
     if (val) {
       val = val.toLowerCase();
     } else {
-      return this.demandeApproFiltered = [...this.demandeApproList.sort((a, b) => a.numDA.localeCompare(b.numDA.valueOf()))];
+      this.demandeApproFiltered = [...this.demandeApproList.sort((a, b) => a.numDA.localeCompare(b.numDA.valueOf()))];
+      this.searchAffElmtChanged();
+      return;
     }
 
     const columns = Object.keys(this.demandeApproList[0]);
@@ -309,13 +331,13 @@ export class DemandeBesoinComponent  implements OnInit {
       }
     });
     this.demandeApproFiltered = rows;
+    this.searchAffElmtChanged();
   }
 
   makeForm(demandeAppro: DemandeApprovisionnement): void {
     this.validateForm = this.fb.group({
       numDA: [demandeAppro != null ? demandeAppro.numDA: null],
-      dateDA: [demandeAppro != null ? demandeAppro.dateDA: null,
-      [Validators.required]],
+      dateDA: [demandeAppro != null ? moment(demandeAppro.dateDA).format('yyyy-MM-DDTHH:mm'): null],
       description: [demandeAppro != null ? demandeAppro.description : null],
       service: [demandeAppro != null ? demandeAppro.service.numService : null,
         [Validators.required]],

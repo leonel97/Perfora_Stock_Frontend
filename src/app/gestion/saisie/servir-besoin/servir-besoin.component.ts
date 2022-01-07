@@ -868,6 +868,7 @@ export class ServirBesoinComponent  implements OnInit {
     let totalTTC : number = 0;
 
     const doc = new jsPDF();
+
     
     autoTable(doc, {
       theme: 'plain',
@@ -972,6 +973,136 @@ export class ServirBesoinComponent  implements OnInit {
     autoTable(doc, {
       theme: 'plain',
       margin: { top: 50, bottom:0 },
+      columnStyles: {
+        0: { textColor: 0, fontStyle: 'bold', halign: 'left' },
+      },
+      body: [
+        ["Arrêté le présent Ordre de Sortie à la Somme de : "+this.salToolsService.salNumberToLetter(this.salToolsService.salRound(totalTTC))+' Francs CFA']
+      ]
+      ,
+    });
+
+    doc.output('dataurlnewwindow');
+
+  }
+
+  openPdfToPrintTicket(element: Approvisionnement){
+
+
+    let totalTTC : number = 0;
+
+    const doc = new jsPDF('p', 'mm', [80, 900]);
+    
+    autoTable(doc, {
+      //startY: 0,
+      theme: "grid",
+      margin: { top: 5, left:5, right:5, bottom:10 },
+      columnStyles: {
+        0: { textColor: 'black', fontStyle: 'bold', fontSize:7, font: 'Times New Roman', halign: 'center' },
+        1: { textColor: 'black', fontStyle: 'bold', fontSize: 8, font: 'Times New Roman', halign: 'left' },
+        2: { textColor: 'blue', fontStyle: 'bold', fontSize: 10, font: 'Times New Roman', halign: 'center', valign: "middle" },
+      },
+      body: [
+        [{content: '\n\n\n\nPORT AUTONOME DE LOME\nLomé Togo',
+        rowSpan: 4},
+        'ACH-IDC-47-PAL17', 
+        { content: 'ORDRE DE SORTIE', rowSpan: 4}],
+        ['Date : 03/12/2021',
+        ],
+        ['Version : 01',
+        ],
+        ['Page: ../..',
+        ]
+      ]
+      ,
+    });
+    
+    doc.addImage(Utils.logoUrlData, 'jpeg', 10, 7, 11, 11);
+    
+
+    autoTable(doc, {
+      theme: 'plain',
+      margin: { top: 1 },
+      columnStyles: {
+        0: { textColor: 0, fontSize: 8, fontStyle: 'bold', halign: 'center' },
+      },
+      body: [
+        ['Ordre de Sortie N° '+element.numAppro+' du '+moment(element.dateAppro).format('DD/MM/YYYY')]
+      ]
+      ,
+    });
+
+    let lignes = [];
+    let demAppr: DemandeApprovisionnement = null;
+
+    this.ligneApproList.forEach(element2 => {
+      if(element2.appro.numAppro == element.numAppro){
+        demAppr = element2.ligneDA.appro;
+        let lig = [];
+        lig.push(element2.ligneDA.article.codeArticle);
+        lig.push(element2.ligneDA.article.libArticle);
+        lig.push(element2.quantiteLigneAppro);
+        lig.push(element2.ligneDA.uniter.libUniter);
+        lig.push(this.salToolsService.salRound(element2.puligneAppro*element2.ligneDA.uniter.poids));
+        let ht = element2.quantiteLigneAppro*element2.puligneAppro*element2.ligneDA.uniter.poids;
+        lig.push(this.salToolsService.salRound(ht));
+        lignes.push(lig);
+
+        totalTTC+= ht;
+      }
+
+    });
+
+    autoTable(doc, {
+      theme: 'plain',
+      margin: { left:5, right:5 },
+      styles: {fontSize: 8},
+      columnStyles: {
+        0: { textColor: 0, fontStyle: 'bold', halign: 'left' },
+        1: { textColor: 0, halign: 'left' },
+      },
+      body: [
+        ['Réf Demande de Besoins :', ''+demAppr?.numDA],
+        ['Centre Demandeuse :', demAppr?.service.codeService+' - '+demAppr?.service.libService],
+        ['Magasin :', element.magasin.codeMagasin+' - '+element.magasin.libMagasin]
+      ]
+      ,
+    });
+
+    
+
+    autoTable(doc, {
+      theme: 'grid',
+      margin: { left:5, right:5 },
+      styles: {fontSize: 8},
+      head: [['Article', 'Désignation', 'Quantité', 'Unité', 'PU', 'Montant']],
+      headStyles:{
+        fillColor: [41, 128, 185],
+        textColor: 255,
+        fontStyle: 'bold' ,
+    },
+    
+      body: lignes
+      ,
+    });
+
+
+    autoTable(doc, {
+      theme: 'grid',
+      margin: { top: 10, left:13 },
+      columnStyles: {
+        0: { fillColor: [41, 128, 185], textColor: 255, fontStyle: 'bold' },
+      },
+      body: [
+        ['Total TTC', this.salToolsService.salRound(totalTTC)]
+      ]
+      ,
+    });
+
+    autoTable(doc, {
+      theme: 'plain',
+      margin: { left:5, right:5 },
+      styles: {fontSize: 8},
       columnStyles: {
         0: { textColor: 0, fontStyle: 'bold', halign: 'left' },
       },

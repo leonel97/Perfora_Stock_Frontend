@@ -99,7 +99,7 @@
                           Demande de Besoin N°
                         </ng-template>
                         <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
-                          {{ getDemandeApproOfAAppro(row)?.numDA }} du {{ getDemandeApproOfAAppro(row)?.dateDA }}
+                          {{ getDemandeApproOfAAppro(row)?.numDA }} du {{ getDemandeApproOfAAppro(row)?.dateDA | date: "dd-MM-yyyy à HH:mm:ss" }}
                         </ng-template>
                       </ngx-datatable-column>
 
@@ -136,6 +136,11 @@
                           </button>
                           <button (click)="openPdfToPrint(row)" class="btn btn-outline-warning m-1 btn-sm"
                                   type="button" ngbTooltip="Imprimer" placement="bottom" *ngIf="authService.hasAccess('saisie_servir_print')">
+                            <i class="i-File-Download"> </i>
+                          </button>
+
+                          <button (click)="openPdfToPrintTicket(row)" class="btn btn-outline-warning m-1 btn-sm"
+                                  type="button" ngbTooltip="Ticket de Caisse" placement="bottom" *ngIf="authService.hasAccess('saisie_servir_print')">
                             <i class="i-File-Download"> </i>
                           </button>
                           

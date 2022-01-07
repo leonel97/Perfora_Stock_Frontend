@@ -285,6 +285,12 @@ export class CommandeAchatComponent implements OnInit {
 
       procesByLc: [commandeAchat != null ? commandeAchat.procesByLc : false],
 
+      departement: [commandeAchat != null ? commandeAchat.commande.departement : false],
+
+      justif: [commandeAchat != null ? commandeAchat.commande.justif : false],
+
+      numDa: [commandeAchat != null ? commandeAchat.commande.numDa : false],
+
     }, {
       validators : SalTools.validatorDateOrdre('dateCommande', 'dateRemise', false)
     });
@@ -404,7 +410,10 @@ export class CommandeAchatComponent implements OnInit {
       console.log('sal', lignesCom);
       
       const com = new Commande(formData.dateCommande, formData.dateRemise, formData.description,
-        formData.delaiLivraison, false, 0, false, false, formData.frs, this.exerciceService.selectedExo );
+        formData.delaiLivraison, false, 0, false, false, formData.frs, this.exerciceService.selectedExo, formData.departement,
+        formData.numDa, formData.justif);
+      console.log(com);
+      
         com.numCommande = formData.numComm;
       if (formData.numComAchat == null) {
         console.log("data", formData);
@@ -830,9 +839,9 @@ export class CommandeAchatComponent implements OnInit {
       },
       body: [
         ['Numéro du bond',': '+element.numComAchat],
-        ['Département',': comming soon'],
-        ['N° DA',': comming soon'],
-        ['Justificatif ',': comming soon '],
+        ['Département',': '+ (element.commande.departement?element.commande.departement.toString():'')],
+        ['N° DA',': '+(element.commande.numDa?element.commande.numDa.toString():'')],
+        ['Justificatif ',': '+(element.commande.justif?element.commande.justif.toString():'')],
         ['Nom du Fournisseur',': '+element.commande.frs.codeFrs+'\t'+element.commande.frs.identiteFrs],
         ['Date d\'émission',': '+moment(element.commande.dateCommande).format('DD/MM/YYYY')],
       ]

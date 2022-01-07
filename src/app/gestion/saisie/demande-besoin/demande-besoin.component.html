@@ -23,7 +23,28 @@
                   <div class="form-group">
                     <input [formControl]="searchControl" class="form-control form-control-rounded" id="email"
                            placeholder="Rechercher Demande de Besoin" type="text" autocomplete="off">
+                    
                   </div>
+                  
+                </div>
+                <div class="col-md-4">
+                  <form [formGroup]="searchAffForm" class="row">
+                    <label class="radio radio-primary col-md-4">
+                      <input type="radio" name="radioAffich" [value]="0" formControlName="radioAffich" (ngModelChange)= "filerData(searchControl.value)">
+                      <span>Toutes</span>
+                      <span class="checkmark"></span>
+                    </label>
+                    <label class="radio radio-success col-md-4">
+                      <input type="radio" name="radioAffich" [value]="1" formControlName="radioAffich" (ngModelChange)= "filerData(searchControl.value)">
+                      <span>Validées</span>
+                      <span class="checkmark"></span>
+                    </label>
+                    <label class="radio radio-danger col-md-4">
+                      <input type="radio" name="radioAffich" [value]="2" formControlName="radioAffich" (ngModelChange)= "filerData(searchControl.value)">
+                      <span>Non Validées</span>
+                      <span class="checkmark"></span>
+                    </label>
+                  </form> 
                 </div>
                 <div class="col-md-12">
                   <div class="o-hidden">
@@ -62,7 +83,7 @@
                           Date
                         </ng-template>
                         <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
-                          {{ row.dateDA }}
+                          {{ row.dateDA | date: "dd-MM-yyyy à HH:mm:ss" }}
                         </ng-template>
                       </ngx-datatable-column>
 
@@ -122,20 +143,20 @@
 
 
 
-          <li [ngbNavItem]="2">
+          <li [ngbNavItem]="2" *ngIf="authService.hasAccess('saisie_dem_bes_new') || validateForm.value.numDA">
             <a ngbNavLink><span *ngIf="! validateForm.value.numDA">Nouvelle</span><span *ngIf="validateForm.value.numDA" span>Modifier</span> Demande ou Expression de Besoin </a>
             <ng-template ngbNavContent>
 
               <div class="mb-2">
                 <div class="d-flex mb-5" style="margin-bottom: 0;">
                   <span class="m-auto"></span>
-                  <btn-loading btnClass="btn-primary btn-save mr-3" [loading]="loading" (click)="submit()" *ngIf="authService.hasAccess('saisie_dem_bes_new')" >Enregistrer</btn-loading>
+                  <btn-loading btnClass="btn-primary btn-save mr-3" [loading]="loading" (click)="submit()" *ngIf="authService.hasAccess('saisie_dem_bes_new') || authService.hasAccess('saisie_dem_bes_edit')" >Enregistrer</btn-loading>
                   <button class="btn btn-outline-secondary " (click)="resetForm()">Annuler</button>
                 </div>
                 <form [formGroup]="validateForm">
                   <h4 class="font-weight-bold">Informations sur la Demande ou Expression de Besoin</h4>
-                  <div class="row">
-                      <div class="col-md" *ngIf="validateForm.value.numDA">
+                  <div class="row" *ngIf="validateForm.value.numDA">
+                      <div class="col-md">
                           <div class="col-md form-group">
                               <label for="orderNo">Numéro</label>
                               <input formControlName="numDA" type="text" class="form-control"
@@ -145,19 +166,11 @@
                       <div class="col-md form-group mb-3">
                         <label for="picker1">Date de demande</label>
                         <div class="input-group">
-                            <input formControlName="dateDA" id="picker1" class="form-control text-right" type="date"
-                                >
+                            <input formControlName="dateDA" id="picker1" class="form-control text-right" type="datetime-local"
+                              readonly  >
 
                         </div>
                       </div>
-
-                      <div class="col-md form-group">
-                        <label for="orderNo">Observation</label>
-                        <input formControlName="description" type="text" class="form-control"
-                            placeholder="Observation sur la demande">
-
-                      </div>
-
                   </div>
                   <div class="row">
 
@@ -166,6 +179,12 @@
                       <ng-select formControlName="service">
                         <ng-option *ngFor="let serv of serviceList" [value]="serv?.numService">{{serv?.codeService}} - {{serv?.libService}}</ng-option>
                       </ng-select>
+                    </div>
+                    <div class="col-md form-group">
+                      <label for="description">Observation</label>
+                      <input formControlName="description" type="text" class="form-control"
+                          placeholder="Observation sur la demande">
+
                     </div>
 
                   </div>
