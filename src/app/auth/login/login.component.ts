@@ -163,6 +163,9 @@ export class LoginComponent implements OnInit {
             this.authenticationFailError = 'Erreur: Votre Compte n\'est pas actif. Veuillez contacter votre administrateur !!!';
             
           }
+          else{
+            this.authenticationFailError = 'Erreur lors du décodage de lUtilisateur du jeton. Veuillez contacter votre administrateur !!!';
+          }
          
         },
         (erreur) => {
