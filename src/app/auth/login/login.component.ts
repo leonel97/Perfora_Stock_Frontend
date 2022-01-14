@@ -148,22 +148,23 @@ export class LoginComponent implements OnInit {
           const helper = new JwtHelperService();
           const decodedToken = helper.decodeToken(token);
 
-          //console.log('user Details', decodedToken);
+          console.log('user Details', decodedToken);
 
           let userConnected = decodedToken.user
-         // console.log('user conected', userConnected);
+          console.log('user conected', userConnected);
 
           if (userConnected && userConnected.activeUtilisateur == true) {
-  
+          console.log('user conected 1', userConnected);
           this.auth.saveToken(token);
           this.router.navigateByUrl('/gestion/accueil');
          
           } else if (userConnected && userConnected.activeUtilisateur == false || userConnected.activeUtilisateur == null || userConnected.activeUtilisateur == undefined ) {
-
+            console.log('user conected 2', userConnected);
             this.authenticationFailError = 'Erreur: Votre Compte n\'est pas actif. Veuillez contacter votre administrateur !!!';
             
           }
           else{
+            console.log('user conected 3', userConnected);
             this.authenticationFailError = 'Erreur lors du décodage de lUtilisateur du jeton. Veuillez contacter votre administrateur !!!';
           }
          
