@@ -158,7 +158,7 @@ export class LoginComponent implements OnInit {
           this.auth.saveToken(token);
           this.router.navigateByUrl('/gestion/accueil');
          
-          } else if (userConnected.activeUtilisateur == false || userConnected.activeUtilisateur == null || userConnected.activeUtilisateur == undefined ) {
+          } else if (userConnected && userConnected.activeUtilisateur == false || userConnected.activeUtilisateur == null || userConnected.activeUtilisateur == undefined ) {
 
             this.authenticationFailError = 'Erreur: Votre Compte n\'est pas actif. Veuillez contacter votre administrateur !!!';
             
