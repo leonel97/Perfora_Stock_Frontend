@@ -153,7 +153,7 @@ export class LoginComponent implements OnInit {
           let userConnected = decodedToken.user
          // console.log('user conected', userConnected);
 
-          if (userConnected.activeUtilisateur == true) {
+          if (userConnected && userConnected.activeUtilisateur == true) {
   
           this.auth.saveToken(token);
           this.router.navigateByUrl('/gestion/accueil');
