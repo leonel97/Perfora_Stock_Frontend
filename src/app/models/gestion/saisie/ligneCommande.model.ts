@@ -8,7 +8,7 @@ export class LigneCommande {
 
   constructor(public qteLigneCommande: number, public puLigneCommande: number, public remise: number,
     public tva: number, public taibic: number, public ts: number, public numCommande: Commande,
-    public article: Article, public uniter: Uniter, public satisfaite?: boolean){
+    public article: Article, public uniter: Uniter, public satisfaite?: boolean, public prixUnitTtc?: boolean) {
 
   }
 

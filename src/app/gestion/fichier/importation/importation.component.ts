@@ -3,7 +3,6 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ToastrService } from 'ngx-toastr';
-import { element } from 'protractor';
 import { Article } from 'src/app/models/gestion/definition/article.model';
 import { CentreConsommation } from 'src/app/models/gestion/definition/centreConsommation';
 import { Direction } from 'src/app/models/gestion/definition/direction';
@@ -14,6 +13,7 @@ import { TypeArticle } from 'src/app/models/gestion/definition/typeArticle.model
 import { TypeCentreConsommation } from 'src/app/models/gestion/definition/typeCentreConsommation';
 import { TypeFournisseur } from 'src/app/models/gestion/definition/typeFournisseur';
 import { Uniter } from 'src/app/models/gestion/definition/uniter.model';
+import { Exercice } from 'src/app/models/gestion/fichier/exercice';
 import { AuthService } from 'src/app/services/common/auth.service';
 import { ArticleService } from 'src/app/services/gestion/definition/article.service';
 import { CentreConsommationService } from 'src/app/services/gestion/definition/centreConsommation.service';
@@ -25,6 +25,7 @@ import { TypeArticleService } from 'src/app/services/gestion/definition/type-art
 import { TypeCentreConsommationService } from 'src/app/services/gestion/definition/typeCentreConsommation.service';
 import { TypeFournisseurService } from 'src/app/services/gestion/definition/typeFournisseur.service';
 import { UniterService } from 'src/app/services/gestion/definition/uniter.service';
+import { ExerciceService } from 'src/app/services/gestion/fichier/exercice.service';
 import * as xlsx from 'xlsx';
 
 @Component({
@@ -51,8 +52,8 @@ export class ImportationComponent implements OnInit {
     private magasinService: MagasinService, private familleService: FamilleService,
     private typeArtiService: TypeArticleService, private articleService: ArticleService,
     private typeFrsService: TypeFournisseurService, private fournisseurService: FournisseurService,
-    private uniterService: UniterService,
-    public authService: AuthService
+    private uniterService: UniterService, private exerciceService: ExerciceService,
+    public authService: AuthService, 
     ) {
     this.repport1FormsGroup = this.formBulder.group({
       rep1Element:1,
@@ -976,6 +977,110 @@ export class ImportationComponent implements OnInit {
           return 1;
         }
       );
+
+    }
+    else if(this.repport1FormsGroup.value['rep1Element'] == 10){
+      this.loading = true;
+      this.articleService.getAllArticle().subscribe(
+        (data1) => {
+
+          this.exerciceService.list().subscribe(
+            (data2: Exercice[]) => {
+              let inde:number = 0;
+              let listToSave: Article[] = [];
+
+              
+
+              for(const element of this.feuille) {
+                inde++;
+                if(element[0] != undefined && element[1] != undefined && typeof(element[1]) == 'object' && element[2] != undefined && typeof(element[3])=='number' && typeof(element[4])=='number'){
+                  
+                  let artiii:Article = null;
+                  let exerci:Exercice = null;
+                  let finded1 = false;
+                  let finded2 = false;
+                  for(const element1 of data1) {
+                    if(element1.codeArticle == element[2]){
+                      artiii = {...element1};
+                      finded1 = true;
+                      break;
+                    }
+                  }
+
+                  if(!finded1){
+                    console.log('Le code d\'article à la ligne '+inde+' nExiste pas. Importation interrompu.');
+                    this.toastr.error('Le code d\'article à la ligne '+inde+' n\'Existe pas. Importation interrompu.', 'Importation de Stock Initial');
+                    this.loading = false;
+                    return;
+                  }
+
+                  for(const element2 of data2) {
+                    if(element2.codeExercice == element[0]){
+                      exerci = {...element2};
+                      finded2 = true;
+                      break;
+                    }
+                  }
+
+                  if(!finded2){
+                    console.log('Le code d\'exercice à la ligne '+inde+' nExiste pas. Importation interrompu.');
+                    this.toastr.error('Le code d\'exercice à la ligne '+inde+' n\'Existe pas. Importation interrompu.', 'Importation de Stock Initial');
+                    this.loading = false;
+                    return;
+                  }
+                  
+                  artiii.exo = exerci;
+                  artiii.datStInitArtTres = element[1];
+                  artiii.qteStIniTres = element[3];
+                  artiii.puStIniTres = element[4];
+                  listToSave.push(artiii);
+
+
+                }
+                else {
+                  console.log('Erreur à la ligne '+inde+'Une information est invalide');
+                  this.toastr.error('Erreur à la ligne '+(inde)+' Une information invalide', 'Importation de Stock Initial');
+                  this.loading = false;
+                  return;
+                }
+
+              }
+
+              this.articleService.addAListArticleForStockInit(listToSave).subscribe(
+                (data) =>  {
+
+                  console.log('Fin de lImportation, Importation réuissir');
+                  this.toastr.success('Importation éffectuée avec Succès', 'Importation de Stock Initial');
+                  this.loading = false;
+                },
+                (erreur) => {
+                  console.log('Erreur lors de lAjout des ligne ', erreur);
+                  this.toastr.error('Erreur lors de l\'Importation du Stock Initial\n Code : '+erreur.status+' | '+erreur.statusText, 'Importation de Stock Initial');
+                  this.loading = false;
+                  return 1;
+                }
+              );
+            }, 
+            (erreur) => {
+              console.log('Erreur lors de la récupération de la liste des magasins', erreur);
+              this.toastr.error('lors de la récupération de la liste des Magasins\n Code : '+erreur.status+' | '+erreur.statusText, 'Importation de Stock Initial');
+              this.loading = false;
+              return 1;
+            }
+          );
+
+          
+
+        }, 
+        (erreur) => {
+          console.log('Erreur lors de la récupération de la liste des articles', erreur);
+          this.toastr.error('lors de la récupération de la liste des Articles\n Code : '+erreur.status+' | '+erreur.statusText, 'Importation de Stock Initial');
+          this.loading = false;
+          return 1;
+        }
+      );
+
+      
 
     }
   }

@@ -28,6 +28,7 @@
                     <!--ng-option [value]="7">Types de Fournisseur</ng-option-->
                     <!--ng-option [value]="8">Fournisseurs</ng-option-->
                     <ng-option [value]="9">Unités de Comptage</ng-option>
+                    <ng-option [value]="10">Stock Initial</ng-option>
                   </ng-select>
                 </div>
                 <div class="col-md-5 form-group mb-3">
@@ -418,6 +419,41 @@
           <th>Code</th>
           <th>Libellé</th>
           <th>Poids</th>
+        </tr>
+      </tfoot>
+    </table>
+
+    </div>
+
+    <div class="modal-body"  *ngIf="repport1FormsGroup.value['rep1Element'] == 10">
+      <h3 style="text-align: center;">Stock Initial</h3>
+      <table class="table table-bordered table-striped table-sm"  id="dataTable1"><!--datatable [dtOptions]="dtOptions1"
+        [dtTrigger]="dtTrigger1"-->
+      <thead>
+        <tr>
+          <th>Code Exercice</th>
+          <th>Date</th>
+          <th>Code Article</th>
+          <th>Stock Initial</th>
+          <th>Cout Unitaire</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let uniter of feuille; let i = index">
+          <td>{{ uniter[0] }}</td>
+          <td>{{ uniter[1] }}</td>
+          <td>{{ uniter[2] }}</td>
+          <td>{{ uniter[3] }}</td>
+          <td>{{ uniter[4] }}</td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <th>Code Exercice</th>
+          <th>Date</th>
+          <th>Code Article</th>
+          <th>Stock Initial</th>
+          <th>Cout Unitaire</th>
         </tr>
       </tfoot>
     </table>

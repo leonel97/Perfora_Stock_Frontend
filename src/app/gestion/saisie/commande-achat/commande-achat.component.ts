@@ -42,6 +42,7 @@ export interface modelLigneCommande{
   selectedUniter: number;
   artii?: Article;
   qteRest?: number;
+  ttc?: boolean;
 
 }
 
@@ -285,11 +286,13 @@ export class CommandeAchatComponent implements OnInit {
 
       procesByLc: [commandeAchat != null ? commandeAchat.procesByLc : false],
 
-      departement: [commandeAchat != null ? commandeAchat.commande.departement : false],
+      departement: [commandeAchat != null ? commandeAchat.commande.departement : null],
 
-      justif: [commandeAchat != null ? commandeAchat.commande.justif : false],
+      justif: [commandeAchat != null ? commandeAchat.commande.justif : null],
 
-      numDa: [commandeAchat != null ? commandeAchat.commande.numDa : false],
+      numDa: [commandeAchat != null ? commandeAchat.commande.numDa : null],
+
+      cmdDe: [commandeAchat != null ? commandeAchat.commande.cmdDe : null],
 
     }, {
       validators : SalTools.validatorDateOrdre('dateCommande', 'dateRemise', false)
@@ -411,7 +414,7 @@ export class CommandeAchatComponent implements OnInit {
       
       const com = new Commande(formData.dateCommande, formData.dateRemise, formData.description,
         formData.delaiLivraison, false, 0, false, false, formData.frs, this.exerciceService.selectedExo, formData.departement,
-        formData.numDa, formData.justif);
+        formData.numDa, formData.justif, formData.cmdDe);
       console.log(com);
       
         com.numCommande = formData.numComm;
@@ -553,6 +556,8 @@ export class CommandeAchatComponent implements OnInit {
       listUniter: [],
       selectedArticl: null,
       selectedUniter: null,
+      ttc: false,
+
     });
   }
 
@@ -568,6 +573,7 @@ export class CommandeAchatComponent implements OnInit {
       this.pushALigneComAcha();
       this.ligneShow[this.ligneShow.length-1].artii = article;
       this.ligneShow[this.ligneShow.length-1].selectedArticl = article.numArticle;
+      this.ligneShow[this.ligneShow.length-1].lignesCommande.tva = article.tvaArticle;
       this.getUniterOfSelectArt(this.ligneShow.length-1);
     }
     
@@ -663,9 +669,10 @@ export class CommandeAchatComponent implements OnInit {
     let tot2: number = 0;
 
     this.ligneShow.forEach(element => {
-      tot0 += (element.lignesCommande.puLigneCommande * element.lignesCommande.qteLigneCommande);
-      tot1 += (element.lignesCommande.puLigneCommande * element.lignesCommande.qteLigneCommande * element.lignesCommande.tva/100);
-      tot2 += (element.lignesCommande.puLigneCommande * element.lignesCommande.qteLigneCommande * (1+(element.lignesCommande.tva/100)));
+      tot0 += (!element.ttc? element.lignesCommande.puLigneCommande * element.lignesCommande.qteLigneCommande : (element.lignesCommande.puLigneCommande * element.lignesCommande.qteLigneCommande)/((element.lignesCommande.tva/100)+1));
+      //tot1 += (element.lignesCommande.puLigneCommande * element.lignesCommande.qteLigneCommande * element.lignesCommande.tva/100);
+      tot2 += (!element.ttc?element.lignesCommande.puLigneCommande * element.lignesCommande.qteLigneCommande*(1+(element.lignesCommande.tva/100)): element.lignesCommande.puLigneCommande * element.lignesCommande.qteLigneCommande);
+      tot1 += tot2-tot0;
     });
 
     this.totaux[0] = tot0;
@@ -816,12 +823,12 @@ export class CommandeAchatComponent implements OnInit {
         [{content: '\n\n\n\nPORT AUTONOME DE LOME\nTel : +228 22 23 77 00\nFax : +228 22 27 26 27 / 22 27 02 48\nE-mail : togoport@togoport.tg\nWebsite : www.togoport.tg\nLomé Togo',
         rowSpan: 4},
         'ACH-IDC-47-PAL17', 
-        { content: 'BON DE COMMANDE', rowSpan: 4}],
+        { content: 'BON DE COMMANDE'+(element.commande.cmdDe ? ' DE '+element.commande.cmdDe.toUpperCase() : ''), rowSpan: 4}],
         ['Date : 03/12/2021',
         ],
         ['Version : 01',
         ],
-        ['Page: ../..',
+        ['Page: 1 / 1',
         ]
       ]
       ,
@@ -871,13 +878,14 @@ export class CommandeAchatComponent implements OnInit {
         lig.push(element2.uniter.libUniter);
         lig.push(element2.puLigneCommande);
         lig.push(element2.tva);
-        let ht = element2.qteLigneCommande*element2.puLigneCommande;
-        lig.push(this.salToolsService.salRound(ht*(1+(element2.tva/100))));
+        let ht = !element2.prixUnitTtc? element2.puLigneCommande * element2.qteLigneCommande : (element2.puLigneCommande * element2.qteLigneCommande)/((element2.tva/100)+1);
+        lig.push(this.salToolsService.salRound(!element2.prixUnitTtc?ht*(1+(element2.tva/100)) : ht/(1+(element2.tva/100))));
         lignes.push(lig);
 
         totalHT+= ht;
-        totalTVA+= ht*(element2.tva/100);
-        totalTTC+= ht*(1+(element2.tva/100));
+        //totalTVA+= ht*(element2.tva/100);
+        totalTTC+= !element2.prixUnitTtc?ht*(1+(element2.tva/100)) : ht/(1+(element2.tva/100));
+        totalTVA = totalTTC - totalHT;
       }
 
     });
