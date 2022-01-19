@@ -399,6 +399,7 @@ export class CommandeAchatComponent implements OnInit {
 
         element.lignesCommande.article = null;
         element.lignesCommande.uniter = null;
+        element.lignesCommande.prixUnitTtc = element.ttc;
 
         if (j > -1) {
           element.lignesCommande.article = element.listArticle[j];
