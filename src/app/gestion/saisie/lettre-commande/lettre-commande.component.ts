@@ -290,7 +290,7 @@ export class LettreCommandeComponent implements OnInit {
 
       let ligneComAchat = this.ligneCommandeList.find( l => (l.article.numArticle == article.numArticle && l.numCommande.numCommande == this.commandeAchatList.find( m => m.numComAchat == this.validateForm.value['numComAchat'])?.commande.numCommande) );
 
-      this.ligneShow[this.ligneShow.length-1].lignesCommande.puLigneCommande = ligneComAchat.puLigneCommande;
+      this.ligneShow[this.ligneShow.length-1].lignesCommande.puLigneCommande = ligneComAchat.prixUnitTtc ? ligneComAchat.puLigneCommande/(1+(ligneComAchat.tva/100)) : ligneComAchat.puLigneCommande;
       this.ligneShow[this.ligneShow.length-1].lignesCommande.tva = ligneComAchat.tva;
       this.ligneShow[this.ligneShow.length-1].selectedUniter = ligneComAchat.uniter.numUniter;
       this.ligneShow[this.ligneShow.length-1].lignesCommande.uniter = ligneComAchat.uniter;
@@ -446,7 +446,7 @@ export class LettreCommandeComponent implements OnInit {
     for(const lig of this.ligneShow){
       if(lig.lignesCommande.puLigneCommande <=0 || lig.selectedUniter == null
         || lig.lignesCommande.qteLigneCommande <=0 || lig.lignesCommande.tva < 0
-        || lig.lignesCommande.qteLigneCommande > lig.qteRest){
+        ){
         lignShowValid = false;
         break;
       }
@@ -909,7 +909,7 @@ export class LettreCommandeComponent implements OnInit {
         lig.push(element2.article.libArticle);
         lig.push(element2.qteLigneCommande);
         lig.push(element2.uniter.libUniter);
-        lig.push(element2.puLigneCommande);
+        lig.push(this.salToolsService.salRound(element2.puLigneCommande));
         lig.push(element2.tva);
         let ht = element2.qteLigneCommande*element2.puLigneCommande;
         lig.push(this.salToolsService.salRound(ht*(1+(element2.tva/100))));

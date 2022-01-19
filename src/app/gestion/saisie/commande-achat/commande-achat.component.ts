@@ -311,6 +311,7 @@ export class CommandeAchatComponent implements OnInit {
             selectedArticl: ligCo.article.numArticle,
             selectedUniter: ligCo.uniter ? ligCo.uniter.numUniter : null,
             artii: ligCo.article,
+            ttc: ligCo.prixUnitTtc
 
           });
         }
@@ -672,7 +673,7 @@ export class CommandeAchatComponent implements OnInit {
       tot0 += (!element.ttc? element.lignesCommande.puLigneCommande * element.lignesCommande.qteLigneCommande : (element.lignesCommande.puLigneCommande * element.lignesCommande.qteLigneCommande)/((element.lignesCommande.tva/100)+1));
       //tot1 += (element.lignesCommande.puLigneCommande * element.lignesCommande.qteLigneCommande * element.lignesCommande.tva/100);
       tot2 += (!element.ttc?element.lignesCommande.puLigneCommande * element.lignesCommande.qteLigneCommande*(1+(element.lignesCommande.tva/100)): element.lignesCommande.puLigneCommande * element.lignesCommande.qteLigneCommande);
-      tot1 += tot2-tot0;
+      tot1 = tot2-tot0;
     });
 
     this.totaux[0] = tot0;
@@ -687,7 +688,7 @@ export class CommandeAchatComponent implements OnInit {
 
     this.ligneCommandeList.forEach(element => {
       if(element.numCommande.numCommande == row.commande.numCommande){
-        tot += element.puLigneCommande * element.qteLigneCommande * (1+(element.tva/100));
+        tot += !element.prixUnitTtc?element.puLigneCommande * element.qteLigneCommande*(1+(element.tva/100)): element.puLigneCommande * element.qteLigneCommande;
       }
     });
 
@@ -876,15 +877,15 @@ export class CommandeAchatComponent implements OnInit {
         lig.push(element2.article.libArticle);
         lig.push(element2.qteLigneCommande);
         lig.push(element2.uniter.libUniter);
-        lig.push(element2.puLigneCommande);
+        lig.push(element2.puLigneCommande+(element2.prixUnitTtc?' (TTC)':''));
         lig.push(element2.tva);
         let ht = !element2.prixUnitTtc? element2.puLigneCommande * element2.qteLigneCommande : (element2.puLigneCommande * element2.qteLigneCommande)/((element2.tva/100)+1);
-        lig.push(this.salToolsService.salRound(!element2.prixUnitTtc?ht*(1+(element2.tva/100)) : ht/(1+(element2.tva/100))));
+        lig.push(this.salToolsService.salRound(ht));
         lignes.push(lig);
 
         totalHT+= ht;
         //totalTVA+= ht*(element2.tva/100);
-        totalTTC+= !element2.prixUnitTtc?ht*(1+(element2.tva/100)) : ht/(1+(element2.tva/100));
+        totalTTC+= !element2.prixUnitTtc?element2.puLigneCommande * element2.qteLigneCommande*(1+(element2.tva/100)) : element2.puLigneCommande * element2.qteLigneCommande;
         totalTVA = totalTTC - totalHT;
       }
 
@@ -892,7 +893,7 @@ export class CommandeAchatComponent implements OnInit {
     
     autoTable(doc, {
       theme: 'grid',
-      head: [['Article', 'Désignation', 'Quantité', 'Unité', 'PU', 'TVA(%)', 'Montant']],
+      head: [['Article', 'Désignation', 'Quantité', 'Unité', 'PU', 'TVA(%)', 'Montant HT']],
       headStyles:{
         fillColor: [41, 128, 185],
         textColor: 255,

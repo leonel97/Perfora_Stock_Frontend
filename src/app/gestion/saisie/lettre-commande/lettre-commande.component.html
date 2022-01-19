@@ -214,7 +214,6 @@
                                       <th scope="col">Article</th>
                                       <th scope="col">PU HT</th>
                                       <th scope="col">Quantité</th>
-                                      <th scope="col">Quantité Restante</th>
                                       <th scope="col">Unité</th>
                                       <th scope="col">Montant HT</th>
                                       <th scope="col">TVA</th>
@@ -237,7 +236,7 @@
                                         -->
                                       </td>
                                       <td>
-                                          {{lig.lignesCommande.puLigneCommande}}
+                                          {{salToolsService.salRound(lig.lignesCommande.puLigneCommande)}}
                                           <!-- <input type="number" class="form-control" [(ngModel)] = "lig.lignesCommande.puLigneCommande"
                                               placeholder="Prix Unitaire HT" (ngModelChange)="calculTotaux()"
                                               [ngStyle]="{'background-color': (lig.lignesCommande.puLigneCommande <=0) ? 'rgb(255, 172, 172)': null}"  
@@ -246,12 +245,8 @@
                                       <td>
                                         <input type="number" class="form-control" [(ngModel)] = "lig.lignesCommande.qteLigneCommande"
                                             placeholder="Quantité" (ngModelChange)="calculTotaux()" 
-                                            [ngStyle]="{'background-color': (lig.lignesCommande.qteLigneCommande <=0 || lig.lignesCommande.qteLigneCommande > lig.qteRest) ? 'rgb(255, 172, 172)': null}"
+                                            [ngStyle]="{'background-color': (lig.lignesCommande.qteLigneCommande <=0) ? 'rgb(255, 172, 172)': null}"
                                             >
-                                      </td>
-                                      <td>
-                                        {{lig.qteRest - lig.lignesCommande.qteLigneCommande}}
-                                        
                                       </td>
                                       <td>
                                         {{lig.lignesCommande?.uniter.codeUniter}} - {{lig.lignesCommande?.uniter.libUniter}}
