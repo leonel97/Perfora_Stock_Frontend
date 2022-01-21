@@ -76,6 +76,7 @@ export class ServirBesoinComponent  implements OnInit {
   detailView: boolean = false;
 
   etatVali: boolean = false;
+  etatVali2: boolean = false;
 
   totaux: number[] = [0, 0, 0];
 
@@ -482,7 +483,7 @@ export class ServirBesoinComponent  implements OnInit {
         this.toastr.error('Veuillez Renseigner les Quantités Convenablement.', ' Erreur !', {progressBar: true});
 
       }, 3000);
-    } else if (this.ligneShow[0].concernedLigneDa.appro.dateDA.valueOf() > formData.dateAppro.valueOf()) {
+    } else if (this.ligneShow[0].concernedLigneDa.appro.dateDA.valueOf() > (new Date(formData.dateAppro)).valueOf()) {
       this.loading = true;
       setTimeout(() => {
         this.loading = false;
@@ -731,7 +732,7 @@ export class ServirBesoinComponent  implements OnInit {
 
   }
 
-  valider(appro: Approvisionnement, eta: boolean, content){
+  valider1(appro: Approvisionnement, eta: boolean, content){
 
     if(this.inventaireEnCours){
       this.toastr.error('Impossible d\'éffectuer l\'action car un Inventaire est en cours !', 'Erreur !', { timeOut: 5000 });
@@ -749,17 +750,81 @@ export class ServirBesoinComponent  implements OnInit {
             .result.then((result) => {
             //this.confirmResut = `Closed with: ${result}`;
             
-              this.stockerService.getAllStocker().subscribe(
-                (data2) => {
-
+              
+              appro.valideAppro1 = eta;
+        
+              this.approService.editAAppro4(appro.numAppro, appro).subscribe(
+                (data) => {
+        
+                  const i = this.approList.findIndex(l => l.numAppro == data.numAppro);
+                      if (i > -1) {
+                        this.approList[i] = data;
+                        this.approFiltered = [...this.approList.sort((a, b) => a.numAppro.localeCompare(b.numAppro.valueOf()))];
+                      }
+        
+                      if(data.valideAppro1 == appro.valideAppro1){
+                        let msg: String = 'Validation'
+                        if(eta == false) msg = 'Annulation';
+                        this.toastr.success(msg+' effectuée avec succès.', 'Success', { timeOut: 5000 });
+                      } else {
+                        let msg: String = 'Erreur lors de la Validation de la Consommation Interne'
+                        
+                        this.toastr.error(msg.valueOf(), 'Erreur !', { timeOut: 5000 });
+                      }
+        
+        
                 },
                 (error: HttpErrorResponse) => {
                   console.log('Echec status ==> ' + error.status);
                   this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000 });
         
                 }
-
               );
+        
+        
+            }, (reason) => {
+              console.log(`Dismissed with: ${reason}`);
+            });
+        
+
+            
+          }
+          else{
+            this.toastr.error('Période Cloturée ', 'Erreur !', { timeOut: 5000, progressBar:true });
+          }
+        },
+        (error: HttpErrorResponse) => {
+          console.log('Echec atatus ==> ' + error.status);
+          this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000, progressBar:true });
+          
+        }
+      );
+  
+
+    }
+
+
+
+  }
+
+  valider(appro: Approvisionnement, eta: boolean, content){
+
+    if(this.inventaireEnCours){
+      this.toastr.error('Impossible d\'éffectuer l\'action car un Inventaire est en cours !', 'Erreur !', { timeOut: 5000 });
+      
+    }
+    else{
+
+      this.clotureService.isPeriodeCloturedByDate(appro.dateAppro).subscribe(
+        (data) => {
+          if(data == false){
+           
+            this.etatVali2 = eta;
+
+            this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', centered: true})
+            .result.then((result) => {
+            //this.confirmResut = `Closed with: ${result}`;
+            
 
               appro.valideAppro = eta;
         
@@ -773,8 +838,8 @@ export class ServirBesoinComponent  implements OnInit {
                       }
         
                       if(data.valideAppro == appro.valideAppro){
-                        let msg: String = 'Validation'
-                        if(eta == false) msg = 'Annulation';
+                        let msg: String = 'Sortie'
+                        if(eta == false) msg = 'Retour';
                         this.toastr.success(msg+' effectuée avec succès.', 'Success', { timeOut: 5000 });
                       } else {
                         let msg: String = 'Erreur lors de la Sortie de d\'Article du Magasin, la quantité disponible de l\'un des articles dans ce magasin n\'est pas satisfaisante.'

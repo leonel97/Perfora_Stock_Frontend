@@ -44,6 +44,10 @@ export class ApprovisionnementService {
       return this.httpCli.put<Approvisionnement>(this.host+'/stock/approvisionnement/byCodApp3/'+code, corps);
     }
 
+    editAAppro4(code:String, corps:Approvisionnement){
+      return this.httpCli.put<Approvisionnement>(this.host+'/stock/approvisionnement/byCodApp4/'+code, corps);
+    }
+
     deleteAAppro(code:String){
       return this.httpCli.delete<boolean>(this.host+'/stock/approvisionnement/byCodApp/'+code);
     }

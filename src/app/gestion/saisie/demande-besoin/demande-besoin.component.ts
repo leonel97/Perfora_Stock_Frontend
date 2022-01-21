@@ -736,7 +736,7 @@ export class DemandeBesoinComponent  implements OnInit {
         1: { textColor: 0, halign: 'left' },
       },
       body: [
-        ['Centre Demandeuse :', element.service.codeService+' - '+element.service.libService],
+        ['Centre Demandeur :', element.service.codeService+' - '+element.service.libService],
       ]
       ,
     });

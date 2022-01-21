@@ -119,17 +119,29 @@
                         <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
                           <!--<strong>{{ row.code }}</strong>-->
                           <button (click)="makeForm(row)" class="btn btn-primary m-1 btn-sm"
-                          type="button" *ngIf="row.valideAppro == false && authService.hasAccess('saisie_servir_edit')" ngbTooltip="Modifier" placement="bottom">
+                          type="button" *ngIf="row.valideAppro1 == false && authService.hasAccess('saisie_servir_edit')" ngbTooltip="Modifier" placement="bottom">
                             <i class="i-Pen-5"> </i>
                           </button>
-                          <button (click)="valider(row, true, modalValid)" class="btn btn-outline-success m-1 btn-sm"
-                                  type="button" *ngIf="row.valideAppro == false && authService.hasAccess('saisie_servir_valid')" ngbTooltip="Valider" placement="bottom">
+                          <!--Validation pour confirmer la saisie de la pièce-->
+                          <button (click)="valider1(row, true, modalValid)" class="btn btn-outline-success m-1 btn-sm"
+                                  type="button" *ngIf="row.valideAppro1 == false && authService.hasAccess('saisie_servir_valid')" ngbTooltip="Valider" placement="bottom">
                             <i class="i-Yes"> </i>
                           </button>
-                          <button (click)="valider(row, false, modalValid)" class="btn btn-outline-warning m-1 btn-sm"
-                                  type="button" *ngIf="row.valideAppro == true && authService.hasAccess('saisie_servir_rollback')" ngbTooltip="Annuler" placement="bottom">
+                          <button (click)="valider1(row, false, modalValid)" class="btn btn-outline-warning m-1 btn-sm"
+                                  type="button" *ngIf="(row.valideAppro1 == true && row.valideAppro == false) && authService.hasAccess('saisie_servir_rollback')" ngbTooltip="Annuler" placement="bottom">
                             <i class="i-Reload"> </i>
                           </button>
+                          <!--Validation pour faire la sortie du magasin-->
+                          <div *ngIf="row.valideAppro1 == true">
+                            <button (click)="valider(row, true, modalValid2)" class="btn btn-outline-success m-1 btn-sm"
+                                  type="button" *ngIf="row.valideAppro == false && authService.hasAccess('saisie_servir_valid2')" ngbTooltip="Sortie de Magasin" placement="bottom">
+                            <i class="i-Yes"> </i>
+                            </button>
+                            <button (click)="valider(row, false, modalValid2)" class="btn btn-outline-warning m-1 btn-sm"
+                                    type="button" *ngIf="row.valideAppro == true && authService.hasAccess('saisie_servir_rollback2')" ngbTooltip="Retour en Magasin" placement="bottom">
+                              <i class="i-Reload"> </i>
+                            </button>
+                          </div>
                           <button (click)="openDetail(row)" class="btn btn-outline-warning m-1 btn-sm"
                                   type="button" ngbTooltip="Détail" placement="bottom" *ngIf="authService.hasAccess('saisie_servir_detail')" >
                             <i class="i-Information"> </i>
@@ -184,7 +196,7 @@
                         <ng-select formControlName="numDA" [readonly]="validateForm.value.numAppro"
                         (ngModelChange)="getInfosOnDaSelected()" >
                         <div *ngFor="let da of demandeApproList">
-                          <ng-option *ngIf="!isADemApproSitisfaied(da) && da.valideDA" [value]="da.numDA">{{da.numDA}} du {{da.dateDA}} ( {{ da.service.codeService }} - {{ da.service.libService }} )</ng-option>
+                          <ng-option *ngIf="!isADemApproSitisfaied(da) && da.valideDA" [value]="da.numDA">{{da.numDA}} du {{da.dateDA | date: "dd-MM-yyyy à HH:mm:ss"}} ( {{ da.service.codeService }} - {{ da.service.libService }} )</ng-option>
                         </div>
 
                         </ng-select>
@@ -344,6 +356,31 @@
     <p>
       <strong>Confirmez-vous <strong class="text-success" *ngIf="etatVali == true">la Validation</strong>
       <strong class="text-danger" *ngIf="etatVali == false">l'Annulation</strong> de la pièce ?</strong>
+    </p>
+  </div>
+  <div class="modal-footer">
+    <button (click)="modal.dismiss('cancel')" class="btn btn-outline-secondary btn-rounded" type="button">NON
+    </button>
+    <button (click)="modal.close('Ok')" class="btn btn-danger btn-rounded" ngbAutofocus
+            type="button">OUI
+    </button>
+  </div>
+</ng-template>
+
+<ng-template #modalValid2 let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-title" *ngIf="etatVali2 == true">Sortie</h4>
+    <h4 class="modal-title" id="modal-title" *ngIf="etatVali2 == false">Retour</h4>
+    <button (click)="modal.dismiss('Cross click')" aria-describedby="modal-title" aria-label="Close button"
+            class="close"
+            type="button">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <p>
+      <strong>Confirmez-vous <strong class="text-success" *ngIf="etatVali2 == true">la Sortie</strong>
+      <strong class="text-danger" *ngIf="etatVali2 == false">le retour</strong> des articles du magasin ?</strong>
     </p>
   </div>
   <div class="modal-footer">
