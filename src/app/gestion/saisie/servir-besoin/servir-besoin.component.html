@@ -26,6 +26,48 @@
                            placeholder="Rechercher Consommation Interne" type="text" autocomplete="off">
                   </div>
                 </div>
+                <div class="col-md-4 form-group mb-3">
+                  <div class="row">
+                    <div class="col-md-3" style="margin:0; padding:0;">
+                      Affichage de 
+                    </div>
+                    <div class="col-md-2" style="margin:0; padding:0;">
+                      <select class="form-control" [(ngModel)] = "nbrElmtByPage" >
+                        <option *ngFor="let supFa of listNbrElmtByPage" [value]="supFa"
+                        >{{ supFa }}</option>
+  
+                      </select>
+                    </div>
+                    <div class="col-md-6" style="margin:0; padding:0; padding-left: 1%;">
+                      éléments par page
+                    </div>
+                  </div>
+                  
+                </div>
+                <div class="col-md-6">
+                  <form [formGroup]="searchAffForm" class="row">
+                    <label class="radio radio-primary col-md-4">
+                      <input type="radio" name="radioAffich" [value]="0" formControlName="radioAffich" (ngModelChange)= "filerData(searchControl.value)">
+                      <span>Toutes</span>
+                      <span class="checkmark"></span>
+                    </label>
+                    <label class="radio radio-success col-md-4">
+                      <input type="radio" name="radioAffich" [value]="1" formControlName="radioAffich" (ngModelChange)= "filerData(searchControl.value)">
+                      <span>Validées et Non Sorties</span>
+                      <span class="checkmark"></span>
+                    </label>
+                    <label class="radio radio-danger col-md-4">
+                      <input type="radio" name="radioAffich" [value]="2" formControlName="radioAffich" (ngModelChange)= "filerData(searchControl.value)">
+                      <span>Non Validées</span>
+                      <span class="checkmark"></span>
+                    </label>
+                    <label class="radio radio-warning col-md-4">
+                      <input type="radio" name="radioAffich" [value]="3" formControlName="radioAffich" (ngModelChange)= "filerData(searchControl.value)">
+                      <span>Sorties</span>
+                      <span class="checkmark"></span>
+                    </label>
+                  </form> 
+                </div>
                 <div class="col-md-12">
                   <div class="o-hidden">
                     <ngx-datatable
@@ -35,17 +77,17 @@
                       [rowHeight]="'auto'"
                       [rows]="approFiltered"
                       [messages]="{emptyMessage: 'Aucune donnée à afficher !!!'}"
-                      [limit]="4"
+                      [limit]="nbrElmtByPage"
                       class="material fullscreen"
-                      style="height: 500px; box-shadow: none; overflow-y:visible">
+                      style="box-shadow: none; overflow-y:visible">
 
                       <ngx-datatable-column [maxWidth]="50">
                         <ng-template ngx-datatable-header-template>
                           Validité
                         </ng-template>
                         <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
-                          <strong *ngIf="row.valideAppro == true">V</strong>
-                          <!--<strong *ngIf="row.commande.valide == false">A</strong>-->
+                          <strong *ngIf="row.valideAppro1 == true && row.valideAppro == false">V</strong>
+                          <strong *ngIf="row.valideAppro == true">S</strong>
                         </ng-template>
                       </ngx-datatable-column>
 

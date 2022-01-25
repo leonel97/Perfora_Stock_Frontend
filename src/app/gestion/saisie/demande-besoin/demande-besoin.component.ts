@@ -644,7 +644,8 @@ export class DemandeBesoinComponent  implements OnInit {
                 const i = this.demandeApproList.findIndex(l => l.numDA == demandeAppro.numDA);
                     if (i > -1) {
                       this.demandeApproList[i] = demandeAppro;
-                      this.demandeApproFiltered = [...this.demandeApproList.sort((a, b) => a.numDA.localeCompare(b.numDA.valueOf()))];
+                      //this.demandeApproFiltered = [...this.demandeApproList.sort((a, b) => a.numDA.localeCompare(b.numDA.valueOf()))];
+                      this.filerData(this.searchControl.value);
                     }
       
                     this.getAllArticle();

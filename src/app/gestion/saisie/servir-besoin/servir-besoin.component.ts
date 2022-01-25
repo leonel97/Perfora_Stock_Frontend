@@ -56,9 +56,13 @@ export interface modelLigneAppro{
 })
 export class ServirBesoinComponent  implements OnInit {
 
+  listNbrElmtByPage = [2, 4, 10, 25, 50, 100];
+  nbrElmtByPage: number = 2;
+
   searchControl: FormControl = new FormControl();
   approFiltered;
 
+  searchAffForm: FormGroup;
   validateForm: FormGroup;
   approList: Approvisionnement[] = [];
   ligneApproList: LigneAppro[] = [];
@@ -120,6 +124,11 @@ export class ServirBesoinComponent  implements OnInit {
       });*/
 
     this.getAllAppro();
+
+    this.searchAffForm = this.fb.group({
+      radioAffich: [0, [Validators.required]],
+
+    });
 
     this.makeForm(null);
 
@@ -279,12 +288,32 @@ export class ServirBesoinComponent  implements OnInit {
 
   }
 
+  searchAffElmtChanged(){
+    //this.filerData(this.searchControl.value);
+    if(this.searchAffForm.value['radioAffich'] == 0){
+
+      this.approFiltered = [...this.approFiltered];
+    }
+    else if(this.searchAffForm.value['radioAffich'] == 1){
+      this.approFiltered = [...this.approFiltered.filter(l => (l.valideAppro1 && !l.valideAppro))];
+    }
+    else if(this.searchAffForm.value['radioAffich'] == 2){
+      this.approFiltered = [...this.approFiltered.filter(l => !l.valideAppro1)];
+    }
+    else {
+      this.approFiltered = [...this.approFiltered.filter(l => l.valideAppro)];
+    }
+    //console.log('sall',this.searchAffForm.value['radioAffich']); 
+    
+  }
 
   filerData(val) {
     if (val) {
       val = val.toLowerCase();
     } else {
-      return this.approFiltered = [...this.approList.sort((a, b) => a.numAppro.localeCompare(b.numAppro.valueOf()))];
+      this.approFiltered = [...this.approList.sort((a, b) => a.numAppro.localeCompare(b.numAppro.valueOf()))];
+      this.searchAffElmtChanged();
+      return;
     }
 
     const columns = Object.keys(this.approList[0]);
@@ -302,6 +331,7 @@ export class ServirBesoinComponent  implements OnInit {
       }
     });
     this.approFiltered = rows;
+    this.searchAffElmtChanged();
   }
 
   makeForm(appro: Approvisionnement): void {
@@ -759,7 +789,8 @@ export class ServirBesoinComponent  implements OnInit {
                   const i = this.approList.findIndex(l => l.numAppro == data.numAppro);
                       if (i > -1) {
                         this.approList[i] = data;
-                        this.approFiltered = [...this.approList.sort((a, b) => a.numAppro.localeCompare(b.numAppro.valueOf()))];
+                        //this.approFiltered = [...this.approList.sort((a, b) => a.numAppro.localeCompare(b.numAppro.valueOf()))];
+                        this.filerData(this.searchControl.value);
                       }
         
                       if(data.valideAppro1 == appro.valideAppro1){
@@ -834,7 +865,8 @@ export class ServirBesoinComponent  implements OnInit {
                   const i = this.approList.findIndex(l => l.numAppro == data.numAppro);
                       if (i > -1) {
                         this.approList[i] = data;
-                        this.approFiltered = [...this.approList.sort((a, b) => a.numAppro.localeCompare(b.numAppro.valueOf()))];
+                        //this.approFiltered = [...this.approList.sort((a, b) => a.numAppro.localeCompare(b.numAppro.valueOf()))];
+                        this.filerData(this.searchControl.value);
                       }
         
                       if(data.valideAppro == appro.valideAppro){
