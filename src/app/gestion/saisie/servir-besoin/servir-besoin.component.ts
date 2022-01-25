@@ -573,7 +573,8 @@ export class ServirBesoinComponent  implements OnInit {
         console.log(data);
 
         this.approList.unshift(data.approvisionnement);
-        this.approFiltered = [...this.approList.sort((a, b) => a.numAppro.localeCompare(b.numAppro.valueOf()))];
+        //this.approFiltered = [...this.approList.sort((a, b) => a.numAppro.localeCompare(b.numAppro.valueOf()))];
+        this.filerData(this.searchControl.value);
 
         setTimeout(() => {
           this.loading = false;
@@ -613,7 +614,8 @@ export class ServirBesoinComponent  implements OnInit {
           const i = this.approList.findIndex(l => l.numAppro == data.approvisionnement.numAppro);
           if (i > -1) {
             this.approList[i] = data.approvisionnement;
-            this.approFiltered = [...this.approList.sort((a, b) => a.numAppro.localeCompare(b.numAppro.valueOf()))];
+            //this.approFiltered = [...this.approList.sort((a, b) => a.numAppro.localeCompare(b.numAppro.valueOf()))];
+            this.filerData(this.searchControl.value);
           }
           setTimeout(() => {
             this.loading = false;
