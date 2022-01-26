@@ -695,7 +695,7 @@ export class ServirBesoinComponent  implements OnInit {
 
   getNotUsedArticle(): Article[]{
     let tab: Article[] = [];
-    this.articleList.filter(l => (this.validateForm.value.magasin && l.famille.magasin.numMagasin == this.validateForm.value.magasin)).forEach(element => {
+    this.articleList.filter(l => (this.validateForm.value.magasin && l.famille.magasin && l.famille.magasin.numMagasin == this.validateForm.value.magasin)).forEach(element => {
       let finded: boolean = false;
       for(const lig of this.ligneShow){
         if(lig.selectedArticl == element.numArticle){

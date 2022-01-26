@@ -150,12 +150,16 @@
 
                     <div class="col-md-5 form-group mb-3">
                       <label for="picker1">Famille</label>
-                      <select class="form-control" id="picker1" formControlName="famille">
+                      <ng-select  id="picker1" formControlName="famille" placeholder="Sélectionnez la Famille de l'article">
+                        <ng-option *ngFor="let supFa of familleList2" [value]="supFa.numFamille"
+                        >{{ supFa.codeFamille }} - {{ supFa.libFamille }}</ng-option>
+                      </ng-select>
+                      <!--select class="form-control" id="picker1" formControlName="famille">
                           <option [value]="null">Aucun</option>
                           <option *ngFor="let supFa of familleList2" [value]="supFa.numFamille"
                           >{{ supFa.codeFamille }} - {{ supFa.libFamille }}</option>
 
-                      </select>
+                      </select-->
                     </div>
 
                   </div>
