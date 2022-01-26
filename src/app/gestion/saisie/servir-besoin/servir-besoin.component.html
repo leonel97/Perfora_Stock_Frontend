@@ -26,7 +26,7 @@
                            placeholder="Rechercher Consommation Interne" type="text" autocomplete="off">
                   </div>
                 </div>
-                <div class="col-md-4 form-group mb-3">
+                <!--div class="col-md-4 form-group mb-3">
                   <div class="row">
                     <div class="col-md-3" style="margin:0; padding:0;">
                       Affichage de 
@@ -43,7 +43,7 @@
                     </div>
                   </div>
                   
-                </div>
+                </div-->
                 <div class="col-md-6">
                   <form [formGroup]="searchAffForm" class="row">
                     <label class="radio radio-primary col-md-4">
@@ -77,9 +77,9 @@
                       [rowHeight]="'auto'"
                       [rows]="approFiltered"
                       [messages]="{emptyMessage: 'Aucune donnée à afficher !!!'}"
-                      [limit]="nbrElmtByPage"
+                      [limit]="4"
                       class="material fullscreen"
-                      style="box-shadow: none; overflow-y:visible">
+                      style="height: 500px; box-shadow: none; overflow-y:visible">
 
                       <ngx-datatable-column [maxWidth]="50">
                         <ng-template ngx-datatable-header-template>
