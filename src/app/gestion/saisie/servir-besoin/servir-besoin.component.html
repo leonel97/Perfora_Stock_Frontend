@@ -220,7 +220,7 @@
               <div class="mb-2">
                 <div class="d-flex mb-5" style="margin-bottom: 0;">
                   <span class="m-auto"></span>
-                  <btn-loading btnClass="btn-primary btn-save mr-3" [loading]="loading" (click)="submit()" *ngIf="!detailView  && authService.hasAccess('saisie_servir_new')" >Enregistrer</btn-loading>
+                  <btn-loading btnClass="btn-primary btn-save mr-3" [loading]="loading" (click)="submit()" *ngIf="!detailView  && (authService.hasAccess('saisie_servir_new') || validateForm.value.numAppro)" >Enregistrer</btn-loading>
                   <button class="btn btn-outline-secondary" (click)="resetForm()"><span *ngIf="!detailView">Annuler</span> <span *ngIf="detailView">Fermer</span></button>
                 </div>
                 <form [formGroup]="validateForm">
