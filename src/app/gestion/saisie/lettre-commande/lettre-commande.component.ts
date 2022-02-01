@@ -804,7 +804,7 @@ export class LettreCommandeComponent implements OnInit {
 
     const doc = new jsPDF();
 
-    autoTable(doc, {
+    /*autoTable(doc, {
       theme: 'plain',
       margin: { top: 5, left:35, right:9, bottom:100 },
       columnStyles: {
@@ -818,6 +818,7 @@ export class LettreCommandeComponent implements OnInit {
       ,
     });
     doc.addImage(Utils.logoUrlData, 'jpeg', 10, 5, 25, 25);
+
 
     autoTable(doc, {
       startY:35,
@@ -837,16 +838,19 @@ export class LettreCommandeComponent implements OnInit {
         ['Union Togolaise de Banque: 60164'],
       ]
       ,
-    });
+    });*/
 
     //doc.setFontSize(14);
     //doc.text('Lettre de Commande N° '+element.numLettreComm+' | AP/ST', 95, 65);
+
+    doc.addImage('/assets/images/grandLogo.jpg','jpeg', 10, 5, 190, 100);
+
     doc.setFontSize(18);
-    doc.text('A', 95, 90);
+    //doc.text('A', 150, 40);
     autoTable(doc, {
-      startY:91,
+      startY:60,
       theme: 'plain',
-      margin: { left: 93 },
+      margin: { left: 110 },
       columnStyles: {
         0: { textColor: 0, fontStyle: 'bold', halign: 'left', fontSize:12 },
       },
@@ -856,7 +860,7 @@ export class LettreCommandeComponent implements OnInit {
       ,
     });
 
-    autoTable(doc, {
+    /*autoTable(doc, {
       startY:85,
       theme: 'plain',
       margin: { right: 125 },
@@ -869,10 +873,10 @@ export class LettreCommandeComponent implements OnInit {
         ['V/Ref','']
       ]
       ,
-    });
+    });*/
 
     autoTable(doc, {
-      //startY:91,
+      startY:110,
       theme: 'plain',
       margin: { right: 100 },
       columnStyles: {
@@ -889,12 +893,12 @@ export class LettreCommandeComponent implements OnInit {
       theme: 'plain',
       //margin: { right: 100 },
       columnStyles: {
-        0: { textColor: 0, halign: 'left', fontSize:11 },
+        0: { textColor: 0, halign: 'left', fontSize:11, cellPadding: { left: 5},  },
       },
       body: [
-        ['\t\t\t\t\t\t\t\t\tMonsieur le Directeur, '],
-        ['\tComme suite à votre proposition de prix n°\t\t\t\t\t\t du \t\t\t\t\t\t.'],
-        ['\tNous avons l\'honneur de vous passer commande ferme pour la fourniture de :']
+        [{content:'Messieurs, ', }],
+        ['Nous passons commande des articles suivants conformément au marché N° '+element.commandeAchat?.commande?.description+' suivant les prix unitaires figurant sur votre bordereau de prix.'],
+        
       ]
       ,
     });

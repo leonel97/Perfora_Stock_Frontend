@@ -105,13 +105,13 @@
                           Date
                         </ng-template>
                         <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
-                          {{ row.dateAppro }}
+                          {{ row.dateAppro | date: "dd-MM-yyyy" }}
                         </ng-template>
                       </ngx-datatable-column>
 
                       <ngx-datatable-column>
                         <ng-template ngx-datatable-header-template>
-                          N° Générique
+                          Observation
                         </ng-template>
                         <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
                           {{ row.descriptionAppro }}
@@ -254,9 +254,9 @@
                   </div>
                   <div class="row">
                     <div class="col-md form-group">
-                      <label for="orderNo">N° Générique</label>
+                      <label for="orderNo">Observation</label>
                       <input formControlName="description" type="text" class="form-control"
-                          placeholder="Numéro" [readOnly]="detailView">
+                          placeholder="Observation" [readOnly]="detailView">
 
                     </div>
 

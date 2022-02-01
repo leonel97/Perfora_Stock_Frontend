@@ -398,19 +398,19 @@ export class DemandeBesoinComponent  implements OnInit {
       this.loading = true;
       setTimeout(() => {
         this.loading = false;
-        this.toastr.error('Veuillez remplir le Formulaire convenablement.', ' Erreur !', {progressBar: true});
+        this.toastr.error('Veuillez remplir le Formulaire convenablement.', ' Erreur !', { timeOut: 5000, progressBar: true});
       }, 3000);
     } else if (this.ligneShow.length == 0) {
       this.loading = true;
       setTimeout(() => {
         this.loading = false;
-        this.toastr.error('Veuillez Ajouter au moins une Ligne.', ' Erreur !', {progressBar: true});
+        this.toastr.error('Veuillez Ajouter au moins une Ligne.', ' Erreur !', { timeOut: 5000, progressBar: true});
       }, 3000);
     } else if (lignShowValid == false) {
       this.loading = true;
       setTimeout(() => {
         this.loading = false;
-        this.toastr.error('Veuillez Renseigner les Lignes Convenablement.', ' Erreur !', {progressBar: true});
+        this.toastr.error('Veuillez Renseigner les Lignes Convenablement.', ' Erreur !', { timeOut: 5000, progressBar: true});
 
       }, 3000);
     } else {
@@ -468,7 +468,7 @@ export class DemandeBesoinComponent  implements OnInit {
               this.loading = false;
               this.activeTabsNav = 1;
               this.resetForm();
-              this.toastr.success('Enregistrement effectué avec succès.', 'Success!', {progressBar: true});
+              this.toastr.success('Enregistrement effectué avec succès.', 'Success!', { timeOut: 5000, progressBar: true});
             }, 3000);
 
             this.getAllArticle();
@@ -482,7 +482,7 @@ export class DemandeBesoinComponent  implements OnInit {
         this.loading = true;
         setTimeout(() => {
           this.loading = false;
-          this.toastr.error('Erreur avec le status '+error.status, ' Erreur !', {progressBar: true});
+          this.toastr.error('Erreur avec le status '+error.status, ' Erreur !', { timeOut: 5000, progressBar: true});
         }, 3000);
 
       }
@@ -510,7 +510,7 @@ export class DemandeBesoinComponent  implements OnInit {
           this.loading = false;
           this.activeTabsNav = 1;
           this.resetForm();
-          this.toastr.success('Modification effectué avec succès.', 'Success!', {progressBar: true});
+          this.toastr.success('Modification effectué avec succès.', 'Success!', { timeOut: 5000, progressBar: true});
         }, 3000);
 
             this.getAllArticle();
@@ -525,7 +525,7 @@ export class DemandeBesoinComponent  implements OnInit {
         this.loading = true;
         setTimeout(() => {
           this.loading = false;
-          this.toastr.error('Erreur avec le status '+error.status, ' Erreur !', {progressBar: true});
+          this.toastr.error('Erreur avec le status '+error.status, ' Erreur !', { timeOut: 5000, progressBar: true });
         }, 3000);
 
       }
@@ -552,11 +552,11 @@ export class DemandeBesoinComponent  implements OnInit {
             this.toastr.success('Suppression effectuée avec succès.', 'Success!', {progressBar: true});
           }, 3000);*/
           this.resetForm();
-          this.toastr.success('Suppression effectué avec succès.', 'Success!', {progressBar: true});
+          this.toastr.success('Suppression effectué avec succès.', 'Success!', { timeOut: 5000, progressBar: true});
         },
         (error: HttpErrorResponse) => {
           console.log('Echec status ==> ' + error.status);
-          this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', {progressBar: true});
+          this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000, progressBar: true});
           /*setTimeout(() => {
             this.toastr.error('Erreur avec le status ' + error.status, ' Erreur !', {progressBar: true});
           }, 3000);*/
@@ -624,6 +624,8 @@ export class DemandeBesoinComponent  implements OnInit {
 
   valider(demandeAppro: DemandeApprovisionnement, eta: boolean, content){
 
+    demandeAppro = {...demandeAppro};
+
     this.clotureService.isPeriodeCloturedByDate(demandeAppro.dateDA).subscribe(
       (data) => {
         if(data == false){
@@ -656,12 +658,12 @@ export class DemandeBesoinComponent  implements OnInit {
       
                     let msg: String = 'Validation'
                     if(eta == false) msg = 'Annulation';
-                    this.toastr.success(msg+' effectuée avec succès.', 'Success', { timeOut: 5000 });
+                    this.toastr.success(msg+' effectuée avec succès.', 'Success', { timeOut: 5000, progressBar:true });
       
               },
               (error: HttpErrorResponse) => {
                 console.log('Echec status ==> ' + error.status);
-                this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000 });
+                this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000, progressBar:true });
       
               }
             );
@@ -738,6 +740,7 @@ export class DemandeBesoinComponent  implements OnInit {
       },
       body: [
         ['Centre Demandeur :', element.service.codeService+' - '+element.service.libService],
+        ['Observation :', element.description+''],
       ]
       ,
     });

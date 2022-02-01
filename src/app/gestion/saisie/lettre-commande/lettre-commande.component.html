@@ -58,7 +58,7 @@
                           Date
                         </ng-template>
                         <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
-                          {{ row.commande.dateCommande }}
+                          {{ row.commande.dateCommande | date: "dd-MM-yyyy" }}
                         </ng-template>
                       </ngx-datatable-column>
 
@@ -67,7 +67,7 @@
                           Référence
                         </ng-template>
                         <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
-                          {{ row.commande.description }}
+                          {{ row.commandeAchat?.numComAchat }} du {{ row.commandeAchat?.commande?.dateCommande | date: "dd-MM-yyyy" }}
                         </ng-template>
                       </ngx-datatable-column>
 
@@ -76,6 +76,7 @@
                           Date de Livraison
                         </ng-template>
                         <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                          <span *ngIf="row.commande.dateRemise">Notifié le {{ row.commande.dateRemise | date: "dd-MM-yyyy" }}<br></span>
                           {{ row.commande.delaiLivraison }} Jour(s)
                           <span *ngIf="row.commande.dateRemise"><br> Soit le {{ salToolsService.addDayToDate(row.commande.dateRemise, row.commande.delaiLivraison) | date: "dd-MM-yyyy"}}</span>
                         </ng-template>

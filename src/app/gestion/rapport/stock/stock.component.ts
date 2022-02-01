@@ -919,8 +919,10 @@ export class StockComponent implements OnInit {
                             elementArrond[3] = SalTools.salRound(elementArrond[3]);
                             elementArrond[4] = SalTools.salRound(elementArrond[4]);
 
-                            lignes[inde]
+                            //lignes[inde]
                           });
+
+                          lignes = lignes.filter((l) => l[2] != 0);
                                         
                           autoTable(doc, {
                             theme: 'plain',

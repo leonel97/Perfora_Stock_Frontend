@@ -62,7 +62,17 @@
                         </ng-template>
                       </ngx-datatable-column>
 
-                      <ngx-datatable-column>
+                      <ngx-datatable-column [maxWidth]="80">
+                        <ng-template ngx-datatable-header-template>
+                          LC ?
+                        </ng-template>
+                        <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                          <span *ngIf="!row.procesByLc">NON</span>
+                          <span *ngIf="row.procesByLc">OUI</span>
+                        </ng-template>
+                      </ngx-datatable-column>
+
+                      <ngx-datatable-column [maxWidth]="120">
                         <ng-template ngx-datatable-header-template>
                           Référence
                         </ng-template>
@@ -76,6 +86,7 @@
                           Date de Livraison
                         </ng-template>
                         <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                          <span *ngIf="row.commande.dateRemise">Notifié le {{ row.commande.dateRemise | date: "dd-MM-yyyy" }}<br></span>
                           {{ row.commande.delaiLivraison }} Jour(s)
                           <span *ngIf="row.commande.dateRemise"><br> Soit le {{ salToolsService.addDayToDate(row.commande.dateRemise, row.commande.delaiLivraison) | date: "dd-MM-yyyy"}}</span>
                         </ng-template>

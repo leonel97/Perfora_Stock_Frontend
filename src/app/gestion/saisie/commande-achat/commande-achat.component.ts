@@ -815,6 +815,9 @@ export class CommandeAchatComponent implements OnInit {
     autoTable(doc, {
       //startY: 0,
       theme: "grid",
+      styles: {
+        lineColor: 'black'
+      },
       margin: { top: 5, left:5, right:5, bottom:100 },
       columnStyles: {
         0: { textColor: 'black', fontStyle: 'bold', fontSize:7, font: 'Times New Roman', halign: 'center', cellWidth: 60 },
@@ -916,6 +919,19 @@ export class CommandeAchatComponent implements OnInit {
         ['Total HT', this.salToolsService.salRound(totalHT)],
         ['Total Montant TVA', this.salToolsService.salRound(totalTVA)],
         ['Total TTC', this.salToolsService.salRound(totalTTC)]
+      ]
+      ,
+    });
+
+    autoTable(doc, {
+      theme: 'grid',
+      margin: { top: 10, bottom:10 },
+      columnStyles: {
+        0: { textColor: 0, fontStyle: 'bold', halign: 'left', minCellWidth:11 },
+        1: { textColor: 0,font: 'Times New Roman', fontStyle: 'italic', halign: 'justify' },
+      },
+      body: [
+        ['NB : ', 'Le fournisseur devra prendre toutes les dispositions pour éviter que le dépotage du produit ne pollue l\'environnement, ni ne porte atteinte à la santé-sécurité des personnes.' ]
       ]
       ,
     });

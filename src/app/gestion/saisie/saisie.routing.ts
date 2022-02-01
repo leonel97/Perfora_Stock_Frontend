@@ -14,6 +14,7 @@ import { DemandeBesoinComponent } from './demande-besoin/demande-besoin.componen
 import { ServirBesoinComponent } from './servir-besoin/servir-besoin.component';
 import { CloturePeriodiqueComponent } from './cloture-periodique/cloture-periodique.component';
 import { CommandeAchatComponent } from './commande-achat/commande-achat.component';
+import { TravauxComponent } from './travaux/travaux.component';
 
 let routes: Routes = [
   {
@@ -32,6 +33,7 @@ let routes: Routes = [
       {  path: 'conso-interne-servir-besoin', component: ServirBesoinComponent },
       {  path: 'cloture-periodique', component: CloturePeriodiqueComponent },
       {  path: 'commande-achat', component: CommandeAchatComponent },
+      {  path: 'travaux', component: TravauxComponent },
     ]
   }
 ];

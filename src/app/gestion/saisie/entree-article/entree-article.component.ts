@@ -1255,8 +1255,8 @@ export class EntreeArticleComponent  implements OnInit {
         1: { textColor: 0, halign: 'left' },
       },
       body: [
-        ['N° Générique :', ''+(element.refBordLivraiRecept ? element.refBordLivraiRecept : '')],
-        ['Ref B/L :', ''+(element.observation ? element.observation : '')],
+        ['N° Générique :', ''+(element.referenceReception ? element.referenceReception : '')],
+        ['Ref B/L :', ''+(element.refBordLivraiRecept ? element.refBordLivraiRecept : '')],
         ['Mode :', 'Commande '+(this.isAFilleComSitisfaied(numFille) ? 'Totalement' : 'Partiellement')+' Satisfaite'],
       ]
       ,
@@ -1333,6 +1333,168 @@ export class EntreeArticleComponent  implements OnInit {
       },
       body: [
         ["Arrêté le présent Ordre d'Entrée à la Somme de : "+this.salToolsService.salNumberToLetter(this.salToolsService.salRound(totalTTC))+' Francs CFA']
+      ]
+      ,
+    });
+
+    
+
+    doc.output('dataurlnewwindow');
+
+  }
+
+  openPdfToPrintPvRecept(element: Reception){
+
+
+    let totalHT : number = 0;
+    let totalTVA : number = 0;
+    let totalTTC : number = 0;
+
+    const doc = new jsPDF();
+    
+    autoTable(doc, {
+      theme: 'plain',
+      margin: { top: 5, left:35, right:9, bottom:100 },
+      columnStyles: {
+        0: { textColor: 'blue', fontStyle: 'bold', halign: 'left' },
+        1: { textColor: 'blue', fontStyle: 'bold', halign: 'right' },
+      },
+      body: [
+        ['PORT AUTONOME DE LOME\n\nTel.: 22.27.47.42/22.27.33.91/22.27.33.92\nFax: (228) 22.27.26.27\nCARTE N° 950113V',
+        'REPUBLIQUE TOGOLAISE\n\nTravail-Liberté-Patrie       ']
+      ]
+      ,
+    });
+    doc.addImage(Utils.logoUrlData, 'jpeg', 10, 5, 25, 25);
+    
+
+    doc.setDrawColor(0);
+    doc.setFillColor(233 , 242, 248);
+    doc.roundedRect(50, 35, 110, 10, 3, 3, 'FD');
+    doc.setFontSize(20);
+    doc.text('PV DE RECEPTION', 70, 43);
+
+    autoTable(doc, {
+      theme: 'plain',
+      startY:50,
+      margin: { top: 0 },
+      columnStyles: {
+        0: { textColor: 0, fontStyle: 'bold', halign: 'center' },
+      },
+      body: [
+        ['Ordre d\'entree N° '+element.numReception+' du '+moment(element.dateReception).format('DD/MM/YYYY')]
+      ]
+      ,
+    });
+
+    let numFille: String = this.getNumFilleCommandeOfARecept(element);
+    let commande: Commande = this.getCommandeByNumFille(numFille);
+
+    autoTable(doc, {
+      theme: 'plain',
+      startY:60,
+      margin: { right: 100 },
+      columnStyles: {
+        0: { textColor: 0, fontStyle: 'bold', halign: 'left' },
+        1: { textColor: 0, halign: 'left' },
+      },
+      body: [
+        ['Réf Commande :', ''+numFille],
+        ['Fournisseur :', commande.frs.codeFrs+' - '+commande.frs.identiteFrs],
+        ['Magasin :', element.magasin.codeMagasin+' - '+element.magasin.libMagasin]
+      ]
+      ,
+    });
+
+    autoTable(doc, {
+      theme: 'plain',
+      startY:60,
+      margin: { left: 100 },
+      columnStyles: {
+        0: { textColor: 0, fontStyle: 'bold', halign: 'left' },
+        1: { textColor: 0, halign: 'left' },
+      },
+      body: [
+        ['N° Générique :', ''+(element.referenceReception ? element.referenceReception : '')],
+        ['Ref B/L :', ''+(element.refBordLivraiRecept ? element.refBordLivraiRecept : '')],
+        ['Mode :', 'Commande '+(this.isAFilleComSitisfaied(numFille) ? 'Totalement' : 'Partiellement')+' Satisfaite'],
+      ]
+      ,
+    });
+
+    autoTable(doc, {
+      theme: 'plain',
+      //startY:50,
+      margin: { top: 0 },
+      columnStyles: {
+        0: { textColor: 0, halign: 'left' },
+      },
+      body: [
+        ["\nA reçu livraison au magasin ce jour des articles décrits ci-dessous :"]
+      ]
+      ,
+    });
+
+    let lignes = [];
+
+    this.ligneReceptList.forEach(element2 => {
+      if(element2.reception.numReception == element.numReception){
+        let lig = [];
+        lig.push(element2.ligneCommande.article.codeArticle);
+        lig.push(element2.ligneCommande.article.libArticle);
+        lig.push(element2.ligneCommande.qteLigneCommande)
+        lig.push(element2.quantiteLigneReception);
+        lig.push(this.getQteRestanOfALigCom(element2.ligneCommande));
+        lig.push(element2.ligneCommande.uniter.libUniter);
+        lig.push(element2.ligneCommande.puLigneCommande);
+        lig.push(element2.ligneCommande.tva);
+        let ht = element2.quantiteLigneReception*element2.ligneCommande.puLigneCommande;
+        lig.push(this.salToolsService.salRound(ht*(1+(element2.ligneCommande.tva/100))));
+        lignes.push(lig);
+
+        totalHT+= ht;
+        totalTVA+= ht*(element2.ligneCommande.tva/100);
+        totalTTC+= ht*(1+(element2.ligneCommande.tva/100));
+      }
+
+    });
+
+    autoTable(doc, {
+      theme: 'grid',
+      head: [['Article', 'Désignation', 'Quantité Commandée', 'Quantité Réceptionnée', 'Quantité Restante', 'Unité', 'PU', 'TVA(%)', 'Montant']],
+      headStyles:{
+        fillColor: [41, 128, 185],
+        textColor: 255,
+        fontStyle: 'bold' ,
+    },
+      margin: { top: 100 },
+      body: lignes
+      ,
+    });
+
+
+    autoTable(doc, {
+      theme: 'grid',
+      margin: { top: 100, left:130 },
+      columnStyles: {
+        0: { fillColor: [41, 128, 185], textColor: 255, fontStyle: 'bold' },
+      },
+      body: [
+        ['Total HT', this.salToolsService.salRound(totalHT)],
+        ['Total Montant TVA', this.salToolsService.salRound(totalTVA)],
+        ['Total TTC', this.salToolsService.salRound(totalTTC)]
+      ]
+      ,
+    });
+
+    autoTable(doc, {
+      theme: 'plain',
+      margin: { top: 50, bottom:0 },
+      columnStyles: {
+        0: { textColor: 0, fontStyle: 'bold', halign: 'left' },
+      },
+      body: [
+        ["Arrêté le présent PV de réception à la Somme de : "+this.salToolsService.salNumberToLetter(this.salToolsService.salRound(totalTTC))+' Francs CFA']
       ]
       ,
     });

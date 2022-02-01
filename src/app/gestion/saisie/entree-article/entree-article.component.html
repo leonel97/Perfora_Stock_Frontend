@@ -118,11 +118,11 @@
                         <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
                           <!--<strong>{{ row.code }}</strong>-->
                           <button (click)="makeForm(row)" class="btn btn-primary m-1 btn-sm"
-                          type="button" *ngIf="row.valideRecep == false && authService.hasAccess('saisie_recept_edit')" title="Modifier">
+                          type="button" *ngIf="row.valideRecep == false && authService.hasAccess('saisie_recept_edit')" ngbTooltip="Modifier">
                             <i class="i-Pen-5"> </i>
                           </button>
                           <button (click)="valider(row, true, modalValid)" class="btn btn-outline-success m-1 btn-sm"
-                                  type="button" *ngIf="row.valideRecep == false  && authService.hasAccess('saisie_recept_valid')" title="Valider">
+                                  type="button" *ngIf="row.valideRecep == false  && authService.hasAccess('saisie_recept_valid')" ngbTooltip="Valider">
                             <i class="i-Yes"> </i>
                           </button>
                           
@@ -133,16 +133,21 @@
                           </button>
                           -->
                           <button (click)="openDetail(row)" class="btn btn-outline-warning m-1 btn-sm"
-                                  type="button" title="Détail"  *ngIf="authService.hasAccess('saisie_recept_detail')">
+                                  type="button" ngbTooltip="Détail"  *ngIf="authService.hasAccess('saisie_recept_detail')">
                             <i class="i-Information"> </i>
                           </button>
                           <button (click)="openPdfToPrint(row)" class="btn btn-outline-warning m-1 btn-sm"
-                                  type="button" title="Imprimer" *ngIf="authService.hasAccess('saisie_recept_print')">
+                                  type="button" ngbTooltip="Imprimer" *ngIf="authService.hasAccess('saisie_recept_print')">
+                            <i class="i-File-Download"> </i>
+                          </button>
+
+                          <button (click)="openPdfToPrintPvRecept(row)" class="btn btn-outline-warning m-1 btn-sm"
+                                  type="button" ngbTooltip="PV de Réception" *ngIf="authService.hasAccess('saisie_recept_print')">
                             <i class="i-File-Download"> </i>
                           </button>
                           
                           <button (click)="confirm(modalConfirm, row)" class="btn btn-outline-danger m-1 btn-sm"
-                                  type="button" *ngIf="row.valideRecep == false && authService.hasAccess('saisie_recept_delete')" title="Supprimer">
+                                  type="button" *ngIf="row.valideRecep == false && authService.hasAccess('saisie_recept_delete')" ngbTooltip="Supprimer">
                             <i class="i-Folder-Trash"> </i>
                           </button>
                         </ng-template>

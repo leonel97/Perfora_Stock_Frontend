@@ -138,7 +138,7 @@ export class ServirBesoinComponent  implements OnInit {
         this.filerData(value);
       });
 
-      this.getAllArticle();
+      //this.getAllArticle();
       this.getAllUniter();
       this.getAllLigneAppro();
       this.getAllDemandeAppro();
@@ -337,7 +337,7 @@ export class ServirBesoinComponent  implements OnInit {
   makeForm(appro: Approvisionnement): void {
     this.validateForm = this.fb.group({
       numAppro: [appro != null ? appro.numAppro: null],
-      dateAppro: [appro != null ? appro.dateAppro: null,
+      dateAppro: [appro != null ? appro.dateAppro: moment(Date.now()).format('yyyy-MM-DD'),
       [Validators.required]],
       description: [appro != null ? appro.descriptionAppro : null],
       magasin: [appro != null ? appro.magasin.numMagasin : null,
@@ -394,7 +394,7 @@ export class ServirBesoinComponent  implements OnInit {
       this.emptyLigneShow();
       this.getNotUsedArticle();
     } 
-    let articlesOfDa = [];    
+    let articlesOfDa: Article[] = [];    
     for(const lig1 of this.ligneDemandeApproList){
       if(lig1.appro.numDA == this.validateForm.value.numDA){
         articlesOfDa.push(lig1.article);
@@ -402,6 +402,18 @@ export class ServirBesoinComponent  implements OnInit {
     }
 
     this.articleList = articlesOfDa;
+
+    let magasinsOfDa: Magasin[] = [];
+
+    for (const artt of articlesOfDa) {
+      if(!(magasinsOfDa.find(l => l.numMagasin == artt.famille?.magasin?.numMagasin)) && SalTools.getConnectedUser().magasins.find(l => l.numMagasin == artt.famille?.magasin?.numMagasin)){
+        magasinsOfDa.push(artt.famille?.magasin);
+      }
+    }
+
+    magasinsOfDa.sort((a, b) => a.codeMagasin.localeCompare(b.codeMagasin.valueOf()));
+
+    this.magasinList2 = magasinsOfDa;
 
   }
 
@@ -448,7 +460,7 @@ export class ServirBesoinComponent  implements OnInit {
     this.ligneShow[ind].listArticle = this.getNotUsedArticle();
 
     this.ligneShow[ind].ligneAppro.quantiteLigneAppro = this.getQteRestanteOfALigneDa(this.ligneShow[ind].concernedLigneDa);
-    this.ligneShow[ind].ligneAppro.puligneAppro = this.ligneShow[ind].concernedStocker.cmup;
+    this.ligneShow[ind].ligneAppro.puligneAppro = this.ligneShow[ind].concernedStocker?.cmup;
     this.ligneShow[ind].qteRest = this.getQteRestanteOfALigneDa(this.ligneShow[ind].concernedLigneDa);
 
   }
@@ -501,23 +513,23 @@ export class ServirBesoinComponent  implements OnInit {
       this.loading = true;
       setTimeout(() => {
         this.loading = false;
-        this.toastr.error('Veuillez remplir le Formulaire convenablement.', ' Erreur !', {progressBar: true});
+        this.toastr.error('Veuillez remplir le Formulaire convenablement.', ' Erreur !', { timeOut: 5000, progressBar:true });
       }, 3000);
     } else if (this.ligneShow.length == 0 || lignShowValid == false) {
       this.loading = true;
       setTimeout(() => {
         this.loading = false;
         if(this.ligneShow.length == 0)
-        this.toastr.error('Veuillez Ajouter au moins une Ligne.', ' Erreur !', {progressBar: true});
+        this.toastr.error('Veuillez Ajouter au moins une Ligne.', ' Erreur !', { timeOut: 5000, progressBar:true });
         if(lignShowValid == false)
-        this.toastr.error('Veuillez Renseigner les Quantités Convenablement.', ' Erreur !', {progressBar: true});
+        this.toastr.error('Veuillez Renseigner les Quantités Convenablement.', ' Erreur !', { timeOut: 5000, progressBar:true });
 
       }, 3000);
     } else if (this.ligneShow[0].concernedLigneDa.appro.dateDA.valueOf() > (new Date(formData.dateAppro)).valueOf()) {
       this.loading = true;
       setTimeout(() => {
         this.loading = false;
-        this.toastr.error('La date de l\'Ordre de Sortie est antérieur à la date de la Demande de besoin.', ' Erreur !', {progressBar: true});
+        this.toastr.error('La date de l\'Ordre de Sortie est antérieur à la date de la Demande de besoin.', ' Erreur !', { timeOut: 5000, progressBar:true });
 
       }, 3000);
     } else {
@@ -580,10 +592,10 @@ export class ServirBesoinComponent  implements OnInit {
           this.loading = false;
           this.activeTabsNav = 1;
           this.resetForm();
-          this.toastr.success('Enregistrement effectué avec succès.', 'Success!', {progressBar: true});
+          this.toastr.success('Enregistrement effectué avec succès.', 'Success!', { timeOut: 5000, progressBar:true });
         }, 3000);
 
-        this.getAllArticle();
+        //this.getAllArticle();
         this.getAllUniter();
         this.getAllLigneAppro();
         this.getAllDemandeAppro();
@@ -597,7 +609,7 @@ export class ServirBesoinComponent  implements OnInit {
         this.loading = true;
         setTimeout(() => {
           this.loading = false;
-          this.toastr.error('Erreur avec le status '+error.status, ' Erreur !', {progressBar: true});
+          this.toastr.error('Erreur avec le status '+error.status, ' Erreur !', { timeOut: 5000, progressBar:true });
         }, 3000);
       }
     );
@@ -621,7 +633,7 @@ export class ServirBesoinComponent  implements OnInit {
             this.loading = false;
             this.activeTabsNav = 1;
             this.resetForm();
-            this.toastr.success('Modification effectuée avec succès.', 'Success!', {progressBar: true});
+            this.toastr.success('Modification effectuée avec succès.', 'Success!', { timeOut: 5000, progressBar:true });
           }, 3000);
 
           this.getAllArticle();
@@ -639,7 +651,7 @@ export class ServirBesoinComponent  implements OnInit {
         this.loading = true;
         setTimeout(() => {
           this.loading = false;
-          this.toastr.error('Erreur avec le status '+error.status, ' Erreur !', {progressBar: true});
+          this.toastr.error('Erreur avec le status '+error.status, ' Erreur !', { timeOut: 5000, progressBar:true });
         }, 3000);
 
 
@@ -664,11 +676,17 @@ export class ServirBesoinComponent  implements OnInit {
             this.approFiltered = [...this.approList.sort((a, b) => a.numAppro.localeCompare(b.numAppro.valueOf()))];
           }
           this.resetForm();
-          this.toastr.success('Suppression effectué avec succès.', 'Success!', { progressBar: true});
+          this.toastr.success('Suppression effectué avec succès.', 'Success!', { timeOut: 5000, progressBar:true });
+          this.getAllUniter();
+          this.getAllLigneAppro();
+          this.getAllDemandeAppro();
+          this.getAllLigneDemandeAppro();
+          this.getAllMagasin();
+          this.getAllStocker();
         },
         (error: HttpErrorResponse) => {
           console.log('Echec status ==> ' + error.status);
-          this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { progressBar: true});
+          this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000, progressBar:true });
 
         });
     }, (reason) => {
@@ -766,8 +784,10 @@ export class ServirBesoinComponent  implements OnInit {
 
   valider1(appro: Approvisionnement, eta: boolean, content){
 
+    appro = {...appro};
+
     if(this.inventaireEnCours){
-      this.toastr.error('Impossible d\'éffectuer l\'action car un Inventaire est en cours !', 'Erreur !', { timeOut: 5000 });
+      this.toastr.error('Impossible d\'éffectuer l\'action car un Inventaire est en cours !', 'Erreur !', { timeOut: 5000, progressBar:true });
       
     }
     else{
@@ -798,18 +818,18 @@ export class ServirBesoinComponent  implements OnInit {
                       if(data.valideAppro1 == appro.valideAppro1){
                         let msg: String = 'Validation'
                         if(eta == false) msg = 'Annulation';
-                        this.toastr.success(msg+' effectuée avec succès.', 'Success', { timeOut: 5000 });
+                        this.toastr.success(msg+' effectuée avec succès.', 'Success', { timeOut: 5000, progressBar:true });
                       } else {
                         let msg: String = 'Erreur lors de la Validation de la Consommation Interne'
                         
-                        this.toastr.error(msg.valueOf(), 'Erreur !', { timeOut: 5000 });
+                        this.toastr.error(msg.valueOf(), 'Erreur !', { timeOut: 5000, progressBar:true });
                       }
         
         
                 },
                 (error: HttpErrorResponse) => {
                   console.log('Echec status ==> ' + error.status);
-                  this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000 });
+                  this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000, progressBar:true });
         
                 }
               );
@@ -842,8 +862,10 @@ export class ServirBesoinComponent  implements OnInit {
 
   valider(appro: Approvisionnement, eta: boolean, content){
 
+    appro = {...appro};
+
     if(this.inventaireEnCours){
-      this.toastr.error('Impossible d\'éffectuer l\'action car un Inventaire est en cours !', 'Erreur !', { timeOut: 5000 });
+      this.toastr.error('Impossible d\'éffectuer l\'action car un Inventaire est en cours !', 'Erreur !', { timeOut: 5000, progressBar:true });
       
     }
     else{
@@ -874,11 +896,11 @@ export class ServirBesoinComponent  implements OnInit {
                       if(data.valideAppro == appro.valideAppro){
                         let msg: String = 'Sortie'
                         if(eta == false) msg = 'Retour';
-                        this.toastr.success(msg+' effectuée avec succès.', 'Success', { timeOut: 5000 });
+                        this.toastr.success(msg+' effectuée avec succès.', 'Success', { timeOut: 5000, progressBar:true });
                       } else {
                         let msg: String = 'Erreur lors de la Sortie de d\'Article du Magasin, la quantité disponible de l\'un des articles dans ce magasin n\'est pas satisfaisante.'
                         if(eta == false) msg = 'Erreur lors du Retour de l\'Article dans le Magasin Annulation';
-                        this.toastr.error(msg.valueOf(), 'Erreur !', { timeOut: 5000 });
+                        this.toastr.error(msg.valueOf(), 'Erreur !', { timeOut: 5000, progressBar:true });
                       }
         
                       this.getAllArticle();
@@ -893,7 +915,7 @@ export class ServirBesoinComponent  implements OnInit {
                 },
                 (error: HttpErrorResponse) => {
                   console.log('Echec status ==> ' + error.status);
-                  this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000 });
+                  this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000, progressBar:true });
         
                 }
               );
@@ -937,16 +959,18 @@ export class ServirBesoinComponent  implements OnInit {
   isADemApproSitisfaied(da: DemandeApprovisionnement) : boolean{
     //let concernedCom: Commande = this.getCommandeByNumFille(numFille);
 
+    if(this.ligneApproList.some( l => l.ligneDA.appro.numDA == da.numDA)) return true;
+
     if(da){
       let finded: boolean = false;
       for(const lig of this.ligneDemandeApproList){
         if(lig.appro.numDA == da.numDA 
           && lig.satisfaite == false){
-            return false;
-          }
-          else if(lig.appro.numDA == da.numDA){
-            finded = true;
-          }
+          return false;
+        }
+        else if(lig.appro.numDA == da.numDA){
+          finded = true;
+        }
       }
 
       if(finded == true){
@@ -1035,7 +1059,7 @@ export class ServirBesoinComponent  implements OnInit {
       },
       body: [
         ['Réf Demande de Besoins :', ''+demAppr?.numDA],
-        ['Centre Demandeuse :', demAppr?.service.codeService+' - '+demAppr?.service.libService],
+        ['Centre Demandeur :', demAppr?.service.codeService+' - '+demAppr?.service.libService],
         ['Magasin :', element.magasin.codeMagasin+' - '+element.magasin.libMagasin]
       ]
       ,
@@ -1095,23 +1119,16 @@ export class ServirBesoinComponent  implements OnInit {
     autoTable(doc, {
       //startY: 0,
       theme: "grid",
-      margin: { top: 5, left:5, right:5, bottom:10 },
+      margin: { top: 5, left:5, right:5, bottom:0 },
       columnStyles: {
-        0: { textColor: 'black', fontStyle: 'bold', fontSize:7, font: 'Times New Roman', halign: 'center' },
-        1: { textColor: 'black', fontStyle: 'bold', fontSize: 8, font: 'Times New Roman', halign: 'left' },
-        2: { textColor: 'blue', fontStyle: 'bold', fontSize: 10, font: 'Times New Roman', halign: 'center', valign: "middle" },
+        0: { textColor: 'black', fontStyle: 'bold', fontSize:7, font: 'Times New Roman', halign: 'center', minCellHeight: 100, cellWidth: 20, },
+        1: { textColor: 'blue', fontStyle: 'bold', fontSize: 10, font: 'Times New Roman', halign: 'center', valign: "middle" },
       },
       body: [
         [{content: '\n\n\n\nPORT AUTONOME DE LOME\nLomé Togo',
-        rowSpan: 4},
-        'ACH-IDC-47-PAL17', 
+        rowSpan: 4,}, 
         { content: 'ORDRE DE SORTIE', rowSpan: 4}],
-        ['Date : 03/12/2021',
-        ],
-        ['Version : 01',
-        ],
-        ['Page: ../..',
-        ]
+        
       ]
       ,
     });
@@ -1121,7 +1138,7 @@ export class ServirBesoinComponent  implements OnInit {
 
     autoTable(doc, {
       theme: 'plain',
-      margin: { top: 1 },
+      margin: { top: 0 },
       columnStyles: {
         0: { textColor: 0, fontSize: 8, fontStyle: 'bold', halign: 'center' },
       },
@@ -1155,14 +1172,14 @@ export class ServirBesoinComponent  implements OnInit {
     autoTable(doc, {
       theme: 'plain',
       margin: { left:5, right:5 },
-      styles: {fontSize: 8},
+      styles: {fontSize: 7},
       columnStyles: {
         0: { textColor: 0, fontStyle: 'bold', halign: 'left' },
         1: { textColor: 0, halign: 'left' },
       },
       body: [
         ['Réf Demande de Besoins :', ''+demAppr?.numDA],
-        ['Centre Demandeuse :', demAppr?.service.codeService+' - '+demAppr?.service.libService],
+        ['Centre Demandeur :', demAppr?.service.codeService+' - '+demAppr?.service.libService],
         ['Magasin :', element.magasin.codeMagasin+' - '+element.magasin.libMagasin]
       ]
       ,
@@ -1173,7 +1190,7 @@ export class ServirBesoinComponent  implements OnInit {
     autoTable(doc, {
       theme: 'grid',
       margin: { left:5, right:5 },
-      styles: {fontSize: 8},
+      styles: {fontSize: 6},
       head: [['Article', 'Désignation', 'Quantité', 'Unité', 'PU', 'Montant']],
       headStyles:{
         fillColor: [41, 128, 185],
