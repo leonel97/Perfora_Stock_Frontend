@@ -1,4 +1,3 @@
-import { LigneCommande } from '../ligneCommande.model';
 import { LigneReception } from '../ligneReception.model';
 import { Reception } from '../reception.model';
 
