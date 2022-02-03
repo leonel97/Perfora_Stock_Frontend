@@ -843,7 +843,7 @@ export class LettreCommandeComponent implements OnInit {
     //doc.setFontSize(14);
     //doc.text('Lettre de Commande N° '+element.numLettreComm+' | AP/ST', 95, 65);
 
-    doc.addImage('/assets/images/grandLogo.jpg','jpeg', 10, 5, 190, 100);
+    doc.addImage('./assets/images/grandLogo.jpg','jpeg', 10, 5, 190, 100);
 
     doc.setFontSize(18);
     //doc.text('A', 150, 40);
