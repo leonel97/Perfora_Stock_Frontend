@@ -172,7 +172,7 @@ export class StockComponent implements OnInit {
   getAllMagasin(){
     this.magasinService.getAllMagasin().subscribe(
       (data) => {
-        this.magasinList = data;
+        this.magasinList = data.sort((a, b) => a.codeMagasin.localeCompare(b.codeMagasin.valueOf()));;
 
       },
       (error: HttpErrorResponse) => {
@@ -865,7 +865,7 @@ export class StockComponent implements OnInit {
 
     this.articleService.getAllArticle().subscribe(
       (data) => {
-        this.articleList = data;
+        this.articleList = data.sort((a, b) => a.codeArticle.localeCompare(b.codeArticle.valueOf()));
 
         this.ligneInventaireService.getAllLigneInventaire().subscribe(
           (data2) => {
@@ -883,7 +883,7 @@ export class StockComponent implements OnInit {
 
                           let concernedFictifStocker: Stocker[] = data5.filter((l) => l.magasin.numMagasin == elemente.numMagasin);
 
-                          /* */
+                          
                           concernedFictifStocker.forEach(ele => {
                             let info = this.getStockOfArtiAtADate(ele.article, data2, data3, data4, dateSto);
                             
@@ -923,6 +923,7 @@ export class StockComponent implements OnInit {
                           });
 
                           lignes = lignes.filter((l) => l[2] != 0);
+                          //lignes.sort((a, b) => a[0].localeCompare(b[0]));
                                         
                           autoTable(doc, {
                             theme: 'plain',
