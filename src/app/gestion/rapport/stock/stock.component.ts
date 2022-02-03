@@ -923,7 +923,7 @@ export class StockComponent implements OnInit {
                           });
 
                           lignes = lignes.filter((l) => l[2] != 0);
-                          //lignes.sort((a, b) => a[0].localeCompare(b[0]));
+                          lignes.sort((a, b) => a[0].localeCompare(b[0]));
                                         
                           autoTable(doc, {
                             theme: 'plain',
