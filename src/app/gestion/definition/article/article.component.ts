@@ -57,7 +57,7 @@ export class ArticleComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this.articleService.getAllArticle().subscribe(
+    this.articleService.getAllArticle0().subscribe(
       (data) => {
         this.articleList = [...data];
         this.articleFiltered = this.articleList.sort((a, b) => a.codeArticle.localeCompare(b.codeArticle.valueOf()));
@@ -188,6 +188,7 @@ export class ArticleComponent implements OnInit {
       famille: [article != null ? article.famille : null],
       typeArticle: [article != null ? article.typeArticle : null],
       uniters: [[]],
+      afficherArticle: [article != null ? article.afficherArticle : true]
 
     });
 

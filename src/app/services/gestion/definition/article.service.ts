@@ -13,6 +13,10 @@ export class ArticleService {
   constructor(private httpCli: HttpClient) { }
 
   //partie Réservée pour les articles
+  getAllArticle0(){
+    return this.httpCli.get<Article[]>(this.host+'/stock/article/list0');
+  }
+
   getAllArticle(){
     return this.httpCli.get<Article[]>(this.host+'/stock/article/list');
   }

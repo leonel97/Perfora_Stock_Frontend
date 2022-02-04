@@ -198,7 +198,7 @@ export class StockComponent implements OnInit {
 
 
   getAllArticle(){
-    this.articleService.getAllArticle().subscribe(
+    this.articleService.getAllArticle0().subscribe(
       (data) => {
         this.articleList = data;
         this.articleFiltered = data;
@@ -547,16 +547,22 @@ export class StockComponent implements OnInit {
                     ,
                   });
 
+                  let totalEntrer: number = 0;
+                  let totalSortie: number = 0;
+
                   lignes.forEach((elementArrond, inde) => {
 
                     elementArrond[3] = SalTools.salRound(elementArrond[3]);
                     elementArrond[6] = SalTools.salRound(elementArrond[6]);
                     elementArrond[7] = SalTools.salRound(elementArrond[7]);
                     elementArrond[9] = SalTools.salRound(elementArrond[9]);
-
+                    totalSortie += elementArrond[5] == '' ? 0: elementArrond[5];
+                    totalEntrer += elementArrond[4] == '' ? 0: elementArrond[4];
                     lignes[inde] = elementArrond;
                     
                   });
+
+                  lignes.push(['Total', '', '','', totalEntrer+'', totalSortie+'', '', '', '', '']);
     
                   autoTable(doc, {
                     theme: 'grid',
@@ -584,6 +590,18 @@ export class StockComponent implements OnInit {
     
                 });
     
+                for (let index = 0; index < doc.getNumberOfPages(); index++) {
+                  doc.setPage(index+1);
+            
+                  doc.setFontSize(10);
+                  doc.setFont('Times New Roman', 'italic', 'bold');
+            
+                  doc.text('Powered by PerfOra-Stock Web\nLe '+moment(Date.now()).format('DD/MM/YYYY à HH:mm:ss'), 5, 205);
+                  
+                  doc.text('Page '+(index+1)+' sur '+doc.getNumberOfPages(), 270, 205);
+            
+                  
+                }
                         
                 this.loading6 = false;
                 //doc.output('dataurlnewwindow');
@@ -708,7 +726,7 @@ export class StockComponent implements OnInit {
 
 
 
-    this.articleService.getAllArticle().subscribe(
+    this.articleService.getAllArticle0().subscribe(
       (data) => {
         this.articleList = data;
 
@@ -863,7 +881,7 @@ export class StockComponent implements OnInit {
 
 
 
-    this.articleService.getAllArticle().subscribe(
+    this.articleService.getAllArticle0().subscribe(
       (data) => {
         this.articleList = data.sort((a, b) => a.codeArticle.localeCompare(b.codeArticle.valueOf()));
 

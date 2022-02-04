@@ -87,7 +87,7 @@ export class ArticleParFamilleComponent implements OnInit {
 
 
   getAllArticle(){
-    this.articleService.getAllArticle().subscribe(
+    this.articleService.getAllArticle0().subscribe(
       (data) => {
         this.articleList = data;
 
@@ -227,7 +227,7 @@ export class ArticleParFamilleComponent implements OnInit {
 
 
 
-    this.articleService.getAllArticle().subscribe(
+    this.articleService.getAllArticle0().subscribe(
       (data) => {
         this.articleList = data;
 
@@ -288,7 +288,18 @@ export class ArticleParFamilleComponent implements OnInit {
         });
 
 
-
+        for (let index = 0; index < doc.getNumberOfPages(); index++) {
+          doc.setPage(index+1);
+    
+          doc.setFontSize(10);
+          doc.setFont('Times New Roman', 'italic', 'bold');
+    
+          doc.text('Powered by PerfOra-Stock Web\nLe '+moment(Date.now()).format('DD/MM/YYYY à HH:mm:ss'), 5, 290);
+          
+          doc.text('Page '+(index+1)+' sur '+doc.getNumberOfPages(), 185, 290);
+    
+          
+        }
 
 
         this.loading = false;

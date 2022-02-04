@@ -127,7 +127,7 @@ export class EtatStockComponent implements OnInit {
   getLignShowOfSelectedMagasin(){
     this.ligneShow = [];
     
-    this.articleService.getAllArticle().subscribe(
+    this.articleService.getAllArticle0().subscribe(
       (data2) => {
 
         this.stockerService.getAllStocker().subscribe(

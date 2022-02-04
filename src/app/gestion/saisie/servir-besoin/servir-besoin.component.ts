@@ -959,7 +959,7 @@ export class ServirBesoinComponent  implements OnInit {
   isADemApproSitisfaied(da: DemandeApprovisionnement) : boolean{
     //let concernedCom: Commande = this.getCommandeByNumFille(numFille);
 
-    if(this.ligneApproList.some( l => l.ligneDA.appro.numDA == da.numDA)) return true;
+    //if(this.ligneApproList.some( l => l.ligneDA.appro.numDA == da.numDA)) return true; par le dg
 
     if(da){
       let finded: boolean = false;

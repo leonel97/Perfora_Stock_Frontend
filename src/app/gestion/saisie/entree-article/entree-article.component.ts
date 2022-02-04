@@ -1446,22 +1446,15 @@ export class EntreeArticleComponent  implements OnInit {
         lig.push(element2.quantiteLigneReception);
         lig.push(this.getQteRestanOfALigCom(element2.ligneCommande));
         lig.push(element2.ligneCommande.uniter.libUniter);
-        lig.push(element2.ligneCommande.puLigneCommande);
-        lig.push(element2.ligneCommande.tva);
-        let ht = element2.quantiteLigneReception*element2.ligneCommande.puLigneCommande;
-        lig.push(this.salToolsService.salRound(ht*(1+(element2.ligneCommande.tva/100))));
         lignes.push(lig);
 
-        totalHT+= ht;
-        totalTVA+= ht*(element2.ligneCommande.tva/100);
-        totalTTC+= ht*(1+(element2.ligneCommande.tva/100));
       }
 
     });
 
     autoTable(doc, {
       theme: 'grid',
-      head: [['Article', 'Désignation', 'Quantité Commandée', 'Quantité Réceptionnée', 'Quantité Restante', 'Unité', 'PU', 'TVA(%)', 'Montant']],
+      head: [['Article', 'Désignation', 'Quantité Commandée', 'Quantité Réceptionnée', 'Quantité Restante', 'Unité']],
       headStyles:{
         fillColor: [41, 128, 185],
         textColor: 255,
@@ -1473,19 +1466,6 @@ export class EntreeArticleComponent  implements OnInit {
     });
 
 
-    autoTable(doc, {
-      theme: 'grid',
-      margin: { top: 100, left:130 },
-      columnStyles: {
-        0: { fillColor: [41, 128, 185], textColor: 255, fontStyle: 'bold' },
-      },
-      body: [
-        ['Total HT', this.salToolsService.salRound(totalHT)],
-        ['Total Montant TVA', this.salToolsService.salRound(totalTVA)],
-        ['Total TTC', this.salToolsService.salRound(totalTTC)]
-      ]
-      ,
-    });
 
     autoTable(doc, {
       theme: 'plain',
@@ -1494,7 +1474,8 @@ export class EntreeArticleComponent  implements OnInit {
         0: { textColor: 0, fontStyle: 'bold', halign: 'left' },
       },
       body: [
-        ["Arrêté le présent PV de réception à la Somme de : "+this.salToolsService.salNumberToLetter(this.salToolsService.salRound(totalTTC))+' Francs CFA']
+        ['Aujourd\'hui .......................... , l\'équipe de réception a procédé à la réception de la commande '+numFille+' .'],
+        ['\nVoici les signataires : ']
       ]
       ,
     });
