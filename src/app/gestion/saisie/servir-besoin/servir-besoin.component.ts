@@ -33,6 +33,7 @@ import { InventaireService } from 'src/app/services/gestion/saisie/inventaire.se
 import { AuthService } from 'src/app/services/common/auth.service';
 import { SalTools } from 'src/app/utilitaires/salTools';
 import { CloturePeriodiqService } from 'src/app/services/gestion/saisie/cloture-periodiq.service';
+import { SalEncapGene } from 'src/app/models/gestion/saisie/encapsuleur-model/salEncapGene.model';
 
 
 export interface modelLigneAppro{
@@ -448,20 +449,34 @@ export class ServirBesoinComponent  implements OnInit {
   }
 
   getInfosOfSelectArt(ind:number){
-
+    
+    
     this.ligneShow[ind].concernedLigneDa = this.getLigneDaBySelectedNumArti(this.ligneShow[ind].selectedArticl, this.validateForm.value.numDA);
     let mag: Magasin = new Magasin('', '');
     const i = this.magasinList.findIndex(l => l.numMagasin == this.validateForm.value.magasin);
     if(i > -1){
       mag = this.magasinList[i];
     }
-    this.ligneShow[ind].concernedStocker = this.getStockerByArtiAndMagasin(this.ligneShow[ind].concernedLigneDa.article, mag);
 
-    this.ligneShow[ind].listArticle = this.getNotUsedArticle();
+    let salEnc = new SalEncapGene();
 
-    this.ligneShow[ind].ligneAppro.quantiteLigneAppro = this.getQteRestanteOfALigneDa(this.ligneShow[ind].concernedLigneDa);
-    this.ligneShow[ind].ligneAppro.puligneAppro = this.ligneShow[ind].concernedStocker?.cmup;
-    this.ligneShow[ind].qteRest = this.getQteRestanteOfALigneDa(this.ligneShow[ind].concernedLigneDa);
+    salEnc.article = this.ligneShow[ind].concernedLigneDa.article;
+    salEnc.magasin = mag;
+
+    this.stockerService.getAStockerByArticleAndMagasin(salEnc).subscribe(
+      (data) => {
+        this.ligneShow[ind].concernedStocker = data;
+        this.ligneShow[ind].listArticle = this.getNotUsedArticle();
+
+        this.ligneShow[ind].ligneAppro.quantiteLigneAppro = this.getQteRestanteOfALigneDa(this.ligneShow[ind].concernedLigneDa);
+        this.ligneShow[ind].ligneAppro.puligneAppro = this.ligneShow[ind].concernedStocker?.cmup;
+        this.ligneShow[ind].qteRest = this.getQteRestanteOfALigneDa(this.ligneShow[ind].concernedLigneDa);
+      }, 
+      (erreur: HttpErrorResponse) => {
+
+      }
+    );
+
 
   }
 
@@ -962,6 +977,7 @@ export class ServirBesoinComponent  implements OnInit {
     //if(this.ligneApproList.some( l => l.ligneDA.appro.numDA == da.numDA)) return true; par le dg
 
     if(da){
+      //let traitable: boolean = false;
       let finded: boolean = false;
       for(const lig of this.ligneDemandeApproList){
         if(lig.appro.numDA == da.numDA 
@@ -971,13 +987,17 @@ export class ServirBesoinComponent  implements OnInit {
         else if(lig.appro.numDA == da.numDA){
           finded = true;
         }
+
+        /*if(lig.appro.numDA == da.numDA &&
+          SalTools.getConnectedUser().magasins.find(l => l.numMagasin == lig.article.famille.magasin.numMagasin)
+          && !this.ligneApproList.some( l => l.ligneDA.appro.numDA == da.numDA)){
+            traitable = true;
+        }*/
+
       }
 
-      if(finded == true){
-        return true;
-      }
-
-      return false;
+      //return traitable;
+      return finded;
 
     }
     

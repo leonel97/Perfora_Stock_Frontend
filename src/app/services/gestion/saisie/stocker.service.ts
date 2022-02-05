@@ -1,5 +1,6 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { SalEncapGene } from 'src/app/models/gestion/saisie/encapsuleur-model/salEncapGene.model';
 import { Stocker } from 'src/app/models/gestion/saisie/stocker.model';
 import { environment } from 'src/environments/environment';
 
@@ -21,6 +22,10 @@ export class StockerService {
 
   getAStockerById(code:String){
     return this.httpCli.get<Stocker>(this.host+'/stock/stocker/byCodSto/'+code);
+  }
+
+  getAStockerByArticleAndMagasin(corps:SalEncapGene){
+    return this.httpCli.post<Stocker>(this.host+'/stock/stocker/findByArticleAndMagasin', corps);
   }
 
   addAStocker(corps:Stocker){
