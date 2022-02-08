@@ -34,7 +34,7 @@
                                         <div class="col-md form-group mb-1">
                                           <label for="sousFa" class="checkbox checkbox-success">
                                             <input type="checkbox" checked formControlName="sousCentreCons" id="sousFa">
-                                            <span>Inclure les centres filles</span>
+                                            <span>Inclure les centres enfants</span>
                                             <span class="checkmark"></span>
                                           </label>
                                         </div>
@@ -91,8 +91,163 @@
                               </div>
 
         </div>
-        <div class="tab-pane fade" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab">Placeholder content for the tab panel. This one relates to the messages tab. You got the finest architecture. Passport stamps, she's cosmopolitan. Fine, fresh, fierce, we got it on lock. Never planned that one day I'd be losing you. She eats your heart out. Your kiss is cosmic, every move is magic. I mean the ones, I mean like she's the one. Greetings loved ones let's take a journey. Just own the night like the 4th of July! But you'd rather get wasted.</div>
-        <div class="tab-pane fade" id="v-pills-messages" role="tabpanel" aria-labelledby="v-pills-messages-tab">Placeholder content for the tab panel. This one relates to the messages tab. You got the finest architecture. Passport stamps, she's cosmopolitan. Fine, fresh, fierce, we got it on lock. Never planned that one day I'd be losing you. She eats your heart out. Your kiss is cosmic, every move is magic. I mean the ones, I mean like she's the one. Greetings loved ones let's take a journey. Just own the night like the 4th of July! But you'd rather get wasted.</div>
+        <div class="tab-pane fade" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-profile-tab">
+                              <!--Contenu Onglet 2-->
+                              <div style="display: flex; align-items: center; justify-content: center;">
+                                <div class="card mb-4" style="margin: auto; min-width: 60%; ">
+                                  <div class="card-body">
+                                    <form [formGroup]="validateForm2" (ngSubmit)="submit2()">
+                                      <div class="card-title mb-3 border-bottom pb-2">Consommation Interne par Centre de Consommation</div>
+                                      <div class="row">
+                                        <div class="col-md form-group mb-3">
+                                          <label >Centre de Consommation</label>
+                                          <ng-select formControlName="centreCons">
+                                            <ng-option [value]="-1">Tous</ng-option>
+                                            <ng-option *ngFor = "let cen of centreConsList; inde" [value]="cen.numService">{{cen.codeService}} - {{cen.libService}}</ng-option>
+                                          </ng-select>
+                                        </div>
+
+                                      </div>
+
+                                      <div class="row" *ngIf="validateForm2.value.centreCons != -1">
+                                        <div class="col-md form-group mb-1">
+                                          <label for="sousFa2" class="checkbox checkbox-success">
+                                            <input type="checkbox" checked formControlName="sousCentreCons" id="sousFa2">
+                                            <span>Inclure les centres enfants</span>
+                                            <span class="checkmark"></span>
+                                          </label>
+                                        </div>
+                                      </div>
+
+                                      <div class="row">
+                                        <div class="col-md form-group mb-3">
+                                          <label >Magasin</label>
+                                          <ng-select formControlName="magasin">
+                                            <ng-option [value]="-1">Tous</ng-option>
+                                            <ng-option *ngFor = "let mag of magasinList; inde" [value]="mag.numMagasin">{{mag.codeMagasin}} - {{mag.libMagasin}}</ng-option>
+                                          </ng-select>
+                                        </div>
+
+                                      </div>
+
+                                      <div class="row">
+                                        <div class="col-md-6 form-group mb-3">
+                                          <label for="dateDebut2">Date de début <span class="required-field">*</span> </label>
+                                          <input class="form-control" formControlName="dateDebut" id="dateDebut2"
+                                                placeholder="Entrer le code" type="date" autocomplete="off">
+                                          <div *ngIf="validateForm2.controls.dateDebut.errors &&
+                                        (validateForm2.controls.dateDebut.dirty || validateForm2.controls.dateDebut.touched)"
+                                              class="error-field">
+                                            Ce champs est obligatoire !
+                                          </div>
+                                        </div>
+                            
+                                        <div class="col-md-6 form-group mb-3">
+                                          <label for="dateFin2">Date de fin <span class="required-field">*</span> </label>
+                                          <input class="form-control" formControlName="dateFin" id="dateFin2"
+                                                placeholder="Entrer le libellé" type="date" autocomplete="off">
+                                          <div *ngIf="validateForm2.controls.dateFin.errors &&
+                                        (validateForm2.controls.dateFin.dirty || validateForm2.controls.dateFin.touched)"
+                                              class="error-field">
+                                            Ce champs est obligatoire !
+                                          </div>
+                                        </div>
+
+                                      </div>
+
+                                      <div class="row">
+                                        <div class="col-md-12">
+                                          <btn-loading btnClass="btn-primary" ngbAutofocus [loading]="loading2">Générer</btn-loading>
+                                          <button (click)="resetForm2()" class="btn m-1 ml-2 btn-cancel" type="button"> Annuler</button>
+                                        </div>
+                                      </div>
+                                    </form>
+
+
+
+                                  </div>
+                                </div>
+                              </div>
+
+        </div>
+        <div class="tab-pane fade" id="v-pills-messages" role="tabpanel" aria-labelledby="v-pills-messages-tab">
+                              <!--Contenu Onglet 3-->
+                              <div style="display: flex; align-items: center; justify-content: center;">
+                                <div class="card mb-4" style="margin: auto; min-width: 60%; ">
+                                  <div class="card-body">
+                                    <form [formGroup]="validateForm3" (ngSubmit)="submit3()">
+                                      <div class="card-title mb-3 border-bottom pb-2">Consommation par article</div>
+                                      <div class="row">
+                                        <div class="col-md form-group mb-3">
+                                          <label >Centre de Consommation</label>
+                                          <ng-select formControlName="centreCons">
+                                            <ng-option [value]="-1">Tous</ng-option>
+                                            <ng-option *ngFor = "let cen of centreConsList; inde" [value]="cen.numService">{{cen.codeService}} - {{cen.libService}}</ng-option>
+                                          </ng-select>
+                                        </div>
+                    
+                                      </div>
+
+                                      <div class="row" *ngIf="validateForm3.value.centreCons != -1">
+                                        <div class="col-md form-group mb-1">
+                                          <label for="sousFa3" class="checkbox checkbox-success">
+                                            <input type="checkbox" checked formControlName="sousCentreCons" id="sousFa3">
+                                            <span>Inclure la consommation des centres enfants</span>
+                                            <span class="checkmark"></span>
+                                          </label>
+                                        </div>
+                                      </div>
+          
+                                      <div class="row">
+                                        <div class="col-md form-group mb-3">
+                                          <label >Magasin</label>
+                                          <ng-select formControlName="magasin">
+                                            <ng-option [value]="-1">Tous</ng-option>
+                                            <ng-option *ngFor = "let mag of magasinList; inde" [value]="mag.numMagasin">{{mag.codeMagasin}} - {{mag.libMagasin}}</ng-option>
+                                          </ng-select>
+                                        </div>
+                    
+                                      </div>
+                    
+                                      <div class="row">
+                                        <div class="col-md-6 form-group mb-3">
+                                          <label for="dateDebut3">Date de début <span class="required-field">*</span> </label>
+                                          <input class="form-control" formControlName="dateDebut" id="dateDebut3"
+                                                placeholder="Entrer le code" type="date" autocomplete="off">
+                                          <div *ngIf="validateForm.controls.dateDebut.errors &&
+                                        (validateForm3.controls.dateDebut.dirty || validateForm3.controls.dateDebut.touched)"
+                                              class="error-field">
+                                            Ce champs est obligatoire !
+                                          </div>
+                                        </div>
+                            
+                                        <div class="col-md-6 form-group mb-3">
+                                          <label for="dateFin3">Date de fin <span class="required-field">*</span> </label>
+                                          <input class="form-control" formControlName="dateFin" id="dateFin3"
+                                                placeholder="Entrer le libellé" type="date" autocomplete="off">
+                                          <div *ngIf="validateForm3.controls.dateFin.errors &&
+                                        (validateForm3.controls.dateFin.dirty || validateForm3.controls.dateFin.touched)"
+                                              class="error-field">
+                                            Ce champs est obligatoire !
+                                          </div>
+                                        </div>
+                    
+                                      </div>
+                    
+                                      <div class="row">
+                                        <div class="col-md-12">
+                                          <btn-loading btnClass="btn-primary" ngbAutofocus [loading]="loading3">Générer</btn-loading>
+                                          <button (click)="resetForm3()" class="btn m-1 ml-2 btn-cancel" type="button"> Annuler</button>
+                                        </div>
+                                      </div>
+                                    </form>
+                    
+                    
+                    
+                                  </div>
+                                </div>
+                              </div>
+        </div>
         <div class="tab-pane fade" id="v-pills-settings" role="tabpanel" aria-labelledby="v-pills-settings-tab">Placeholder content for the tab panel. This one relates to the messages tab. You got the finest architecture. Passport stamps, she's cosmopolitan. Fine, fresh, fierce, we got it on lock. Never planned that one day I'd be losing you. She eats your heart out. Your kiss is cosmic, every move is magic. I mean the ones, I mean like she's the one. Greetings loved ones let's take a journey. Just own the night like the 4th of July! But you'd rather get wasted.</div>
       </div>
     </div>

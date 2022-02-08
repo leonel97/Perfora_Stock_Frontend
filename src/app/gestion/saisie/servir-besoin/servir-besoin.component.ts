@@ -800,77 +800,92 @@ export class ServirBesoinComponent  implements OnInit {
   valider1(appro: Approvisionnement, eta: boolean, content){
 
     appro = {...appro};
-
-    if(this.inventaireEnCours){
-      this.toastr.error('Impossible d\'éffectuer l\'action car un Inventaire est en cours !', 'Erreur !', { timeOut: 5000, progressBar:true });
-      
-    }
-    else{
-
-      this.clotureService.isPeriodeCloturedByDate(appro.dateAppro).subscribe(
-        (data) => {
-          if(data == false){
-           
-            this.etatVali = eta;
-
-            this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', centered: true})
-            .result.then((result) => {
-            //this.confirmResut = `Closed with: ${result}`;
-            
-              
-              appro.valideAppro1 = eta;
-        
-              this.approService.editAAppro4(appro.numAppro, appro).subscribe(
-                (data) => {
-        
-                  const i = this.approList.findIndex(l => l.numAppro == data.numAppro);
-                      if (i > -1) {
-                        this.approList[i] = data;
-                        //this.approFiltered = [...this.approList.sort((a, b) => a.numAppro.localeCompare(b.numAppro.valueOf()))];
-                        this.filerData(this.searchControl.value);
-                      }
-        
-                      if(data.valideAppro1 == appro.valideAppro1){
-                        let msg: String = 'Validation'
-                        if(eta == false) msg = 'Annulation';
-                        this.toastr.success(msg+' effectuée avec succès.', 'Success', { timeOut: 5000, progressBar:true });
-                      } else {
-                        let msg: String = 'Erreur lors de la Validation de la Consommation Interne'
-                        
-                        this.toastr.error(msg.valueOf(), 'Erreur !', { timeOut: 5000, progressBar:true });
-                      }
-        
-        
-                },
-                (error: HttpErrorResponse) => {
-                  console.log('Echec status ==> ' + error.status);
-                  this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000, progressBar:true });
-        
-                }
-              );
-        
-        
-            }, (reason) => {
-              console.log(`Dismissed with: ${reason}`);
-            });
-        
-
-            
+    this.inventaireService.getAllInventaire().subscribe(
+      (dataInv) => {
+        let finded = false;
+        for (const element of dataInv) {
+          if(element.valideInve == false && element.magasin.numMagasin == appro.magasin.numMagasin){
+            finded = true;
           }
-          else{
-            this.toastr.error('Période Cloturée ', 'Erreur !', { timeOut: 5000, progressBar:true });
-          }
-        },
-        (error: HttpErrorResponse) => {
-          console.log('Echec atatus ==> ' + error.status);
-          this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000, progressBar:true });
+        }
+
+        if(finded){
+          this.toastr.error('Impossible d\'éffectuer l\'action car un Inventaire est en cours dans ce magasin!', 'Erreur !', { timeOut: 5000, progressBar:true });
           
         }
-      );
-  
+        else{
 
-    }
+          this.clotureService.isPeriodeCloturedByDate(appro.dateAppro).subscribe(
+            (data) => {
+              if(data == false){
+              
+                this.etatVali = eta;
 
+                this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', centered: true})
+                .result.then((result) => {
+                //this.confirmResut = `Closed with: ${result}`;
+                
+                  
+                  appro.valideAppro1 = eta;
+            
+                  this.approService.editAAppro4(appro.numAppro, appro).subscribe(
+                    (data) => {
+            
+                      const i = this.approList.findIndex(l => l.numAppro == data.numAppro);
+                          if (i > -1) {
+                            this.approList[i] = data;
+                            //this.approFiltered = [...this.approList.sort((a, b) => a.numAppro.localeCompare(b.numAppro.valueOf()))];
+                            this.filerData(this.searchControl.value);
+                          }
+            
+                          if(data.valideAppro1 == appro.valideAppro1){
+                            let msg: String = 'Validation'
+                            if(eta == false) msg = 'Annulation';
+                            this.toastr.success(msg+' effectuée avec succès.', 'Success', { timeOut: 5000, progressBar:true });
+                          } else {
+                            let msg: String = 'Erreur lors de la Validation de la Consommation Interne'
+                            
+                            this.toastr.error(msg.valueOf(), 'Erreur !', { timeOut: 5000, progressBar:true });
+                          }
+            
+            
+                    },
+                    (error: HttpErrorResponse) => {
+                      console.log('Echec status ==> ' + error.status);
+                      this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000, progressBar:true });
+            
+                    }
+                  );
+            
+            
+                }, (reason) => {
+                  console.log(`Dismissed with: ${reason}`);
+                });
+            
+
+                
+              }
+              else{
+                this.toastr.error('Période Cloturée ', 'Erreur !', { timeOut: 5000, progressBar:true });
+              }
+            },
+            (error: HttpErrorResponse) => {
+              console.log('Echec atatus ==> ' + error.status);
+              this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000, progressBar:true });
+              
+            }
+          );
+      
+
+        }
+
+
+
+      },
+      (error: HttpErrorResponse) => {
+        console.log('Echec status ==> ' + error.status);
+      }
+    );
 
 
   }
@@ -879,83 +894,101 @@ export class ServirBesoinComponent  implements OnInit {
 
     appro = {...appro};
 
-    if(this.inventaireEnCours){
-      this.toastr.error('Impossible d\'éffectuer l\'action car un Inventaire est en cours !', 'Erreur !', { timeOut: 5000, progressBar:true });
-      
-    }
-    else{
-
-      this.clotureService.isPeriodeCloturedByDate(appro.dateAppro).subscribe(
-        (data) => {
-          if(data == false){
-           
-            this.etatVali2 = eta;
-
-            this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', centered: true})
-            .result.then((result) => {
-            //this.confirmResut = `Closed with: ${result}`;
-            
-
-              appro.valideAppro = eta;
-        
-              this.approService.editAAppro3(appro.numAppro, appro).subscribe(
-                (data) => {
-        
-                  const i = this.approList.findIndex(l => l.numAppro == data.numAppro);
-                      if (i > -1) {
-                        this.approList[i] = data;
-                        //this.approFiltered = [...this.approList.sort((a, b) => a.numAppro.localeCompare(b.numAppro.valueOf()))];
-                        this.filerData(this.searchControl.value);
-                      }
-        
-                      if(data.valideAppro == appro.valideAppro){
-                        let msg: String = 'Sortie'
-                        if(eta == false) msg = 'Retour';
-                        this.toastr.success(msg+' effectuée avec succès.', 'Success', { timeOut: 5000, progressBar:true });
-                      } else {
-                        let msg: String = 'Erreur lors de la Sortie de d\'Article du Magasin, la quantité disponible de l\'un des articles dans ce magasin n\'est pas satisfaisante.'
-                        if(eta == false) msg = 'Erreur lors du Retour de l\'Article dans le Magasin Annulation';
-                        this.toastr.error(msg.valueOf(), 'Erreur !', { timeOut: 5000, progressBar:true });
-                      }
-        
-                      this.getAllArticle();
-                      this.getAllUniter();
-                      this.getAllLigneAppro();
-                      this.getAllDemandeAppro();
-                      this.getAllLigneDemandeAppro();
-                      this.getAllMagasin();
-                      this.getAllStocker();
-        
-        
-                },
-                (error: HttpErrorResponse) => {
-                  console.log('Echec status ==> ' + error.status);
-                  this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000, progressBar:true });
-        
-                }
-              );
-        
-        
-            }, (reason) => {
-              console.log(`Dismissed with: ${reason}`);
-            });
-        
-
-            
+    this.inventaireService.getAllInventaire().subscribe(
+      (dataInv) => {
+        let finded = false;
+        for (const element of dataInv) {
+          if(element.valideInve == false  && element.magasin.numMagasin == appro.magasin.numMagasin){
+            finded = true;
           }
-          else{
-            this.toastr.error('Période Cloturée ', 'Erreur !', { timeOut: 5000, progressBar:true });
-          }
-        },
-        (error: HttpErrorResponse) => {
-          console.log('Echec atatus ==> ' + error.status);
-          this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000, progressBar:true });
+        }
+
+        if(finded){
+          this.toastr.error('Impossible d\'éffectuer l\'action car un Inventaire est en cours !', 'Erreur !', { timeOut: 5000, progressBar:true });
           
         }
-      );
-  
+        else{
+    
+          this.clotureService.isPeriodeCloturedByDate(appro.dateAppro).subscribe(
+            (data) => {
+              if(data == false){
+               
+                this.etatVali2 = eta;
+    
+                this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', centered: true})
+                .result.then((result) => {
+                //this.confirmResut = `Closed with: ${result}`;
+                
+    
+                  appro.valideAppro = eta;
+            
+                  this.approService.editAAppro3(appro.numAppro, appro).subscribe(
+                    (data) => {
+            
+                      const i = this.approList.findIndex(l => l.numAppro == data.numAppro);
+                          if (i > -1) {
+                            this.approList[i] = data;
+                            //this.approFiltered = [...this.approList.sort((a, b) => a.numAppro.localeCompare(b.numAppro.valueOf()))];
+                            this.filerData(this.searchControl.value);
+                          }
+            
+                          if(data.valideAppro == appro.valideAppro){
+                            let msg: String = 'Sortie'
+                            if(eta == false) msg = 'Retour';
+                            this.toastr.success(msg+' effectuée avec succès.', 'Success', { timeOut: 5000, progressBar:true });
+                          } else {
+                            let msg: String = 'Erreur lors de la Sortie de d\'Article du Magasin, la quantité disponible de l\'un des articles dans ce magasin n\'est pas satisfaisante.'
+                            if(eta == false) msg = 'Erreur lors du Retour de l\'Article dans le Magasin Annulation';
+                            this.toastr.error(msg.valueOf(), 'Erreur !', { timeOut: 5000, progressBar:true });
+                          }
+            
+                          this.getAllArticle();
+                          this.getAllUniter();
+                          this.getAllLigneAppro();
+                          this.getAllDemandeAppro();
+                          this.getAllLigneDemandeAppro();
+                          this.getAllMagasin();
+                          this.getAllStocker();
+            
+            
+                    },
+                    (error: HttpErrorResponse) => {
+                      console.log('Echec status ==> ' + error.status);
+                      this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000, progressBar:true });
+            
+                    }
+                  );
+            
+            
+                }, (reason) => {
+                  console.log(`Dismissed with: ${reason}`);
+                });
+            
+    
+                
+              }
+              else{
+                this.toastr.error('Période Cloturée ', 'Erreur !', { timeOut: 5000, progressBar:true });
+              }
+            },
+            (error: HttpErrorResponse) => {
+              console.log('Echec atatus ==> ' + error.status);
+              this.toastr.error('Erreur avec le status ' + error.status, 'Erreur !', { timeOut: 5000, progressBar:true });
+              
+            }
+          );
+      
+    
+        }
 
-    }
+      },
+      (error: HttpErrorResponse) => {
+        console.log('Echec status ==> ' + error.status);
+      }
+    );
+
+
+
 
 
 

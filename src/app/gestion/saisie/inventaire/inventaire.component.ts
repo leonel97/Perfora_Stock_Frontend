@@ -193,7 +193,11 @@ export class InventaireComponent implements OnInit {
 
   }
   
-
+  reporterStockTheorique(){
+    this.tempateLigneInventaire.forEach(element => {
+      element.stockreel = (!this.validateForm.value.report == true ? element.stockTheoriq : 0);
+    });
+  }
   
   makeForm(inventaire: Inventaire): void {
     this.validateForm = this.fb.group({
@@ -205,6 +209,7 @@ export class InventaireComponent implements OnInit {
       /*frs: [demandePrix != null ? demandePrix.commande.frs.numFournisseur : null,
         [Validators.required]],
       numComm: [demandePrix != null ? demandePrix.commande.numCommande : null],*/
+      report : false,
     });
     //cette condition permet de basculer vers la tab contenant le formulaire lors d'une modification
     if (inventaire?.numInv !=null){

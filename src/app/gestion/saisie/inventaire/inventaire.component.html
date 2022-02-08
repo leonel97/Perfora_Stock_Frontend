@@ -159,7 +159,7 @@
                                     placeholder="Numéro" readonly>
                             </div>
                         </div>
-                        <div class="col-md-6 form-group mb-3">
+                        <div class="col-md form-group mb-3">
                             <label for="magasin">Magasin</label>
                             <ng-select bindLabel="libMagasin"  id="magasin" formControlName="magasin" placeholder="Entrer le magasin"  [readonly]="detailView" >
                               <!--ng-option [ngValue]="null">-- Centre de consommation parent -- </ng-option-->
@@ -167,7 +167,7 @@
                             </ng-select>
                         </div>
 
-                        <div class="col-md-6 form-group mb-3">
+                        <div class="col-md form-group mb-3">
                           <label for="picker1">Date Inventaire</label>
                           <div class="input-group">
                               <input formControlName="dateInv" id="picker1" class="form-control text-right" type="date"  [readonly]="detailView">
@@ -176,11 +176,19 @@
                        
                     </div>
                     <div class="row">
-                      <div class="col-md-12 form-group">
+                      <div class="col-md-8 form-group">
                         <label for="orderNo">Commentaire ou Observation </label>
                         <input formControlName="descrInv" type="text" class="form-control" id="descrInv"  [readonly]="detailView"
                             placeholder="Commentaire ou Observation sur l'inventaire" autocomplete="off">
   
+                      </div>
+
+                      <div class="col-md-4 form-group mb-3" style="display: flex; flex-direction: column; align-items: center;">
+                        <label class="checkbox checkbox-success" style="margin: auto;">
+                          Reporter les stock théorique
+                          <input type="checkbox" formControlName="report" (click)="reporterStockTheorique()">
+                          <span class="checkmark"></span>
+                        </label>
                       </div>
                      
   
