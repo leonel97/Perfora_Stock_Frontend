@@ -268,6 +268,7 @@ export class ServirBesoinComponent  implements OnInit {
   getAllDemandeAppro(){
     this.demandeApproService.getAllDemandeAppro().subscribe(
       (data) => {
+        data.sort((a, b) => a.numDA.localeCompare(b.numDA.toString()));
         this.demandeApproList = data;
       },
       (error: HttpErrorResponse) => {
