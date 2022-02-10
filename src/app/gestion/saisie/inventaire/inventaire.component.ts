@@ -561,7 +561,7 @@ export class InventaireComponent implements OnInit {
     });
 
 
-    doc.output('dataurlnewwindow');
+    doc.save('inventaire.pdf');
 
   }
 
@@ -656,7 +656,7 @@ export class InventaireComponent implements OnInit {
 
 
 
-    doc.output('dataurlnewwindow');
+    doc.save('fiche_inventaire.pdf');;
 
   }
 
