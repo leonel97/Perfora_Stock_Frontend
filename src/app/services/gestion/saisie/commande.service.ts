@@ -18,6 +18,10 @@ export class CommandeService {
       return this.httpCli.get<Commande[]>(this.host+'/stock/commande/list');
     }
 
+    getCommandeByCodeExo(code:String){
+      return this.httpCli.get<Commande[]>(this.host+'/stock/commande/byCodExo/'+code);
+    }
+
     getACommandeById(code:String){
       return this.httpCli.get<Commande>(this.host+'/stock/commande/byCodCom/'+code);
     }

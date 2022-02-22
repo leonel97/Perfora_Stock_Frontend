@@ -5,7 +5,7 @@ export class DemandeApprovisionnement {
 
   constructor(public numDA: String, public dateDA: Date, public valeur: number,
     public valideDA: boolean, public exercice: Exercice,  public service: CentreConsommation,
-    public description: String){
+    public description: String, public notProcessAgain?: boolean) {
 
   }
 

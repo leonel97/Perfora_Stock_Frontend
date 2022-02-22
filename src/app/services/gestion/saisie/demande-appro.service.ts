@@ -19,6 +19,10 @@ export class DemandeApproService {
     return this.httpCli.get<DemandeApprovisionnement[]>(this.host+'/stock/demandeAppro/list');
   }
 
+  getDemandeApprovisionnementByCodeExo(code:String){
+    return this.httpCli.get<DemandeApprovisionnement[]>(this.host+'/stock/demandeAppro/byCodExo/'+code);
+  }
+
   getADemandeApproById(code:String){
     return this.httpCli.get<DemandeApprovisionnement>(this.host+'/stock/demandeAppro/byCodDemApp/'+code);
   }

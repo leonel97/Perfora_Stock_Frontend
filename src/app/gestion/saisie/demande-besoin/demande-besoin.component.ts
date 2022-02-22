@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -27,6 +27,7 @@ import { Utils } from 'src/app/utilitaires/utils';
 import { AuthService } from 'src/app/services/common/auth.service';
 import { SalTools } from 'src/app/utilitaires/salTools';
 import { CloturePeriodiqService } from 'src/app/services/gestion/saisie/cloture-periodiq.service';
+import { DatatableComponent } from '@swimlane/ngx-datatable';
 
 
 export interface modelLigneDemandeAppro{
@@ -55,6 +56,7 @@ export class DemandeBesoinComponent  implements OnInit {
   searchAffForm: FormGroup;
   validateForm: FormGroup;
   demandeApproList: DemandeApprovisionnement[] = [];
+  demandeApproListByExo: DemandeApprovisionnement[] = [];
   ligneDemandeApproList: LigneDemandeAppro[] = [];
   selectedLigneDemandeApproList: LigneDemandeAppro[] = [];
   articleList: Article[] = [];
@@ -72,6 +74,8 @@ export class DemandeBesoinComponent  implements OnInit {
   //pour les tabs navs
   activeTabsNav;
   //end
+
+  //@ViewChild('tableDt') table: DatatableComponent;
 
   constructor(
     private demandeApproService: DemandeApproService,
@@ -145,13 +149,26 @@ export class DemandeBesoinComponent  implements OnInit {
     this.demandeApproService.getAllDemandeAppro().subscribe(
       (data) => {
         this.demandeApproList = [...data.filter(l => this.isAllowedService(this.serviceList, l))];
-        this.demandeApproFiltered = this.demandeApproList.sort((a, b) => a.numDA.localeCompare(b.numDA.valueOf()));
+        //this.demandeApproFiltered = this.demandeApproList.sort((a, b) => a.numDA.localeCompare(b.numDA.valueOf()));
+        //console.log(data);
+      },
+      (error: HttpErrorResponse) => {
+        console.log('Echec status ==> ' + error.status);
+      });
+  }
+
+  getAllDemandeApproByCodeExoSelected(){
+    this.demandeApproService.getDemandeApprovisionnementByCodeExo(this.exerciceService.selectedExo.codeExercice).subscribe(
+      (data) => {
+        this.demandeApproListByExo = [...data.filter(l => this.isAllowedService(this.serviceList, l))];
+        this.demandeApproFiltered = this.demandeApproListByExo.sort((a, b) => a.numDA.localeCompare(b.numDA.valueOf()));
         console.log(data);
       },
       (error: HttpErrorResponse) => {
         console.log('Echec status ==> ' + error.status);
       });
   }
+
 
   isAllowedService(listServ:CentreConsommation[], demandeAppro: DemandeApprovisionnement):boolean{
     
@@ -216,7 +233,7 @@ export class DemandeBesoinComponent  implements OnInit {
     this.centreConsommationService.list().subscribe(
       (data: any) => {
         this.serviceList = SalTools.getConnectedUser().accesChildService ? SalTools.deepSearcher(SalTools.getConnectedUser().service, 'superService', 'numService', data) : [SalTools.getConnectedUser().service];
-        this.getAllDemandeAppro();
+        this.getAllDemandeApproByCodeExoSelected();
       },
       (error: HttpErrorResponse) => {
         console.log('Echec status ==> ' + error.status);
@@ -311,17 +328,17 @@ export class DemandeBesoinComponent  implements OnInit {
     if (val) {
       val = val.toLowerCase();
     } else {
-      this.demandeApproFiltered = [...this.demandeApproList.sort((a, b) => a.numDA.localeCompare(b.numDA.valueOf()))];
+      this.demandeApproFiltered = [...this.demandeApproListByExo.sort((a, b) => a.numDA.localeCompare(b.numDA.valueOf()))];
       this.searchAffElmtChanged();
       return;
     }
 
-    const columns = Object.keys(this.demandeApproList[0]);
+    const columns = Object.keys(this.demandeApproListByExo[0]);
     if (!columns.length) {
       return;
     }
 
-    const rows = this.demandeApproList.filter(function (d) {
+    const rows = this.demandeApproListByExo.filter(function (d) {
       for (let i = 0; i <= columns.length; i++) {
         const column = columns[i];
         // console.log(d[column]);
@@ -346,23 +363,33 @@ export class DemandeBesoinComponent  implements OnInit {
     });
     //cette condition permet de basculer vers la tab contenant le formulaire lors d'une modification
     if (demandeAppro?.numDA !=null){
-      this.ligneShow = [];
 
-      for(const ligCo of this.ligneDemandeApproList){
-        if(ligCo.appro.numDA == demandeAppro.numDA){
-          this.ligneShow.push({
-            ligneDemandeAppro: ligCo,
-            listArticle: this.getNotUsedArticle(),
-            listUniter: this.getUniterOfAArticle(ligCo.article.numArticle),
-            selectedArticl: ligCo.article.numArticle,
-            selectedUniter: ligCo.uniter ? ligCo.uniter.numUniter : null,
-            artii: ligCo.article,
+      this.ligneDemandeApproService.getLignesDemandeApproByCodeDemAppro(demandeAppro.numDA).subscribe(
+        (ligneDemandeApproList) => {
+          this.ligneShow = [];
 
-          });
+          for(const ligCo of ligneDemandeApproList){
+            
+              this.ligneShow.push({
+                ligneDemandeAppro: ligCo,
+                listArticle: this.getNotUsedArticle(),
+                listUniter: this.getUniterOfAArticle(ligCo.article.numArticle),
+                selectedArticl: ligCo.article.numArticle,
+                selectedUniter: ligCo.uniter ? ligCo.uniter.numUniter : null,
+                artii: ligCo.article,
+    
+              });
+            
+          }
+    
+          this.activeTabsNav = 2;
+        },
+        (error: HttpErrorResponse) => {
+          console.log('Echec status ==> ' + error.status);
         }
-      }
+      );
 
-      this.activeTabsNav = 2;
+
     }
   }
 
@@ -461,8 +488,15 @@ export class DemandeBesoinComponent  implements OnInit {
         this.getAllLigneDemandeAppro();
         console.log(data);
 
-            this.demandeApproList.unshift(data.demandeApprovisionnement);
-            this.demandeApproFiltered = [...this.demandeApproList.sort((a, b) => a.numDA.localeCompare(b.numDA.valueOf()))];
+            this.demandeApproListByExo.unshift(data.demandeApprovisionnement);
+            this.demandeApproFiltered = [...this.demandeApproListByExo.sort((a, b) => a.numDA.localeCompare(b.numDA.valueOf()))];
+
+            /*if(this.demandeApproFiltered.length % 4 > 0){
+              this.table.offset = ((this.demandeApproFiltered.length - (this.demandeApproFiltered % 4)) / 4) + 1;
+            }
+            else {
+              this.table.offset = this.demandeApproFiltered / 4;
+            }*/
 
             setTimeout(() => {
               this.loading = false;
@@ -500,10 +534,10 @@ export class DemandeBesoinComponent  implements OnInit {
 
         console.log(data);
 
-            const i = this.demandeApproList.findIndex(l => l.numDA == data.demandeApprovisionnement.numDA);
+            const i = this.demandeApproListByExo.findIndex(l => l.numDA == data.demandeApprovisionnement.numDA);
             if (i > -1) {
-              this.demandeApproList[i] = data.demandeApprovisionnement;
-              this.demandeApproFiltered = [...this.demandeApproList.sort((a, b) => a.numDA.localeCompare(b.numDA.valueOf()))];
+              this.demandeApproListByExo[i] = data.demandeApprovisionnement;
+              this.demandeApproFiltered = [...this.demandeApproListByExo.sort((a, b) => a.numDA.localeCompare(b.numDA.valueOf()))];
             }
 
         setTimeout(() => {
@@ -543,10 +577,10 @@ export class DemandeBesoinComponent  implements OnInit {
         (data) => {
 
           console.log(data);
-          const i = this.demandeApproList.findIndex(l => l.numDA == demandeAppro.numDA);
+          const i = this.demandeApproListByExo.findIndex(l => l.numDA == demandeAppro.numDA);
           if (i > -1) {
-            this.demandeApproList.splice(i, 1);
-            this.demandeApproFiltered = [...this.demandeApproList.sort((a, b) => a.numDA.localeCompare(b.numDA.valueOf()))];
+            this.demandeApproListByExo.splice(i, 1);
+            this.demandeApproFiltered = [...this.demandeApproListByExo.sort((a, b) => a.numDA.localeCompare(b.numDA.valueOf()))];
           }
           /*setTimeout(() => {
             this.toastr.success('Suppression effectuée avec succès.', 'Success!', {progressBar: true});
@@ -643,9 +677,9 @@ export class DemandeBesoinComponent  implements OnInit {
       
                 demandeAppro = data;
       
-                const i = this.demandeApproList.findIndex(l => l.numDA == demandeAppro.numDA);
+                const i = this.demandeApproListByExo.findIndex(l => l.numDA == demandeAppro.numDA);
                     if (i > -1) {
-                      this.demandeApproList[i] = demandeAppro;
+                      this.demandeApproListByExo[i] = demandeAppro;
                       //this.demandeApproFiltered = [...this.demandeApproList.sort((a, b) => a.numDA.localeCompare(b.numDA.valueOf()))];
                       this.filerData(this.searchControl.value);
                     }
@@ -745,38 +779,44 @@ export class DemandeBesoinComponent  implements OnInit {
       ,
     });
 
-    let lignes = [];
+    this.ligneDemandeApproService.getLignesDemandeApproByCodeDemAppro(element.numDA).subscribe(
+      (ligneDemandeApproList) => {
+        let lignes = [];
 
-    this.ligneDemandeApproList.forEach(element2 => {
-      if(element2.appro.numDA == element.numDA){
-        let lig = [];
-        lig.push(element2.article.codeArticle);
-        lig.push(element2.article.libArticle);
-        lig.push(element2.quantiteDemandee);
-        lig.push(element2.uniter.libUniter);
-
-        lignes.push(lig);
-      }
-
-    });
-
-    autoTable(doc, {
-      theme: 'grid',
-      head: [['Article', 'Désignation', 'Quantité', 'Unité']],
-      headStyles:{
-        fillColor: [41, 128, 185],
-        textColor: 255,
-        fontStyle: 'bold' ,
-    },
-      margin: { top: 100 },
-      body: lignes
-      ,
-    });
-
-
+        ligneDemandeApproList.forEach(element2 => {
+          
+            let lig = [];
+            lig.push(element2.article.codeArticle);
+            lig.push(element2.article.libArticle);
+            lig.push(element2.quantiteDemandee);
+            lig.push(element2.uniter.libUniter);
     
+            lignes.push(lig);
+          
+    
+        });
+    
+        autoTable(doc, {
+          theme: 'grid',
+          head: [['Article', 'Désignation', 'Quantité', 'Unité']],
+          headStyles:{
+            fillColor: [41, 128, 185],
+            textColor: 255,
+            fontStyle: 'bold' ,
+        },
+          margin: { top: 100 },
+          body: lignes
+          ,
+        });
+    
+        doc.output('dataurlnewwindow');
+    
+      },
+      (error: HttpErrorResponse) => {
+        console.log('Echec status ==> ' + error.status);
+      }
+    );
 
-    doc.output('dataurlnewwindow');
 
   }
 

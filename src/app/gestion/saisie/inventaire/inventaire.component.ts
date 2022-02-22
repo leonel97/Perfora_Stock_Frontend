@@ -50,6 +50,7 @@ export class InventaireComponent implements OnInit {
 
   
   inventaireList: Inventaire[] = [];
+  inventaireListByExo: Inventaire[] = [];
   ligneInventaireList: LigneInventaire[] = [];
   inventaire: Inventaire = null;
 
@@ -85,7 +86,7 @@ export class InventaireComponent implements OnInit {
 
     this.getAllMagasin();
     this.getAllStocker();
-    this.getAllInventaire();
+    this.getAllInventaireByCodeExoSelected();
     this.getAllLignenventaire();
 
    
@@ -123,8 +124,23 @@ export class InventaireComponent implements OnInit {
     this.inventaireService.getAllInventaire().subscribe(
       (data) => {
         this.inventaireList = data;
-        this.inventaireFiltered = [...this.inventaireList.sort((a, b) => a.numInv.localeCompare(b.numInv.valueOf()))];
-        console.log('All innventaire', this.inventaireList);
+        //this.inventaireFiltered = [...this.inventaireList.sort((a, b) => a.numInv.localeCompare(b.numInv.valueOf()))];
+        //console.log('All innventaire', this.inventaireList);
+        
+      },
+      (error: HttpErrorResponse) => {
+        console.log('Echec status ==> ' + error.status);
+      }
+    );
+
+  }
+
+  getAllInventaireByCodeExoSelected(){
+    this.inventaireService.getInventaireByCodeExo(this.exerciceService.selectedExo.codeExercice).subscribe(
+      (data) => {
+        this.inventaireListByExo = data;
+        this.inventaireFiltered = [...this.inventaireListByExo.sort((a, b) => a.numInv.localeCompare(b.numInv.valueOf()))];
+        console.log('All innventaire', this.inventaireListByExo);
         
       },
       (error: HttpErrorResponse) => {
@@ -213,20 +229,28 @@ export class InventaireComponent implements OnInit {
     });
     //cette condition permet de basculer vers la tab contenant le formulaire lors d'une modification
     if (inventaire?.numInv !=null){
-      this.tempateLigneInventaire = [];
 
-      for(const ligInventaire of this.ligneInventaireList){
-        if(ligInventaire.inventaire.numInv == inventaire.numInv){
-          /*this.ligneShow.push({
-            this.templateLign: ligDp;
-          });*/
-          this.tempateLigneInventaire.push(ligInventaire);
+      this.ligneInventaireService.getLignesInventaireByCodeInventaire(inventaire?.numInv).subscribe(
+        (ligneInventaireList) => {
+
+          this.tempateLigneInventaire = [];
+
+          for(const ligInventaire of ligneInventaireList){
+            
+              this.tempateLigneInventaire.push(ligInventaire);
+            
+          }
+          console.log('lines of inventaire', this.tempateLigneInventaire);
+          
+
+          this.activeTabsNav = 2;
+
+        }, 
+        (error: HttpErrorResponse) => {
+          console.log('Echec status ==> ' + error.status);
         }
-      }
-      console.log('lines of inventaire', this.tempateLigneInventaire);
+      );
       
-
-      this.activeTabsNav = 2;
     }
   }
 
@@ -292,8 +316,8 @@ export class InventaireComponent implements OnInit {
         this.getAllInventaire();
         this.getAllLignenventaire();
 
-        this.inventaireList.unshift(data.inventaire);
-        this.inventaireFiltered = [...this.inventaireList.sort((a, b) => a.numInv.localeCompare(b.numInv.valueOf()))];
+        this.inventaireListByExo.unshift(data.inventaire);
+        this.inventaireFiltered = [...this.inventaireListByExo.sort((a, b) => a.numInv.localeCompare(b.numInv.valueOf()))];
         setTimeout(() => {
           this.loading = false;
           this.activeTabsNav = 1;
@@ -321,13 +345,13 @@ export class InventaireComponent implements OnInit {
     this.inventaireService.editInventaire2(inventaire.numInv.toString(), new EncapInventaire(inventaire, lignesInventaire)).subscribe(
       (data2) => {
         this.getAllLignenventaire();
-        this.getAllInventaire();
+        //this.getAllInventaire();
         this.getAllMagasin();
       
 
         console.log(data2);
 
-            const i = this.inventaireList.findIndex(l => l.numInv == data2.inventaire.numInv);
+            const i = this.inventaireListByExo.findIndex(l => l.numInv == data2.inventaire.numInv);
             if (i > -1) {
               this.inventaireList[i] = data2.inventaire;
               this.inventaireFiltered = [...this.inventaireList.sort((a, b) => a.numInv.localeCompare(b.numInv.valueOf()))];
@@ -366,10 +390,10 @@ export class InventaireComponent implements OnInit {
         (data) => {
 
           console.log(data);
-          const i = this.inventaireList.findIndex(l => l.numInv == inventaire.numInv);
+          const i = this.inventaireListByExo.findIndex(l => l.numInv == inventaire.numInv);
           if (i > -1) {
-              this.inventaireList.splice(i, 1);
-              this.inventaireFiltered = [...this.inventaireList.sort((a, b) => a.numInv.localeCompare(b.numInv.valueOf()))];
+              this.inventaireListByExo.splice(i, 1);
+              this.inventaireFiltered = [...this.inventaireListByExo.sort((a, b) => a.numInv.localeCompare(b.numInv.valueOf()))];
           }
 
           this.resetForm();
@@ -405,10 +429,10 @@ export class InventaireComponent implements OnInit {
                 this.toastr.success('stock ajusté avec succès ', 'Success !', { progressBar: true });
 
 
-                const i = this.inventaireList.findIndex(l => l.numInv == data.numInv);
+                const i = this.inventaireListByExo.findIndex(l => l.numInv == data.numInv);
                 if (i > -1) {
-                  this.inventaireList[i] = data;
-                  this.inventaireFiltered = [...this.inventaireList.sort((a, b) => a.numInv.localeCompare(b.numInv.valueOf()))];
+                  this.inventaireListByExo[i] = data;
+                  this.inventaireFiltered = [...this.inventaireListByExo.sort((a, b) => a.numInv.localeCompare(b.numInv.valueOf()))];
                   console.log('value inventaire ', this.inventaireFiltered);
                   
                 }
@@ -495,73 +519,69 @@ export class InventaireComponent implements OnInit {
     autoTable(doc, {
       theme: 'plain',
       startY:60,
-      margin: { right: 100 },
       columnStyles: {
-        0: { textColor: 0, fontStyle: 'bold', halign: 'left' },
+        0: { textColor: 0, fontStyle: 'bold', halign: 'left', cellWidth: 30 },
         1: { textColor: 0, halign: 'left' },
       },
       body: [
         ['Exercice :', ''+element.exercice.codeExercice],
         ['Magasin :', element.magasin.codeMagasin+' - '+element.magasin.libMagasin],
-        ['Inventaire :', element.numInv.toString()]
-      ]
-      ,
-    });
-
-    autoTable(doc, {
-      theme: 'plain',
-      startY:60,
-      margin: { left: 100 },
-      columnStyles: {
-        0: { textColor: 0, fontStyle: 'bold', halign: 'left' },
-        1: { textColor: 0, halign: 'left' },
-      },
-      body: [
-       // ['Observation :', ''+(element.descrInv ? element.descrInv : '')],
+        ['Inventaire :', element.numInv.toString()],
         ['Observation :', ''+(element.descrInv ? element.descrInv : '')],
-        
       ]
       ,
     });
 
-    let lignes = [];
+    this.ligneInventaireService.getLignesInventaireByCodeInventaire(element.numInv).subscribe(
+      (ligneInventaireList) => {
+        let lignes = [];
 
-    this.ligneInventaireList.forEach(element2 => {
-      if(element2.inventaire.numInv == element.numInv){
-        let lig = [];
-        lig.push(element2.article.codeArticle);
-        lig.push(element2.article.libArticle);
-        lig.push(element2.stockTheoriq);
-        lig.push(element2.stockreel);
-        lig.push(SalTools.salRound(element2.pu));
-        lig.push(element2.stockreel - element2.stockTheoriq );
-        lig.push( SalTools.salRound((element2.stockreel*element2.pu) - (element2.stockTheoriq*element2.pu)) );
-        //let ht = element2.quantiteLigneReception*element2.ligneCommande.puLigneCommande;
-        //lig.push(ht*(1+(element2.ligneCommande.tva/100)));
-        lignes.push(lig);
+        ligneInventaireList.forEach(element2 => {
+          if(element2.inventaire.numInv == element.numInv){
+            let lig = [];
+            lig.push(element2.article.codeArticle);
+            lig.push(element2.article.libArticle);
+            lig.push(element2.stockTheoriq);
+            lig.push(element2.stockreel);
+            lig.push(SalTools.salRound(element2.pu));
+            lig.push(element2.stockreel - element2.stockTheoriq );
+            lig.push( SalTools.salRound((element2.stockreel*element2.pu) - (element2.stockTheoriq*element2.pu)) );
+            //let ht = element2.quantiteLigneReception*element2.ligneCommande.puLigneCommande;
+            //lig.push(ht*(1+(element2.ligneCommande.tva/100)));
+            lignes.push(lig);
 
-       /* totalHT+= ht;
-        totalTVA+= ht*(element2.ligneCommande.tva/100);
-        totalTTC+= ht*(1+(element2.ligneCommande.tva/100));*/
+          /* totalHT+= ht;
+            totalTVA+= ht*(element2.ligneCommande.tva/100);
+            totalTTC+= ht*(1+(element2.ligneCommande.tva/100));*/
+          }
+
+        });
+
+        lignes.sort((a, b) => a[0].localeCompare(b[0].toString()));
+
+        autoTable(doc, {
+          theme: 'grid',
+          head: [['Article', 'Désignation', 'Stock Théo.', 'Stock Réel', 'PU', 'Ecart Qté', ' Ecart Montant']],
+          headStyles:{
+            fillColor: [41, 128, 185],
+            textColor: 255,
+            fontStyle: 'bold' ,
+        },
+          margin: { top: 0 },
+          body: lignes
+          ,
+        });
+
+
+        doc.save('inventaire.pdf');
+
+      }, 
+      (error: HttpErrorResponse) => {
+        console.log('Echec status ==> ' + error.status);
       }
+    );
 
-    });
-
-    autoTable(doc, {
-      theme: 'grid',
-      head: [['Article', 'Désignation', 'Stock Théo.', 'Stock Réel', 'PU', 'Ecart Qté', ' Ecart Montant']],
-      headStyles:{
-        fillColor: [41, 128, 185],
-        textColor: 255,
-        fontStyle: 'bold' ,
-    },
-      margin: { top: 100 },
-      body: lignes
-      ,
-    });
-
-
-    doc.save('inventaire.pdf');
+    
 
   }
 
@@ -648,7 +668,7 @@ export class InventaireComponent implements OnInit {
         textColor: 255,
         fontStyle: 'bold' ,
     },
-      margin: { top: 100 },
+      margin: { top: 0 },
       //body: lignes
       body: []
       ,

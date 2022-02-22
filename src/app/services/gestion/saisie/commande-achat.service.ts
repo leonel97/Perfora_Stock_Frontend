@@ -17,6 +17,10 @@ export class CommandeAchatService {
     return this.httpCli.get<CommandeAchat[]>(this.host+'/stock/commandeAchat/list');
   }
 
+  getCommandeAchatByCodeExo(code:String){
+    return this.httpCli.get<CommandeAchat[]>(this.host+'/stock/commandeAchat/byCodExo/'+code);
+  }
+
   getACommandeAchatById(code:String){
     return this.httpCli.get<CommandeAchat>(this.host+'/stock/commandeAchat/byCodComAch/'+code);
   }

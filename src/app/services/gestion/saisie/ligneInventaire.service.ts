@@ -22,6 +22,10 @@ export class LigneInventaireService {
     return this.httpCli.get<LigneInventaire>(this.host+'/stock/ligneInventaire/byCodSto/'+code);
   }
 
+  getLignesInventaireByCodeInventaire(code:String){
+    return this.httpCli.get<LigneInventaire[]>(this.host+'/stock/ligneInventaire/list/byCodeInv/'+code);
+  }
+
   addLigneInventaire(corps:LigneInventaire){
     return this.httpCli.post<LigneInventaire>(this.host+'/stock/ligneInventaire/list', corps);
   }

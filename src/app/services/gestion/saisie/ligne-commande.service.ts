@@ -22,6 +22,10 @@ export class LigneCommandeService {
     return this.httpCli.get<LigneCommande>(this.host+'/stock/ligneCommande/byCodLigCom/'+code);
   }
 
+  getLignesCommandeByCodeCommmande(code:String){
+    return this.httpCli.get<LigneCommande[]>(this.host+'/stock/ligneCommande/list/byCodeCom/'+code);
+  }
+
   addALigneCommande(corps:LigneCommande){
     return this.httpCli.post<LigneCommande>(this.host+'/stock/ligneCommande/list', corps);
   }

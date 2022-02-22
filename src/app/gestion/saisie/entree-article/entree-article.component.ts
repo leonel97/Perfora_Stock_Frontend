@@ -75,6 +75,7 @@ export class EntreeArticleComponent  implements OnInit {
 
   validateForm: FormGroup;
   receptionList: Reception[] = [];
+  receptionListByExo: Reception[] = [];
   ligneReceptList: LigneReception[] = [];
   ligneCommandeList: LigneCommande[] = [];
   commandeList: Commande[] = [];
@@ -136,7 +137,7 @@ export class EntreeArticleComponent  implements OnInit {
 
   ngOnInit(): void {
 
-    this.getAllReception();
+    this.getAllReceptionByCodeExoSelected();
 
     this.makeForm(null);
 
@@ -300,7 +301,19 @@ export class EntreeArticleComponent  implements OnInit {
     this.receptionService.getAllReception().subscribe(
       (data) => {
         this.receptionList = [...data.filter( l => this.isAllowedMagasin(l))];
-        this.receptionFiltered = this.receptionList.sort((a, b) => a.numReception.localeCompare(b.numReception.valueOf()));
+        //this.receptionFiltered = this.receptionList.sort((a, b) => a.numReception.localeCompare(b.numReception.valueOf()));
+        //console.log(this.receptionList);
+      },
+      (error: HttpErrorResponse) => {
+        console.log('Echec status ==> ' + error.status);
+      });
+  }
+
+  getAllReceptionByCodeExoSelected(){
+    this.receptionService.getReceptionByCodeExo(this.exerciceService.selectedExo.codeExercice).subscribe(
+      (data) => {
+        this.receptionListByExo = [...data.filter( l => this.isAllowedMagasin(l))];
+        this.receptionFiltered = this.receptionListByExo.sort((a, b) => a.numReception.localeCompare(b.numReception.valueOf()));
         //console.log(this.receptionList);
       },
       (error: HttpErrorResponse) => {
@@ -369,15 +382,15 @@ export class EntreeArticleComponent  implements OnInit {
     if (val) {
       val = val.toLowerCase();
     } else {
-      return this.receptionFiltered = [...this.receptionList.sort((a, b) => a.numReception.localeCompare(b.numReception.valueOf()))];
+      return this.receptionFiltered = [...this.receptionListByExo.sort((a, b) => a.numReception.localeCompare(b.numReception.valueOf()))];
     }
 
-    const columns = Object.keys(this.receptionList[0]);
+    const columns = Object.keys(this.receptionListByExo[0]);
     if (!columns.length) {
       return;
     }
 
-    const rows = this.receptionList.filter(function (d) {
+    const rows = this.receptionListByExo.filter(function (d) {
       for (let i = 0; i <= columns.length; i++) {
         const column = columns[i];
         // console.log(d[column]);
@@ -411,31 +424,42 @@ export class EntreeArticleComponent  implements OnInit {
     });
     //cette condition permet de basculer vers la tab contenant le formulaire lors d'une modification
     if (reception?.numReception !=null){
-      this.ligneShow = [];
-      //console.log(this.validateForm.value, reception.dateReception);
-      if(this.detailView == true) this.detailView = false;
-      for(const ligCo of this.ligneReceptList){
-        if(ligCo.reception.numReception == reception.numReception){
-          let ne = new LigneReception(ligCo.quantiteLigneReception, ligCo.puLigneReception, ligCo.observationLigneReception, 
-            ligCo.lastCump, ligCo.ligneCommande, ligCo.reception, ligCo.lastStockQte);
-            ne.idLigneReception = ligCo.idLigneReception;
-          this.ligneShow.push({
-            ligneReception: ne,
-            listArticle: this.getNotUsedArticle(),
-            uniter: ne.ligneCommande.uniter,
-            selectedArticl: ne.ligneCommande.article.numArticle,
-            selectedUniter: ne.ligneCommande.uniter ? ne.ligneCommande.uniter.numUniter : null,
-            prixUnitaire: ne.puLigneReception,
-            concernedLigneCom: ne.ligneCommande,
-            concernedStocker: this.getStockerByArtiAndMagasin(ne.ligneCommande.article, reception.magasin),
-            qteRest: this.getQteRestanOfALigCom(ne.ligneCommande) + ne.quantiteLigneReception
-          });
+
+      this.ligneReceptService.getLignesReceptionByCodeReception(reception.numReception).subscribe(
+        (ligneReceptList) => {
+          this.ligneShow = [];
+          //console.log(this.validateForm.value, reception.dateReception);
+          if(this.detailView == true) this.detailView = false;
+          for(const ligCo of ligneReceptList){
+            
+              let ne = new LigneReception(ligCo.quantiteLigneReception, ligCo.puLigneReception, ligCo.observationLigneReception, 
+                ligCo.lastCump, ligCo.ligneCommande, ligCo.reception, ligCo.lastStockQte);
+                ne.idLigneReception = ligCo.idLigneReception;
+              this.ligneShow.push({
+                ligneReception: ne,
+                listArticle: this.getNotUsedArticle(),
+                uniter: ne.ligneCommande.uniter,
+                selectedArticl: ne.ligneCommande.article.numArticle,
+                selectedUniter: ne.ligneCommande.uniter ? ne.ligneCommande.uniter.numUniter : null,
+                prixUnitaire: ne.puLigneReception,
+                concernedLigneCom: ne.ligneCommande,
+                concernedStocker: this.getStockerByArtiAndMagasin(ne.ligneCommande.article, reception.magasin),
+                qteRest: this.getQteRestanOfALigCom(ne.ligneCommande) + ne.quantiteLigneReception
+              });
+            
+          }
+    
+          this.calculTotaux();
+    
+          this.activeTabsNav = 2;
+    
+        },
+        (error: HttpErrorResponse) => {
+          console.log('Echec status ==> ' + error.status);
         }
-      }
+      );
 
-      this.calculTotaux();
 
-      this.activeTabsNav = 2;
     }
   }
 
@@ -816,8 +840,8 @@ export class EntreeArticleComponent  implements OnInit {
         this.getAllConsulterFrsForDp();
         console.log(data);
 
-        this.receptionList.unshift(data.reception);
-        this.receptionFiltered = [...this.receptionList.sort((a, b) => a.numReception.localeCompare(b.numReception.valueOf()))];
+        this.receptionListByExo.unshift(data.reception);
+        this.receptionFiltered = [...this.receptionListByExo.sort((a, b) => a.numReception.localeCompare(b.numReception.valueOf()))];
         setTimeout(() => {
           this.loading = false;
           this.activeTabsNav = 1;
@@ -856,10 +880,10 @@ export class EntreeArticleComponent  implements OnInit {
         this.getAllConsulterFrsForDp();
 
         console.log(data);
-          const i = this.receptionList.findIndex(l => l.numReception == data.reception.numReception);
+          const i = this.receptionListByExo.findIndex(l => l.numReception == data.reception.numReception);
           if (i > -1) {
-            this.receptionList[i] = data.reception;
-            this.receptionFiltered = [...this.receptionList.sort((a, b) => a.numReception.localeCompare(b.numReception.valueOf()))];
+            this.receptionListByExo[i] = data.reception;
+            this.receptionFiltered = [...this.receptionListByExo.sort((a, b) => a.numReception.localeCompare(b.numReception.valueOf()))];
           }
           
           setTimeout(() => {
@@ -907,10 +931,10 @@ export class EntreeArticleComponent  implements OnInit {
           this.getAllFactureProFormAcha();
           this.getAllConsulterFrsForDp();
           console.log(data);
-          const i = this.receptionList.findIndex(l => l.numReception == reception.numReception);
+          const i = this.receptionListByExo.findIndex(l => l.numReception == reception.numReception);
           if (i > -1) {
-            this.receptionList.splice(i, 1);
-            this.receptionFiltered = [...this.receptionList.sort((a, b) => a.numReception.localeCompare(b.numReception.valueOf()))];
+            this.receptionListByExo.splice(i, 1);
+            this.receptionFiltered = [...this.receptionListByExo.sort((a, b) => a.numReception.localeCompare(b.numReception.valueOf()))];
           }
           this.resetForm();
           this.toastr.success('Suppression effectuée avec succès.', 'Success!', {progressBar: true});
@@ -1037,10 +1061,10 @@ export class EntreeArticleComponent  implements OnInit {
               this.receptionService.editAReception3(reception.numReception, reception).subscribe(
                 (data) => {
           
-                  const i = this.receptionList.findIndex(l => l.numReception == data.numReception);
+                  const i = this.receptionListByExo.findIndex(l => l.numReception == data.numReception);
                       if (i > -1) {
-                        this.receptionList[i] = data;
-                        this.receptionFiltered = [...this.receptionList.sort((a, b) => a.numReception.localeCompare(b.numReception.valueOf()))];
+                        this.receptionListByExo[i] = data;
+                        this.receptionFiltered = [...this.receptionListByExo.sort((a, b) => a.numReception.localeCompare(b.numReception.valueOf()))];
                       }
           
                       this.getAllLigneReception();
@@ -1275,71 +1299,80 @@ export class EntreeArticleComponent  implements OnInit {
       ,
     });
 
-    let lignes = [];
+    this.ligneReceptService.getLignesReceptionByCodeReception(element.numReception).subscribe(
+      (ligneReceptList) => {
+        let lignes = [];
 
-    this.ligneReceptList.forEach(element2 => {
-      if(element2.reception.numReception == element.numReception){
-        let lig = [];
-        lig.push(element2.ligneCommande.article.codeArticle);
-        lig.push(element2.ligneCommande.article.libArticle);
-        lig.push(element2.quantiteLigneReception);
-        lig.push(element2.ligneCommande.uniter.libUniter);
-        lig.push(element2.ligneCommande.puLigneCommande);
-        lig.push(element2.ligneCommande.tva);
-        let ht = element2.quantiteLigneReception*element2.ligneCommande.puLigneCommande;
-        lig.push(this.salToolsService.salRound(ht*(1+(element2.ligneCommande.tva/100))));
-        lignes.push(lig);
-
-        totalHT+= ht;
-        totalTVA+= ht*(element2.ligneCommande.tva/100);
-        totalTTC+= ht*(1+(element2.ligneCommande.tva/100));
-      }
-
-    });
-
-    autoTable(doc, {
-      theme: 'grid',
-      head: [['Article', 'Désignation', 'Quantité', 'Unité', 'PU', 'TVA(%)', 'Montant']],
-      headStyles:{
-        fillColor: [41, 128, 185],
-        textColor: 255,
-        fontStyle: 'bold' ,
-    },
-      margin: { top: 100 },
-      body: lignes
-      ,
-    });
-
-
-    autoTable(doc, {
-      theme: 'grid',
-      margin: { top: 100, left:130 },
-      columnStyles: {
-        0: { fillColor: [41, 128, 185], textColor: 255, fontStyle: 'bold' },
-      },
-      body: [
-        ['Total HT', this.salToolsService.salRound(totalHT)],
-        ['Total Montant TVA', this.salToolsService.salRound(totalTVA)],
-        ['Total TTC', this.salToolsService.salRound(totalTTC)]
-      ]
-      ,
-    });
-
-    autoTable(doc, {
-      theme: 'plain',
-      margin: { top: 50, bottom:0 },
-      columnStyles: {
-        0: { textColor: 0, fontStyle: 'bold', halign: 'left' },
-      },
-      body: [
-        ["Arrêté le présent Ordre d'Entrée à la Somme de : "+this.salToolsService.salNumberToLetter(this.salToolsService.salRound(totalTTC))+' Francs CFA']
-      ]
-      ,
-    });
-
+        ligneReceptList.forEach(element2 => {
+          if(element2.reception.numReception == element.numReception){
+            let lig = [];
+            lig.push(element2.ligneCommande.article.codeArticle);
+            lig.push(element2.ligneCommande.article.libArticle);
+            lig.push(element2.quantiteLigneReception);
+            lig.push(element2.ligneCommande.uniter.libUniter);
+            lig.push(element2.ligneCommande.puLigneCommande);
+            lig.push(element2.ligneCommande.tva);
+            let ht = element2.quantiteLigneReception*element2.ligneCommande.puLigneCommande;
+            lig.push(this.salToolsService.salRound(ht*(1+(element2.ligneCommande.tva/100))));
+            lignes.push(lig);
     
+            totalHT+= ht;
+            totalTVA+= ht*(element2.ligneCommande.tva/100);
+            totalTTC+= ht*(1+(element2.ligneCommande.tva/100));
+          }
+    
+        });
+    
+        autoTable(doc, {
+          theme: 'grid',
+          head: [['Article', 'Désignation', 'Quantité', 'Unité', 'PU', 'TVA(%)', 'Montant']],
+          headStyles:{
+            fillColor: [41, 128, 185],
+            textColor: 255,
+            fontStyle: 'bold' ,
+        },
+          margin: { top: 100 },
+          body: lignes
+          ,
+        });
+    
+    
+        autoTable(doc, {
+          theme: 'grid',
+          margin: { top: 100, left:130 },
+          columnStyles: {
+            0: { fillColor: [41, 128, 185], textColor: 255, fontStyle: 'bold' },
+          },
+          body: [
+            ['Total HT', this.salToolsService.salRound(totalHT)],
+            ['Total Montant TVA', this.salToolsService.salRound(totalTVA)],
+            ['Total TTC', this.salToolsService.salRound(totalTTC)]
+          ]
+          ,
+        });
+    
+        autoTable(doc, {
+          theme: 'plain',
+          margin: { top: 50, bottom:0 },
+          columnStyles: {
+            0: { textColor: 0, fontStyle: 'bold', halign: 'left' },
+          },
+          body: [
+            ["Arrêté le présent Ordre d'Entrée à la Somme de : "+this.salToolsService.salNumberToLetter(this.salToolsService.salRound(totalTTC))+' Francs CFA']
+          ]
+          ,
+        });
+    
+        
+    
+        doc.output('dataurlnewwindow');
+    
+      },
+      (error: HttpErrorResponse) => {
+        console.log('Echec status ==> ' + error.status);
+      }
+    );
 
-    doc.output('dataurlnewwindow');
 
   }
 
@@ -1435,54 +1468,61 @@ export class EntreeArticleComponent  implements OnInit {
       ,
     });
 
-    let lignes = [];
+    this.ligneReceptService.getLignesReceptionByCodeReception(element.numReception).subscribe(
+      (ligneReceptList) => {
+        
+        let lignes = [];
 
-    this.ligneReceptList.forEach(element2 => {
-      if(element2.reception.numReception == element.numReception){
-        let lig = [];
-        lig.push(element2.ligneCommande.article.codeArticle);
-        lig.push(element2.ligneCommande.article.libArticle);
-        lig.push(element2.ligneCommande.qteLigneCommande)
-        lig.push(element2.quantiteLigneReception);
-        lig.push(this.getQteRestanOfALigCom(element2.ligneCommande));
-        lig.push(element2.ligneCommande.uniter.libUniter);
-        lignes.push(lig);
-
-      }
-
-    });
-
-    autoTable(doc, {
-      theme: 'grid',
-      head: [['Article', 'Désignation', 'Quantité Commandée', 'Quantité Réceptionnée', 'Quantité Restante', 'Unité']],
-      headStyles:{
-        fillColor: [41, 128, 185],
-        textColor: 255,
-        fontStyle: 'bold' ,
-    },
-      margin: { top: 100 },
-      body: lignes
-      ,
-    });
+        ligneReceptList.forEach(element2 => {
+          
+            let lig = [];
+            lig.push(element2.ligneCommande.article.codeArticle);
+            lig.push(element2.ligneCommande.article.libArticle);
+            lig.push(element2.ligneCommande.qteLigneCommande)
+            lig.push(element2.quantiteLigneReception);
+            lig.push(this.getQteRestanOfALigCom(element2.ligneCommande));
+            lig.push(element2.ligneCommande.uniter.libUniter);
+            lignes.push(lig);
 
 
+        });
 
-    autoTable(doc, {
-      theme: 'plain',
-      margin: { top: 50, bottom:0 },
-      columnStyles: {
-        0: { textColor: 0, fontStyle: 'bold', halign: 'left' },
+        autoTable(doc, {
+          theme: 'grid',
+          head: [['Article', 'Désignation', 'Quantité Commandée', 'Quantité Réceptionnée', 'Quantité Restante', 'Unité']],
+          headStyles:{
+            fillColor: [41, 128, 185],
+            textColor: 255,
+            fontStyle: 'bold' ,
+        },
+          margin: { top: 100 },
+          body: lignes
+          ,
+        });
+
+
+
+        autoTable(doc, {
+          theme: 'plain',
+          margin: { top: 50, bottom:0 },
+          columnStyles: {
+            0: { textColor: 0, fontStyle: 'bold', halign: 'left' },
+          },
+          body: [
+            ['Aujourd\'hui .......................... , l\'équipe de réception a procédé à la réception de la commande '+numFille+' .'],
+            ['\nVoici les signataires : ']
+          ]
+          ,
+        });
+
+        doc.output('dataurlnewwindow');
+
       },
-      body: [
-        ['Aujourd\'hui .......................... , l\'équipe de réception a procédé à la réception de la commande '+numFille+' .'],
-        ['\nVoici les signataires : ']
-      ]
-      ,
-    });
+      (error: HttpErrorResponse) => {
+        console.log('Echec status ==> ' + error.status);
+      }
+    );
 
-    
-
-    doc.output('dataurlnewwindow');
 
   }
 

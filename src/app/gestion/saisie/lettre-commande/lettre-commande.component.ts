@@ -50,6 +50,7 @@ export class LettreCommandeComponent implements OnInit {
 
   validateForm: FormGroup;
   lettreCommandeList: LettreCommande[] = [];
+  lettreCommandeListByExo: LettreCommande[] = [];
   ligneCommandeList: LigneCommande[] = [];
   selectedLigneCommandeList: LigneCommande[] = [];
   fournisseurList: Fournisseur[] = [];
@@ -91,11 +92,11 @@ export class LettreCommandeComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this.lettreCommandeService.getAllLettreCommande().subscribe(
+    this.lettreCommandeService.getLettreCommandeByCodeExo(this.exerciceService.selectedExo.codeExercice).subscribe(
       (data) => {
-        this.lettreCommandeList = [...data];
-        this.lettreCommandeFiltered = this.lettreCommandeList.sort((a, b) => a.numLettreComm.localeCompare(b.numLettreComm.valueOf()));
-        console.log(this.lettreCommandeList);
+        this.lettreCommandeListByExo = [...data];
+        this.lettreCommandeFiltered = this.lettreCommandeListByExo.sort((a, b) => a.numLettreComm.localeCompare(b.numLettreComm.valueOf()));
+        console.log(this.lettreCommandeListByExo);
       },
       (error: HttpErrorResponse) => {
         console.log('Echec status ==> ' + error.status);
@@ -139,8 +140,20 @@ export class LettreCommandeComponent implements OnInit {
     this.lettreCommandeService.getAllLettreCommande().subscribe(
       (data) => {
         this.lettreCommandeList = [...data];
-        this.lettreCommandeFiltered = this.lettreCommandeList.sort((a, b) => a.numLettreComm.localeCompare(b.numLettreComm.valueOf()));
-        console.log(this.lettreCommandeList);
+        //this.lettreCommandeFiltered = this.lettreCommandeList.sort((a, b) => a.numLettreComm.localeCompare(b.numLettreComm.valueOf()));
+        //console.log(this.lettreCommandeList);
+      },
+      (error: HttpErrorResponse) => {
+        console.log('Echec status ==> ' + error.status);
+      });
+  }
+
+  getAllLettreCommandeByCodeExoSelected(){
+    this.lettreCommandeService.getLettreCommandeByCodeExo(this.exerciceService.selectedExo.codeExercice).subscribe(
+      (data) => {
+        this.lettreCommandeListByExo = [...data];
+        this.lettreCommandeFiltered = this.lettreCommandeListByExo.sort((a, b) => a.numLettreComm.localeCompare(b.numLettreComm.valueOf()));
+        console.log(this.lettreCommandeListByExo);
       },
       (error: HttpErrorResponse) => {
         console.log('Echec status ==> ' + error.status);
@@ -356,15 +369,15 @@ export class LettreCommandeComponent implements OnInit {
     if (val) {
       val = val.toLowerCase();
     } else {
-      return this.lettreCommandeFiltered = [...this.lettreCommandeList.sort((a, b) => a.numLettreComm.localeCompare(b.numLettreComm.valueOf()))];
+      return this.lettreCommandeFiltered = [...this.lettreCommandeListByExo.sort((a, b) => a.numLettreComm.localeCompare(b.numLettreComm.valueOf()))];
     }
 
-    const columns = Object.keys(this.lettreCommandeList[0]);
+    const columns = Object.keys(this.lettreCommandeListByExo[0]);
     if (!columns.length) {
       return;
     }
 
-    const rows = this.lettreCommandeList.filter(function (d) {
+    const rows = this.lettreCommandeListByExo.filter(function (d) {
       for (let i = 0; i <= columns.length; i++) {
         const column = columns[i];
         // console.log(d[column]);
@@ -397,27 +410,37 @@ export class LettreCommandeComponent implements OnInit {
     });
     //cette condition permet de basculer vers la tab contenant le formulaire lors d'une modification
     if (lettreCommande?.numLettreComm !=null){
-      this.ligneShow = [];
+      
+      this.ligneCommandeService.getLignesCommandeByCodeCommmande(lettreCommande.commande.numCommande.toString()).subscribe(
+        (ligneCommandeList) => {
+                
+          this.ligneShow = [];
 
-      for(const ligCo of this.ligneCommandeList){
-        if(ligCo.numCommande.numCommande == lettreCommande.commande.numCommande){
-          
-          this.ligneShow.push({
-            lignesCommande: {...ligCo},
-            listArticle: this.getNotUsedArticle(),
-            listUniter: this.getUniterOfAArticle(ligCo.article.numArticle),
-            selectedArticl: ligCo.article.numArticle,
-            selectedUniter: ligCo.uniter ? ligCo.uniter.numUniter : null,
-            artii: ligCo.article,
-            qteRest: ligCo.qteLigneCommande + this.getQteRestanOfALigComAch(this.ligneCommandeList.find(l => (l.numCommande.numCommande == lettreCommande.commandeAchat?.commande?.numCommande && l.article.numArticle == ligCo.article.numArticle))),
+          for(const ligCo of ligneCommandeList){
+            
+              
+              this.ligneShow.push({
+                lignesCommande: {...ligCo},
+                listArticle: this.getNotUsedArticle(),
+                listUniter: this.getUniterOfAArticle(ligCo.article.numArticle),
+                selectedArticl: ligCo.article.numArticle,
+                selectedUniter: ligCo.uniter ? ligCo.uniter.numUniter : null,
+                artii: ligCo.article,
+                qteRest: ligCo.qteLigneCommande + this.getQteRestanOfALigComAch(this.ligneCommandeList.find(l => (l.numCommande.numCommande == lettreCommande.commandeAchat?.commande?.numCommande && l.article.numArticle == ligCo.article.numArticle))),
 
-          });
+              });
+            
+          }
+
+          this.calculTotaux();
+
+          this.activeTabsNav = 2;
+        }, 
+        (error: HttpErrorResponse) => {
+          console.log('Echec status ==> ' + error.status);
         }
-      }
+      );
 
-      this.calculTotaux();
-
-      this.activeTabsNav = 2;
     }
   }
 
@@ -492,12 +515,12 @@ export class LettreCommandeComponent implements OnInit {
         const j = element.listArticle.findIndex(l => l.numArticle == element.selectedArticl);
         const k = element.listUniter.findIndex(l => l.numUniter == element.selectedUniter);
 
-        element.lignesCommande.article = null;
+        element.lignesCommande.article = element.artii;
         element.lignesCommande.uniter = null;
 
-        if (j > -1) {
+        /*if (j > -1) {
           element.lignesCommande.article = element.listArticle[j];
-        }
+        }*/
 
         if (k > -1) {
           element.lignesCommande.uniter = element.listUniter[k];
@@ -531,8 +554,8 @@ export class LettreCommandeComponent implements OnInit {
           (data) => {
             console.log(data);
 
-            this.lettreCommandeList.unshift(data);
-            this.lettreCommandeFiltered = [...this.lettreCommandeList.sort((a, b) => a.numLettreComm.localeCompare(b.numLettreComm.valueOf()))];
+            this.lettreCommandeListByExo.unshift(data);
+            this.lettreCommandeFiltered = [...this.lettreCommandeListByExo.sort((a, b) => a.numLettreComm.localeCompare(b.numLettreComm.valueOf()))];
             this.resetForm();
             this.toastr.success('Enregistrement effectué avec succès.', 'Success', { timeOut: 5000 });
             this.loading = false;
@@ -566,10 +589,10 @@ export class LettreCommandeComponent implements OnInit {
           (data) => {
             console.log(data);
 
-            const i = this.lettreCommandeList.findIndex(l => l.numLettreComm == data.numLettreComm);
+            const i = this.lettreCommandeListByExo.findIndex(l => l.numLettreComm == data.numLettreComm);
             if (i > -1) {
-              this.lettreCommandeList[i] = data;
-              this.lettreCommandeFiltered = [...this.lettreCommandeList.sort((a, b) => a.numLettreComm.localeCompare(b.numLettreComm.valueOf()))];
+              this.lettreCommandeListByExo[i] = data;
+              this.lettreCommandeFiltered = [...this.lettreCommandeListByExo.sort((a, b) => a.numLettreComm.localeCompare(b.numLettreComm.valueOf()))];
             }
 
             this.resetForm();
@@ -619,10 +642,10 @@ export class LettreCommandeComponent implements OnInit {
           );
 
           console.log(data);
-          const i = this.lettreCommandeList.findIndex(l => l.numLettreComm == lettreCommande.numLettreComm);
+          const i = this.lettreCommandeListByExo.findIndex(l => l.numLettreComm == lettreCommande.numLettreComm);
           if (i > -1) {
-            this.lettreCommandeList.splice(i, 1);
-            this.lettreCommandeFiltered = [...this.lettreCommandeList.sort((a, b) => a.numLettreComm.localeCompare(b.numLettreComm.valueOf()))];
+            this.lettreCommandeListByExo.splice(i, 1);
+            this.lettreCommandeFiltered = [...this.lettreCommandeListByExo.sort((a, b) => a.numLettreComm.localeCompare(b.numLettreComm.valueOf()))];
           }
           /*setTimeout(() => {
             this.toastr.success('Suppression effectuée avec succès.', 'Success!', {progressBar: true});
@@ -754,10 +777,10 @@ export class LettreCommandeComponent implements OnInit {
       
               lettreCommande.commande = data;
       
-              const i = this.lettreCommandeList.findIndex(l => l.numLettreComm == lettreCommande.numLettreComm);
+              const i = this.lettreCommandeListByExo.findIndex(l => l.numLettreComm == lettreCommande.numLettreComm);
                   if (i > -1) {
-                    this.lettreCommandeList[i] = lettreCommande;
-                    this.lettreCommandeFiltered = [...this.lettreCommandeList.sort((a, b) => a.numLettreComm.localeCompare(b.numLettreComm.valueOf()))];
+                    this.lettreCommandeListByExo[i] = lettreCommande;
+                    this.lettreCommandeFiltered = [...this.lettreCommandeListByExo.sort((a, b) => a.numLettreComm.localeCompare(b.numLettreComm.valueOf()))];
                   }
       
                   let msg: String = 'Validation'
@@ -804,49 +827,10 @@ export class LettreCommandeComponent implements OnInit {
 
     const doc = new jsPDF();
 
-    /*autoTable(doc, {
-      theme: 'plain',
-      margin: { top: 5, left:35, right:9, bottom:100 },
-      columnStyles: {
-        0: { textColor: 'blue', fontStyle: 'bold', halign: 'left' },
-        1: { textColor: 'blue', fontStyle: 'bold', halign: 'right' },
-      },
-      body: [
-        ['PORT AUTONOME DE LOME\n\nTel.: 22.27.47.42/22.27.33.91/22.27.33.92\nFax: (228) 22.27.26.27\nCARTE N° 950113V',
-        'REPUBLIQUE TOGOLAISE\n\nTravail-Liberté-Patrie       ']
-      ]
-      ,
-    });
-    doc.addImage(Utils.logoUrlData, 'jpeg', 10, 5, 25, 25);
-
-
-    autoTable(doc, {
-      startY:35,
-      theme: 'plain',
-      //margin: { right: 100 },
-      columnStyles: {
-        0: { textColor: 0, halign: 'left', fontSize:9 },
-        1: { textColor: 0, fontStyle:'bold', halign: 'right', fontSize:9 },
-      },
-      body: [
-        ['B.P. 1225', 'Lomé, le '+moment(Date.now()).format('DD/MM/YYYY')],
-        ['Tél. : 22 27 47 42 / 22 27 33 91 / 22 27 33 92'],
-        ['Télex : 5243 TOGOPORT'],
-        ['TELEFAX : 22 27 26 27 DG'],
-        ['TELEFAX : 22 27 90 66 DFC'],
-        ['Adresse Télégr. Togoport'],
-        ['Union Togolaise de Banque: 60164'],
-      ]
-      ,
-    });*/
-
-    //doc.setFontSize(14);
-    //doc.text('Lettre de Commande N° '+element.numLettreComm+' | AP/ST', 95, 65);
 
     doc.addImage('./assets/images/grandLogo.jpg','jpeg', 10, 5, 190, 100);
 
     doc.setFontSize(18);
-    //doc.text('A', 150, 40);
     autoTable(doc, {
       startY:60,
       theme: 'plain',
@@ -860,20 +844,6 @@ export class LettreCommandeComponent implements OnInit {
       ,
     });
 
-    /*autoTable(doc, {
-      startY:85,
-      theme: 'plain',
-      margin: { right: 125 },
-      columnStyles: {
-        0: { textColor: 0, fontStyle: 'bold', halign: 'right', fontSize:10 },
-        1: { textColor: 0, halign: 'left', fontSize:10 },
-      },
-      body: [
-        ['N/Ref',element.commande?.description?.valueOf()],
-        ['V/Ref','']
-      ]
-      ,
-    });*/
 
     autoTable(doc, {
       startY:110,
@@ -903,98 +873,106 @@ export class LettreCommandeComponent implements OnInit {
       ,
     });
 
-    let lignes = [];
+    this.ligneCommandeService.getLignesCommandeByCodeCommmande(element.commande.numCommande.toString()).subscribe(
+      (ligneCommandeList) => {
+        let lignes = [];
 
-    this.ligneCommandeList.forEach(element2 => {
-
-      if(element2.numCommande.numCommande == element.commande.numCommande){
-        let lig = [];
-        lig.push(element2.article.codeArticle);
-        lig.push(element2.article.libArticle);
-        lig.push(element2.qteLigneCommande);
-        lig.push(element2.uniter.libUniter);
-        lig.push(this.salToolsService.salRound(element2.puLigneCommande));
-        lig.push(element2.tva);
-        let ht = element2.qteLigneCommande*element2.puLigneCommande;
-        lig.push(this.salToolsService.salRound(ht*(1+(element2.tva/100))));
-        lignes.push(lig);
-
-        totalHT+= ht;
-        totalTVA+= ht*(element2.tva/100);
-        totalTTC+= ht*(1+(element2.tva/100));
+        ligneCommandeList.forEach(element2 => {
+    
+            let lig = [];
+            lig.push(element2.article.codeArticle);
+            lig.push(element2.article.libArticle);
+            lig.push(element2.qteLigneCommande);
+            lig.push(element2.uniter.libUniter);
+            lig.push(this.salToolsService.salRound(element2.puLigneCommande));
+            lig.push(element2.tva);
+            let ht = element2.qteLigneCommande*element2.puLigneCommande;
+            lig.push(this.salToolsService.salRound(ht*(1+(element2.tva/100))));
+            lignes.push(lig);
+    
+            totalHT+= ht;
+            totalTVA+= ht*(element2.tva/100);
+            totalTTC+= ht*(1+(element2.tva/100));
+          
+    
+        });
+    
+        autoTable(doc, {
+          theme: 'grid',
+          head: [['Article', 'Désignation', 'Quantité', 'Unité', 'PU', 'TVA(%)', 'Montant']],
+          headStyles:{
+            fillColor: [41, 128, 185],
+            textColor: 255,
+            fontStyle: 'bold' ,
+        },
+          margin: { top: 100 },
+          body: lignes
+          ,
+        });
+    
+    
+        autoTable(doc, {
+          theme: 'grid',
+          margin: { top: 0, left:130 },
+          columnStyles: {
+            0: { fillColor: [41, 128, 185], textColor: 255, fontStyle: 'bold' },
+          },
+          body: [
+            ['Total HT', this.salToolsService.salRound(totalHT)],
+            ['Total Montant TVA', this.salToolsService.salRound(totalTVA)],
+            ['Total TTC', this.salToolsService.salRound(totalTTC)]
+          ]
+          ,
+        });
+    
+        autoTable(doc, {
+          theme: 'plain',
+          margin: { top: 0 },
+          columnStyles: {
+            0: { textColor: 0, halign: 'right' },
+            1: { textColor: 0, fontStyle: 'bold', halign: 'left' },
+          },
+          body: [
+            ['MONTANT TOTAL :', this.salToolsService.salNumberToLetter(this.salToolsService.salRound(totalTTC))+' Francs CFA'],
+            ['Délais de livraison :', element.commande.delaiLivraison+' Jour(s)']
+          ]
+          ,
+        });
+    
+        autoTable(doc, {
+          theme: 'plain',
+          margin: { top: 0 },
+          columnStyles: {
+            0: { textColor: 0, fontStyle: 'bold', halign: 'left' },
+    
+          },
+          body: [
+            ['Veuillez agréer, Monsieur le Directeur, l\'expression de nos salutations distinguées.']
+          ]
+          ,
+        });
+    
+        autoTable(doc, {
+          theme: 'plain',
+          margin: { top: 0 },
+          columnStyles: {
+            0: { textColor: 0, fontStyle: 'bold', halign: 'center' },
+    
+          },
+          body: [
+            ['Le Directeur Général\n\n\n\n\n\n\n\nContre-Amiral Fogan K. ADEGNON']
+          ]
+          ,
+        });
+    
+        doc.output('dataurlnewwindow');
+    
+      },
+      (error: HttpErrorResponse) => {
+        console.log('Echec status ==> ' + error.status);
       }
+    );
 
-    });
-
-    autoTable(doc, {
-      theme: 'grid',
-      head: [['Article', 'Désignation', 'Quantité', 'Unité', 'PU', 'TVA(%)', 'Montant']],
-      headStyles:{
-        fillColor: [41, 128, 185],
-        textColor: 255,
-        fontStyle: 'bold' ,
-    },
-      margin: { top: 100 },
-      body: lignes
-      ,
-    });
-
-
-    autoTable(doc, {
-      theme: 'grid',
-      margin: { top: 0, left:130 },
-      columnStyles: {
-        0: { fillColor: [41, 128, 185], textColor: 255, fontStyle: 'bold' },
-      },
-      body: [
-        ['Total HT', this.salToolsService.salRound(totalHT)],
-        ['Total Montant TVA', this.salToolsService.salRound(totalTVA)],
-        ['Total TTC', this.salToolsService.salRound(totalTTC)]
-      ]
-      ,
-    });
-
-    autoTable(doc, {
-      theme: 'plain',
-      margin: { top: 0 },
-      columnStyles: {
-        0: { textColor: 0, halign: 'right' },
-        1: { textColor: 0, fontStyle: 'bold', halign: 'left' },
-      },
-      body: [
-        ['MONTANT TOTAL :', this.salToolsService.salNumberToLetter(this.salToolsService.salRound(totalTTC))+' Francs CFA'],
-        ['Délais de livraison :', element.commande.delaiLivraison+' Jour(s)']
-      ]
-      ,
-    });
-
-    autoTable(doc, {
-      theme: 'plain',
-      margin: { top: 0 },
-      columnStyles: {
-        0: { textColor: 0, fontStyle: 'bold', halign: 'left' },
-
-      },
-      body: [
-        ['Veuillez agréer, Monsieur le Directeur, l\'expression de nos salutations distinguées.']
-      ]
-      ,
-    });
-
-    autoTable(doc, {
-      theme: 'plain',
-      margin: { top: 0 },
-      columnStyles: {
-        0: { textColor: 0, fontStyle: 'bold', halign: 'center' },
-
-      },
-      body: [
-        ['Le Directeur Général\n\n\n\n\n\n\n\nContre-Amiral Fogan K. ADEGNON']
-      ]
-      ,
-    });
-
-    doc.output('dataurlnewwindow');
 
   }
 

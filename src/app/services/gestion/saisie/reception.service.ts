@@ -19,6 +19,10 @@ export class ReceptionService {
       return this.httpCli.get<Reception[]>(this.host+'/stock/reception/list');
     }
 
+    getReceptionByCodeExo(code:String){
+      return this.httpCli.get<Reception[]>(this.host+'/stock/reception/byCodExo/'+code);
+    }
+
     getAReceptionById(code:String){
       return this.httpCli.get<Reception>(this.host+'/stock/reception/byCodRec/'+code);
     }

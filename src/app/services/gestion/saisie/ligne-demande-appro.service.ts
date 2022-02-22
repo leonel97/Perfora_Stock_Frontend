@@ -24,6 +24,10 @@ export class LigneDemandeApproService {
     return this.httpCli.get<LigneDemandeAppro>(this.host+'/stock/ligneDemandeAppro/byCodLigDemApp/'+code);
   }
 
+  getLignesDemandeApproByCodeDemAppro(code:String){
+    return this.httpCli.get<LigneDemandeAppro[]>(this.host+'/stock/ligneDemandeAppro/list/byCodeDemApp/'+code);
+  }
+
   addALigneDemandeAppro(corps:LigneDemandeAppro){
     return this.httpCli.post<LigneDemandeAppro>(this.host+'/stock/ligneDemandeAppro/list', corps);
   }

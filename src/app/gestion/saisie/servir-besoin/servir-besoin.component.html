@@ -238,7 +238,7 @@
                         <ng-select formControlName="numDA" [readonly]="validateForm.value.numAppro"
                         (ngModelChange)="getInfosOnDaSelected()" >
                         <div *ngFor="let da of demandeApproList">
-                          <ng-option *ngIf="!isADemApproSitisfaied(da) && da.valideDA" [value]="da.numDA">{{da.numDA}} du {{da.dateDA | date: "dd-MM-yyyy à HH:mm:ss"}} ( {{ da.service.codeService }} - {{ da.service.libService }} )</ng-option>
+                          <ng-option *ngIf="(isADemApproSitisfaied(da) ? false : !da.notProcessAgain) && da.valideDA" [value]="da.numDA">{{da.numDA}} du {{da.dateDA | date: "dd-MM-yyyy à HH:mm:ss"}} ( {{ da.service.codeService }} - {{ da.service.libService }} )</ng-option>
                         </div>
 
                         </ng-select>
@@ -265,6 +265,14 @@
                       <ng-select formControlName="magasin" (ngModelChange)="emptyLigneShow()" [readonly]="detailView">
                         <ng-option *ngFor="let mag of magasinList2" [value]="mag.numMagasin">{{mag.codeMagasin}} - {{mag.libMagasin}}</ng-option>
                       </ng-select>
+                    </div>
+
+                    <div class="col-md form-group mb-3" style="display: flex; flex-direction: column; align-items: center;">
+                      <label class="checkbox checkbox-warning" style="margin: auto;">
+                        Ne plus traiter la demande ultérieurement
+                        <input type="checkbox" formControlName="notProcessAgain" [checked]="null" (click)="null">
+                        <span class="checkmark"></span>
+                      </label>
                     </div>
 
                   </div>

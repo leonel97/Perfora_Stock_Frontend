@@ -18,6 +18,10 @@ export class TravauxService {
     return this.httpCli.get<Travaux[]>(this.host+'/stock/travaux/list');
   }
 
+  getTravauxByCodeExo(code:String){
+    return this.httpCli.get<Travaux[]>(this.host+'/stock/travaux/byCodExo/'+code);
+  }
+
   getATravauxById(code:String){
     return this.httpCli.get<Travaux>(this.host+'/stock/travaux/byCodTrav/'+code);
   }

@@ -1,1 +1,441 @@
-<p>travaux works!</p>
+<div class="">
+    <div class="breadcrumb">
+        <h1> Gestion des Travaux</h1>
+        <ul>
+            <li><a href="">Saisie</a></li>
+            <li>Travaux</li>
+        </ul>
+    </div>
+
+    <div class="separator-breadcrumb border-top"></div>
+    <!--Contenu component importation-->
+
+    <div class="card mb-4">
+      <div class="card-body">
+        <div class="card-title mb-3 border-bottom pb-2">Gestion des Travaux</div>
+
+        <ul #nav="ngbNav" [(activeId)]="activeTabsNav" class="nav-tabs" ngbNav>
+          <li [ngbNavItem]="1">
+            <a ngbNavLink>Liste des Travaux</a>
+            <ng-template ngbNavContent>
+              <div class="row">
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <input [formControl]="searchControl" class="form-control form-control-rounded"
+                           placeholder="Rechercher Commande Achat">
+                  </div>
+                </div>
+                <div class="col-md-12">
+                  <div class="o-hidden">
+                    <ngx-datatable
+                      [columnMode]="'force'"
+                      [footerHeight]="50"
+                      [headerHeight]="50"
+                      [rowHeight]="'auto'"
+                      [rows]="travauxFiltered"
+                      [limit]="4"
+                      class="material fullscreen"
+                      style="height: 500px; box-shadow: none; overflow-y:visible">
+
+                      <ngx-datatable-column [maxWidth]="50">
+                        <ng-template ngx-datatable-header-template>
+                          Validité
+                        </ng-template>
+                        <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                          <strong *ngIf="row.valide == true">V</strong>
+                          <!--<strong *ngIf="row.commande.valide == false">A</strong>-->
+                        </ng-template>
+                      </ngx-datatable-column>
+
+                      <ngx-datatable-column name="numTravaux">
+                        <ng-template ngx-datatable-header-template>
+                          Code
+                        </ng-template>
+                      </ngx-datatable-column>
+
+                      <ngx-datatable-column>
+                        <ng-template ngx-datatable-header-template>
+                          Date
+                        </ng-template>
+                        <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                          {{ row.dateCommande }}
+                        </ng-template>
+                      </ngx-datatable-column>
+
+                      <ngx-datatable-column [maxWidth]="120">
+                        <ng-template ngx-datatable-header-template>
+                          Référence
+                        </ng-template>
+                        <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                          {{ row.description }}
+                        </ng-template>
+                      </ngx-datatable-column>
+
+                      <ngx-datatable-column>
+                        <ng-template ngx-datatable-header-template>
+                          Date de Livraison
+                        </ng-template>
+                        <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                          <span *ngIf="row.dateRemise">Notifié le {{ row.dateRemise | date: "dd-MM-yyyy" }}<br></span>
+                          {{ row.delaiLivraison }} Jour(s)
+                          <span *ngIf="row.dateRemise"><br> Soit le {{ salToolsService.addDayToDate(row.dateRemise, row.delaiLivraison) | date: "dd-MM-yyyy"}}</span>
+                        </ng-template>
+                      </ngx-datatable-column>
+
+                      <ngx-datatable-column>
+                        <ng-template ngx-datatable-header-template>
+                          Fournisseur
+                        </ng-template>
+                        <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                          {{ row.frs.numFournisseur }} - {{ row.frs.identiteFrs }}
+                        </ng-template>
+                      </ngx-datatable-column>
+
+                      <ngx-datatable-column>
+                        <ng-template ngx-datatable-header-template>
+                          Total TTC
+                        </ng-template>
+                        <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                          {{ salToolsService.salRound(getTotalTtcOfATravaux(row)) }}
+                        </ng-template>
+                      </ngx-datatable-column>
+
+                      <ngx-datatable-column>
+                        <ng-template ngx-datatable-header-template>
+                          Actions
+                        </ng-template>
+                        <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
+                          <!--<strong>{{ row.code }}</strong>-->
+                          <button (click)="makeForm(row)" class="btn btn-primary m-1 btn-sm"
+                          type="button" *ngIf="row.valide == false && authService.hasAccess('saisie_ca_edit')" ngbTooltip="Modifier" placement="bottom" >
+                            <i class="i-Pen-5"> </i>
+                          </button>
+                          
+                          <button (click)="valider(row, true, modalValid)" class="btn btn-outline-success m-1 btn-sm"
+                                  type="button" *ngIf="row.valide == false && authService.hasAccess('saisie_ca_valid')" ngbTooltip="Valider" placement="bottom">
+                            <i class="i-Yes"> </i>
+                          </button>
+                          <button (click)="modalImpressio(row, modalImpression)" class="btn btn-outline-warning m-1 btn-sm"
+                                  type="button" ngbTooltip="Imprimer" placement="bottom" *ngIf="authService.hasAccess('saisie_ca_print')">
+                            <i class="i-File-Download"> </i>
+                          </button>
+                          <button (click)="valider(row, false, modalValid)" class="btn btn-outline-warning m-1 btn-sm"
+                                  type="button" *ngIf="row.valide == true && authService.hasAccess('saisie_ca_rollback')" ngbTooltip="Annuler" placement="bottom" >
+                            <i class="i-Reload"> </i>
+                          </button>
+                          
+                          <button (click)="confirm(modalConfirm, row)" class="btn btn-outline-danger m-1 btn-sm"
+                                  type="button" *ngIf="row.valide == false && authService.hasAccess('saisie_ca_delete')" ngbTooltip="Supprimer" placement="bottom">
+                            <i class="i-Folder-Trash"> </i>
+                          </button>
+                        </ng-template>
+                      </ngx-datatable-column>
+                    </ngx-datatable>
+                  </div>
+                </div>
+              </div>
+            </ng-template>
+          </li>
+
+
+
+          <li [ngbNavItem]="2">
+            <a ngbNavLink><span *ngIf="! validateForm.value.numComAchat">Nouvelle</span><span *ngIf="validateForm.value.numComAchat" span>Modifier</span> Travaux</a>
+            <ng-template ngbNavContent>
+
+              <div class="mb-2">
+                <div class="d-flex mb-5" style="margin-bottom: 0;">
+                  <span class="m-auto"></span>
+                  <btn-loading btnClass="btn-primary mr-3" [loading]="loading" (click)="submit()" *ngIf="authService.hasAccess('saisie_ca_new')">Enrégistrer</btn-loading>
+                  <button class="btn btn-outline-secondary" (click)="resetForm()">Annuler</button>
+                  
+                </div>
+                <form [formGroup]="validateForm">
+                  <h4 class="font-weight-bold">Informations sur le Travail</h4>
+                  <div class="row">
+                      <div class="col-md" *ngIf="validateForm.value.numTravaux">
+                          <div class="col-md form-group">
+                              <label for="numTravaux">Numéro</label>
+                              <input formControlName="numTravaux" type="text" class="form-control"
+                                  placeholder="Numéro" readonly id="numTravaux">
+                          </div>
+                      </div>
+                      <div class="col-md form-group mb-3">
+                        <label for="picker1">Date de commande</label>
+                        <div class="input-group">
+                            <input formControlName="dateCommande" id="picker1" class="form-control text-right" type="date"
+                                >
+
+                        </div>
+                      </div>
+                      <div class="col-md">
+                        <div class="col-md form-group" >
+                            <label for="orderNo">Délais de Livraison (en jours)</label>
+                            <input formControlName="delaiLivraison" type="number" class="form-control"
+                                placeholder="Délais de Livraison">
+                        </div>
+                      </div>
+                      <div class="col-md form-group mb-3">
+                        <label for="picker1">Date de Remise</label>
+                        <div class="input-group">
+                            <input formControlName="dateRemise" id="picker2" class="form-control text-right"
+                                type="date">
+
+                        </div>
+                      </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md form-group">
+                      <label for="orderNo">Références</label>
+                      <input formControlName="description" type="text" class="form-control"
+                          placeholder="Références">
+
+                    </div>
+                    <div class="col-md form-group mb-3">
+                      <label >Fournisseur</label>
+                      <ng-select formControlName="frs">
+                        <ng-option *ngFor="let frs of fournisseurList" [value]="frs.numFournisseur">{{frs.codeFrs}} - {{frs.identiteFrs}}</ng-option>
+                      </ng-select>
+                    </div>                    
+
+                  </div>
+                  <div class="row">
+                    <div class="col-md form-group">
+                      <label for="orderNo">Département</label>
+                      <input formControlName="departement" type="text" class="form-control"
+                          placeholder="Département">
+
+                    </div>
+                    <div class="col-md form-group mb-3">
+                      <label >Justificatif</label>
+                      <input formControlName="justif" type="text" class="form-control"
+                      placeholder="Justificatif">
+                    </div>
+                    <div class="col-md form-group mb-3">
+                      <label >N° DA</label>
+                      <input formControlName="numDa" type="text" class="form-control"
+                      placeholder="N° de DA">
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md form-group">
+                      <label for="orderNo">Travaux de</label>
+                      <input formControlName="cmdDe" type="text" class="form-control"
+                          placeholder="Commande Achat de">
+
+                    </div>
+                    
+                  </div>
+                </form>
+                  <div class="mt-3 mb-4 border-top"></div>
+                  <h4 class="font-weight-bold">Détails sur le Travail</h4>
+
+                  <div class="row">
+                      <div class="col-md-12 table-responsive">
+                          <table class="table table-hover mb-3">
+                              <thead class="bg-gray-300">
+                                  <tr>
+                                      <th scope="col">#</th>
+                                      <th scope="col">Désignation</th>
+                                      <th scope="col">PU</th>
+                                      <th scope="col">Quantité</th>
+                                      <th scope="col">Unité</th>
+                                      <th scope="col">Montant HT</th>
+                                      <th scope="col">TVA</th>
+                                      <th scope="col">Montant TTC</th>
+                                      <th scope="col"></th>
+                                  </tr>
+                              </thead>
+                              <tbody>
+                                  <tr *ngFor="let lig of ligneShow; let i = index;"
+                                      >
+                                      <th scope="row">{{i + 1}}</th>
+                                      <td>
+                                        <input type="text"  class="form-control" [(ngModel)]="lig.ligneTravaux.designationLigne">
+                                        
+                                      </td>
+                                      <td>
+                                        <div class="row">
+                                          <div class="col-md-8">
+                                            <input type="number" class="form-control" [(ngModel)] = "lig.ligneTravaux.puLigneCommande"
+                                              placeholder="Prix Unitaire" (ngModelChange)="calculTotaux()"
+                                              [ngStyle]="{'background-color': (lig.ligneTravaux.puLigneCommande <=0) ? 'rgb(255, 172, 172)': null}"  
+                                            >
+                                          </div>
+                                          <div class="col-md-4" style="padding:0">
+                                            <label class="checkbox checkbox-primary" style="margin: auto;">
+                                              TTC
+                                              <input type="checkbox" [(ngModel)] = "lig.ligneTravaux.prixUnitTtc" (ngModelChange)="calculTotaux()" [checked]="null" (click)="null">
+                                              <span class="checkmark"></span>
+                                            </label>
+                                          </div>
+                                        </div>
+                                          
+                                      </td>
+                                      <td>
+                                        <input type="number" class="form-control" [(ngModel)] = "lig.ligneTravaux.qteLigneCommande"
+                                            placeholder="Quantité" (ngModelChange)="calculTotaux()"
+                                            [ngStyle]="{'background-color': (lig.ligneTravaux.qteLigneCommande <=0) ? 'rgb(255, 172, 172)': null}"
+                                          >
+                                      </td>
+                                      <td>
+                                        <ng-select [(ngModel)]="lig.selectedUniter" style="min-width: 180px;" 
+                                        [ngStyle]="{'border': (lig.selectedUniter == null) ? '2px solid rgb(255, 172, 172)': null,
+                                                    'background-color': (lig.selectedUniter == null) ? '2px solid rgb(255, 172, 172)': null,
+                                                    'border-radius':  (lig.selectedUniter == null) ? '5px': null}"
+                                        >
+                                          <ng-option *ngFor="let unit of lig.listUniter" [value]="unit.numUniter"
+                                          
+                                           >{{unit.codeUniter}} - {{unit.libUniter}}</ng-option>
+                                        </ng-select>
+                                      </td>
+                                      <td>
+                                        {{ salToolsService.salRound(!lig.ligneTravaux.prixUnitTtc? lig.ligneTravaux.puLigneCommande * lig.ligneTravaux.qteLigneCommande : (lig.ligneTravaux.puLigneCommande * lig.ligneTravaux.qteLigneCommande)/((lig.ligneTravaux.tva/100)+1)) }}
+                                      </td>
+                                      <td>
+                                          <input type="number" class="form-control" [(ngModel)] = "lig.ligneTravaux.tva"
+                                              placeholder="Tva" (ngModelChange)="calculTotaux()"
+                                              [ngStyle]="{'background-color': (lig.ligneTravaux.tva < 0) ? 'rgb(255, 172, 172)': null}"
+                                              >
+                                      </td>
+                                      <td>
+                                        {{ salToolsService.salRound(!lig.ligneTravaux.prixUnitTtc?lig.ligneTravaux.puLigneCommande * lig.ligneTravaux.qteLigneCommande*(1+(lig.ligneTravaux.tva/100)): lig.ligneTravaux.puLigneCommande * lig.ligneTravaux.qteLigneCommande) }}
+                                      </td>
+                                      <td>
+                                          <button class="btn btn-outline-secondary float-right" (click)="modalPopALigneTravaux(i, modalConfirmDelLig)">Retirer</button>
+                                      </td>
+                                  </tr>
+                              </tbody>
+                          </table>
+                          <button class="btn btn-primary float-right mb-4" (click)="pushALigneTravaux()">Ajouter une ligne</button>
+                      </div>
+
+                      <div class="col-md-12">
+
+                          <div class="float-right">
+                              <p>Total Montant HT : <span> {{ salToolsService.salRound(totaux[0]) }} </span>  F CFA</p>
+                              <p class="d-flex align-items-center">Total Montant TVA : <span> {{ salToolsService.salRound(totaux[1]) }} </span>  F CFA</p>
+                              <h5 class="font-weight-bold d-flex align-items-center">Total Montant TTC : <span> {{ salToolsService.salRound(totaux[2]) }} </span>  F CFA</h5>
+                          </div>
+                      </div>
+
+                  </div>
+
+              </div>
+
+            </ng-template>
+          </li>
+
+        </ul>
+
+        <div [ngbNavOutlet]="nav" class="mt-2"></div>
+
+      </div>
+    </div>
+
+</div>
+
+
+
+<ng-template #modalConfirm let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-title">Suppression</h4>
+    <button (click)="modal.dismiss('Cross click')" aria-describedby="modal-title" aria-label="Close button"
+            class="close"
+            type="button">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <p>
+      <strong>Confirmez-vous la suppression de
+        <span class="text-primary">{{ travaux?.numTravaux }}</span> ?</strong></p>
+  </div>
+  <div class="modal-footer">
+    <button (click)="modal.dismiss('cancel')" class="btn btn-outline-secondary btn-rounded" type="button">Annuler
+    </button>
+    <button (click)="modal.close('Ok')" class="btn btn-danger btn-rounded" ngbAutofocus
+            type="button">Confirmer
+    </button>
+  </div>
+</ng-template>
+
+<ng-template #modalValid let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-title" *ngIf="etatVali == true">Validation</h4>
+    <h4 class="modal-title" id="modal-title" *ngIf="etatVali == false">Annulation</h4>
+    <button (click)="modal.dismiss('Cross click')" aria-describedby="modal-title" aria-label="Close button"
+            class="close"
+            type="button">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <p>
+      <strong>Confirmez-vous <strong class="text-success" *ngIf="etatVali == true">la Validation</strong>
+      <strong class="text-danger" *ngIf="etatVali == false">l'Annulation</strong> de la pièce ?</strong>
+    </p>
+  </div>
+  <div class="modal-footer">
+    <button (click)="modal.dismiss('cancel')" class="btn btn-outline-secondary btn-rounded" type="button">NON
+    </button>
+    <button (click)="modal.close('Ok')" class="btn btn-danger btn-rounded" ngbAutofocus
+            type="button">OUI
+    </button>
+  </div>
+</ng-template>
+
+
+<ng-template #modalConfirmDelLig let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-title">Suppression</h4>
+    <button (click)="modal.dismiss('Cross click')" aria-describedby="modal-title" aria-label="Close button"
+            class="close"
+            type="button">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <p>
+      <strong>Confirmez-vous le retrait de la ligne d'article
+        <span class="text-primary">{{ ligneTrava.designationLigne }} - {{ ligneTrava.designationLigne }}</span> ?</strong></p>
+  </div>
+  <div class="modal-footer">
+    <button (click)="modal.dismiss('cancel')" class="btn btn-outline-secondary btn-rounded" type="button">Annuler
+    </button>
+    <button (click)="modal.close('Ok')" class="btn btn-danger btn-rounded" ngbAutofocus
+            type="button">Confirmer
+    </button>
+  </div>
+</ng-template>
+
+<ng-template #modalImpression let-modal>
+    <div class="modal-header">
+      <h4 class="modal-title" id="modal-title">Impression</h4>
+      <button (click)="modal.dismiss('Cross click')" aria-describedby="modal-title" aria-label="Close button"
+              class="close"
+              type="button">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+        <div class="row">
+            <div class="col-md form-group mb-3" style="display: flex; flex-direction: column; align-items: center;">
+                <label class="checkbox checkbox-success" style="margin: auto;">
+                    <strong>Afficher la ligne 
+                        <span class="text-primary">NB</span> ?</strong>
+                  <input type="checkbox" [(ngModel)]="affichNb" [checked]="null" (click)="null">
+                  <span class="checkmark"></span>
+                </label>
+            </div>
+        </div>
+      
+    </div>
+    <div class="modal-footer">
+      <button (click)="modal.dismiss('cancel')" class="btn btn-outline-secondary btn-rounded" type="button">Annuler
+      </button>
+      <button (click)="modal.close('Ok')" class="btn btn-danger btn-rounded" ngbAutofocus
+              type="button">Continuer
+      </button>
+    </div>
+  </ng-template>

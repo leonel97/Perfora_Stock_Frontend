@@ -23,6 +23,10 @@ export class LigneApproService {
       return this.httpCli.get<LigneAppro>(this.host+'/stock/ligneAppro/byCodLigApp/'+code);
     }
 
+    getLignesApproByCodeAppro(code:String){
+      return this.httpCli.get<LigneAppro[]>(this.host+'/stock/ligneAppro/list/byCodeAppro/'+code);
+    }
+
     addALigneAppro(corps:LigneAppro){
       return this.httpCli.post<LigneAppro>(this.host+'/stock/ligneAppro/list', corps);
     }

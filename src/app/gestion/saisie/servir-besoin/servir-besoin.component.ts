@@ -66,6 +66,7 @@ export class ServirBesoinComponent  implements OnInit {
   searchAffForm: FormGroup;
   validateForm: FormGroup;
   approList: Approvisionnement[] = [];
+  approListByExo: Approvisionnement[] = [];
   ligneApproList: LigneAppro[] = [];
   ligneDemandeApproList: LigneDemandeAppro[] = [];
   demandeApproList: DemandeApprovisionnement[] = [];
@@ -124,7 +125,7 @@ export class ServirBesoinComponent  implements OnInit {
         console.log('Echec status ==> ' + error.status);
       });*/
 
-    this.getAllAppro();
+    this.getAllApproByCodeExoSelected();
 
     this.searchAffForm = this.fb.group({
       radioAffich: [0, [Validators.required]],
@@ -161,6 +162,20 @@ export class ServirBesoinComponent  implements OnInit {
       }
     }
     return b;
+  }
+
+  getAllApproByCodeExoSelected(){
+    this.approService.getApprovisionnementByCodeExo(this.exerciceService.selectedExo.codeExercice).subscribe(
+      (data) => {
+
+        this.approListByExo = [...data.filter( l => this.isAllowedMagasin(l))];
+        this.approFiltered = this.approListByExo.sort((a, b) => a.numAppro.localeCompare(b.numAppro.valueOf()));
+
+      },
+      (error: HttpErrorResponse) => {
+        console.log('Echec status ==> ' + error.status);
+      }
+    );
   }
 
   
@@ -212,8 +227,8 @@ export class ServirBesoinComponent  implements OnInit {
     this.approService.getAllAppro().subscribe(
       (data) => {
         this.approList = [...data.filter( l => this.isAllowedMagasin(l))];
-        this.approFiltered = this.approList.sort((a, b) => a.numAppro.localeCompare(b.numAppro.valueOf()));
-        console.log(this.approList);
+        //this.approFiltered = this.approList.sort((a, b) => a.numAppro.localeCompare(b.numAppro.valueOf()));
+        //console.log(this.approList);
       },
       (error: HttpErrorResponse) => {
         console.log('Echec status ==> ' + error.status);
@@ -313,7 +328,7 @@ export class ServirBesoinComponent  implements OnInit {
     if (val) {
       val = val.toLowerCase();
     } else {
-      this.approFiltered = [...this.approList.sort((a, b) => a.numAppro.localeCompare(b.numAppro.valueOf()))];
+      this.approFiltered = [...this.approListByExo.sort((a, b) => a.numAppro.localeCompare(b.numAppro.valueOf()))];
       this.searchAffElmtChanged();
       return;
     }
@@ -323,7 +338,7 @@ export class ServirBesoinComponent  implements OnInit {
       return;
     }
 
-    const rows = this.approList.filter(function (d) {
+    const rows = this.approListByExo.filter(function (d) {
       for (let i = 0; i <= columns.length; i++) {
         const column = columns[i];
         // console.log(d[column]);
@@ -347,35 +362,48 @@ export class ServirBesoinComponent  implements OnInit {
       valideAppro: [appro != null ? appro.valideAppro : false],
       numDA: [appro != null ? this.getDemandeApproOfAAppro(appro)?.numDA : null,
         [Validators.required]],
+      notProcessAgain: [appro != null ? this.getDemandeApproOfAAppro(appro)?.notProcessAgain : false],
 
     });
     //cette condition permet de basculer vers la tab contenant le formulaire lors d'une modification
     if (appro?.numAppro !=null){
-      this.ligneShow = [];
-      if(this.detailView == true) this.detailView = false;
-      for(const ligCo of this.ligneApproList){
-        if(ligCo.appro.numAppro == appro.numAppro){
-          this.ligneShow.push({
-            ligneAppro: ligCo,
-            listArticle: this.getNotUsedArticle(),
-            uniter: ligCo.ligneDA.uniter,
-            selectedArticl: ligCo.ligneDA.article.numArticle,
-            selectedUniter: ligCo.ligneDA.uniter ? ligCo.ligneDA.uniter.numUniter : null,
-            coutUnitaire: ligCo.puligneAppro,
-            concernedLigneDa: ligCo.ligneDA,
-            concernedStocker: this.getStockerByArtiAndMagasin(ligCo.ligneDA.article, appro.magasin),
-            qteRest: this.getQteRestanteOfALigneDa(ligCo.ligneDA) + ligCo.quantiteLigneAppro,
 
-          });
+      this.ligneApproService.getLignesApproByCodeAppro( appro.numAppro).subscribe(
+        (ligneApproList) => {
+          this.ligneShow = [];
+          if(this.detailView == true) this.detailView = false;
+          for(const ligCo of ligneApproList){
+            
+              this.ligneShow.push({
+                ligneAppro: ligCo,
+                listArticle: this.getNotUsedArticle(),
+                uniter: ligCo.ligneDA.uniter,
+                selectedArticl: ligCo.ligneDA.article.numArticle,
+                selectedUniter: ligCo.ligneDA.uniter ? ligCo.ligneDA.uniter.numUniter : null,
+                coutUnitaire: ligCo.puligneAppro,
+                concernedLigneDa: ligCo.ligneDA,
+                concernedStocker: this.getStockerByArtiAndMagasin(ligCo.ligneDA.article, appro.magasin),
+                qteRest: this.getQteRestanteOfALigneDa(ligCo.ligneDA) + ligCo.quantiteLigneAppro,
+    
+              });
+            
+          }
+    
+          this.getInfosOnDaSelected(true);
+          this.getInfosOnMagasinSelected();
+    
+          this.calculTotaux();
+    
+          this.activeTabsNav = 2;
+        }, 
+        (error: HttpErrorResponse) => {
+
+          console.log('Echec status ==> '+error.status);
+
         }
-      }
+      );
 
-      this.getInfosOnDaSelected(true);
-      this.getInfosOnMagasinSelected();
 
-      this.calculTotaux();
-
-      this.activeTabsNav = 2;
     }
   }
 
@@ -578,29 +606,34 @@ export class ServirBesoinComponent  implements OnInit {
         }
 
         lignesAppr.push(element.ligneAppro);
+        
 
       });
+
+      let demAppr = this.demandeApproList[i];
+
+      demAppr.notProcessAgain = formData.notProcessAgain;
 
       if (formData.numAppro == null) {
         console.log("data", formData);
 
-        this.enregistrerAppro(approo, lignesAppr);
+        this.enregistrerAppro(approo, lignesAppr, demAppr);
       } else {
-        this.modifierAppro(approo, lignesAppr);
+        this.modifierAppro(approo, lignesAppr, demAppr);
       }
     }
   }
 
-  enregistrerAppro(appro: Approvisionnement, lignesAppro: LigneAppro[]): void {
+  enregistrerAppro(appro: Approvisionnement, lignesAppro: LigneAppro[], demAppr: DemandeApprovisionnement): void {
     this.loading = true;
     this.getAllLigneAppro();
-    console.log('obj', new EncapApprovisionnement(appro, lignesAppro));
-    this.approService.addAAppro2(new EncapApprovisionnement(appro, lignesAppro)).subscribe(
+    console.log('obj', new EncapApprovisionnement(appro, lignesAppro, demAppr));
+    this.approService.addAAppro2(new EncapApprovisionnement(appro, lignesAppro, demAppr)).subscribe(
       (data) => {
 
         console.log(data);
 
-        this.approList.unshift(data.approvisionnement);
+        this.approListByExo.unshift(data.approvisionnement);
         //this.approFiltered = [...this.approList.sort((a, b) => a.numAppro.localeCompare(b.numAppro.valueOf()))];
         this.filerData(this.searchControl.value);
 
@@ -632,16 +665,16 @@ export class ServirBesoinComponent  implements OnInit {
 
   }
 
-  modifierAppro(appro: Approvisionnement, lignesAppro: LigneAppro[]): void {
+  modifierAppro(appro: Approvisionnement, lignesAppro: LigneAppro[], demAppr: DemandeApprovisionnement): void {
     this.loading = true;
-    this.approService.editAAppro2(appro.numAppro, new EncapApprovisionnement(appro, lignesAppro)).subscribe(
+    this.approService.editAAppro2(appro.numAppro, new EncapApprovisionnement(appro, lignesAppro, demAppr)).subscribe(
       (data) => {
         this.getAllLigneAppro();
 
         console.log(data);
-          const i = this.approList.findIndex(l => l.numAppro == data.approvisionnement.numAppro);
+          const i = this.approListByExo.findIndex(l => l.numAppro == data.approvisionnement.numAppro);
           if (i > -1) {
-            this.approList[i] = data.approvisionnement;
+            this.approListByExo[i] = data.approvisionnement;
             //this.approFiltered = [...this.approList.sort((a, b) => a.numAppro.localeCompare(b.numAppro.valueOf()))];
             this.filerData(this.searchControl.value);
           }
@@ -686,10 +719,11 @@ export class ServirBesoinComponent  implements OnInit {
         (data) => {
 
           console.log(data);
-          const i = this.approList.findIndex(l => l.numAppro == appro.numAppro);
+          const i = this.approListByExo.findIndex(l => l.numAppro == appro.numAppro);
           if (i > -1) {
-            this.approList.splice(i, 1);
-            this.approFiltered = [...this.approList.sort((a, b) => a.numAppro.localeCompare(b.numAppro.valueOf()))];
+            this.approListByExo.splice(i, 1);
+            //this.approFiltered = [...this.approList.sort((a, b) => a.numAppro.localeCompare(b.numAppro.valueOf()))];
+            this.filerData(this.searchControl.value);
           }
           this.resetForm();
           this.toastr.success('Suppression effectué avec succès.', 'Success!', { timeOut: 5000, progressBar:true });
@@ -926,9 +960,9 @@ export class ServirBesoinComponent  implements OnInit {
                   this.approService.editAAppro3(appro.numAppro, appro).subscribe(
                     (data) => {
             
-                      const i = this.approList.findIndex(l => l.numAppro == data.numAppro);
+                      const i = this.approListByExo.findIndex(l => l.numAppro == data.numAppro);
                           if (i > -1) {
-                            this.approList[i] = data;
+                            this.approListByExo[i] = data;
                             //this.approFiltered = [...this.approList.sort((a, b) => a.numAppro.localeCompare(b.numAppro.valueOf()))];
                             this.filerData(this.searchControl.value);
                           }
@@ -1082,84 +1116,93 @@ export class ServirBesoinComponent  implements OnInit {
       ,
     });
 
-    let lignes = [];
-    let demAppr: DemandeApprovisionnement = null;
-
-    this.ligneApproList.forEach(element2 => {
-      if(element2.appro.numAppro == element.numAppro){
-        demAppr = element2.ligneDA.appro;
-        let lig = [];
-        lig.push(element2.ligneDA.article.codeArticle);
-        lig.push(element2.ligneDA.article.libArticle);
-        lig.push(element2.quantiteLigneAppro);
-        lig.push(element2.ligneDA.uniter.libUniter);
-        lig.push(this.salToolsService.salRound(element2.puligneAppro*element2.ligneDA.uniter.poids));
-        let ht = element2.quantiteLigneAppro*element2.puligneAppro*element2.ligneDA.uniter.poids;
-        lig.push(this.salToolsService.salRound(ht));
-        lignes.push(lig);
-
-        totalTTC+= ht;
-      }
-
-    });
-
-    autoTable(doc, {
-      theme: 'plain',
-      startY:60,
-      margin: { right: 50 },
-      columnStyles: {
-        0: { textColor: 0, fontStyle: 'bold', halign: 'left' },
-        1: { textColor: 0, halign: 'left' },
-      },
-      body: [
-        ['Réf Demande de Besoins :', ''+demAppr?.numDA],
-        ['Centre Demandeur :', demAppr?.service.codeService+' - '+demAppr?.service.libService],
-        ['Magasin :', element.magasin.codeMagasin+' - '+element.magasin.libMagasin]
-      ]
-      ,
-    });
-
+    this.ligneApproService.getLignesApproByCodeAppro(element.numAppro).subscribe(
+      (ligneApproList) => {
+        let lignes = [];
+        let demAppr: DemandeApprovisionnement = null;
     
-
-    autoTable(doc, {
-      theme: 'grid',
-      head: [['Article', 'Désignation', 'Quantité', 'Unité', 'PU', 'Montant']],
-      headStyles:{
-        fillColor: [41, 128, 185],
-        textColor: 255,
-        fontStyle: 'bold' ,
-    },
-      margin: { top: 100 },
-      body: lignes
-      ,
-    });
-
-
-    autoTable(doc, {
-      theme: 'grid',
-      margin: { top: 100, left:130 },
-      columnStyles: {
-        0: { fillColor: [41, 128, 185], textColor: 255, fontStyle: 'bold' },
+        ligneApproList.forEach(element2 => {
+          
+            demAppr = element2.ligneDA.appro;
+            let lig = [];
+            lig.push(element2.ligneDA.article.codeArticle);
+            lig.push(element2.ligneDA.article.libArticle);
+            lig.push(element2.quantiteLigneAppro);
+            lig.push(element2.ligneDA.uniter.libUniter);
+            lig.push(this.salToolsService.salRound(element2.puligneAppro*element2.ligneDA.uniter.poids));
+            let ht = element2.quantiteLigneAppro*element2.puligneAppro*element2.ligneDA.uniter.poids;
+            lig.push(this.salToolsService.salRound(ht));
+            lignes.push(lig);
+    
+            totalTTC+= ht;
+          
+    
+        });
+    
+        autoTable(doc, {
+          theme: 'plain',
+          startY:60,
+          margin: { right: 50 },
+          columnStyles: {
+            0: { textColor: 0, fontStyle: 'bold', halign: 'left' },
+            1: { textColor: 0, halign: 'left' },
+          },
+          body: [
+            ['Réf Demande de Besoins :', ''+demAppr?.numDA],
+            ['Centre Demandeur :', demAppr?.service.codeService+' - '+demAppr?.service.libService],
+            ['Magasin :', element.magasin.codeMagasin+' - '+element.magasin.libMagasin]
+          ]
+          ,
+        });
+    
+        
+    
+        autoTable(doc, {
+          theme: 'grid',
+          head: [['Article', 'Désignation', 'Quantité', 'Unité', 'PU', 'Montant']],
+          headStyles:{
+            fillColor: [41, 128, 185],
+            textColor: 255,
+            fontStyle: 'bold' ,
+        },
+          margin: { top: 100 },
+          body: lignes
+          ,
+        });
+    
+    
+        autoTable(doc, {
+          theme: 'grid',
+          margin: { top: 100, left:130 },
+          columnStyles: {
+            0: { fillColor: [41, 128, 185], textColor: 255, fontStyle: 'bold' },
+          },
+          body: [
+            ['Total TTC', this.salToolsService.salRound(totalTTC)]
+          ]
+          ,
+        });
+    
+        autoTable(doc, {
+          theme: 'plain',
+          margin: { top: 50, bottom:0 },
+          columnStyles: {
+            0: { textColor: 0, fontStyle: 'bold', halign: 'left' },
+          },
+          body: [
+            ["Arrêté le présent Ordre de Sortie à la Somme de : "+this.salToolsService.salNumberToLetter(this.salToolsService.salRound(totalTTC))+' Francs CFA']
+          ]
+          ,
+        });
+    
+        doc.output('dataurlnewwindow');
+    
       },
-      body: [
-        ['Total TTC', this.salToolsService.salRound(totalTTC)]
-      ]
-      ,
-    });
+      (error: HttpErrorResponse) => {
+        console.log('Echec status ==> ' + error.status);
+      }
+    );
 
-    autoTable(doc, {
-      theme: 'plain',
-      margin: { top: 50, bottom:0 },
-      columnStyles: {
-        0: { textColor: 0, fontStyle: 'bold', halign: 'left' },
-      },
-      body: [
-        ["Arrêté le présent Ordre de Sortie à la Somme de : "+this.salToolsService.salNumberToLetter(this.salToolsService.salRound(totalTTC))+' Francs CFA']
-      ]
-      ,
-    });
-
-    doc.output('dataurlnewwindow');
 
   }
 
@@ -1202,87 +1245,96 @@ export class ServirBesoinComponent  implements OnInit {
       ,
     });
 
-    let lignes = [];
-    let demAppr: DemandeApprovisionnement = null;
-
-    this.ligneApproList.forEach(element2 => {
-      if(element2.appro.numAppro == element.numAppro){
-        demAppr = element2.ligneDA.appro;
-        let lig = [];
-        lig.push(element2.ligneDA.article.codeArticle);
-        lig.push(element2.ligneDA.article.libArticle);
-        lig.push(element2.quantiteLigneAppro);
-        lig.push(element2.ligneDA.uniter.libUniter);
-        lig.push(this.salToolsService.salRound(element2.puligneAppro*element2.ligneDA.uniter.poids));
-        let ht = element2.quantiteLigneAppro*element2.puligneAppro*element2.ligneDA.uniter.poids;
-        lig.push(this.salToolsService.salRound(ht));
-        lignes.push(lig);
-
-        totalTTC+= ht;
+    this.ligneApproService.getLignesApproByCodeAppro(element.numAppro).subscribe(
+      (ligneApproList) => {
+        let lignes = [];
+        let demAppr: DemandeApprovisionnement = null;
+    
+        ligneApproList.forEach(element2 => {
+          
+            demAppr = element2.ligneDA.appro;
+            let lig = [];
+            lig.push(element2.ligneDA.article.codeArticle);
+            lig.push(element2.ligneDA.article.libArticle);
+            lig.push(element2.quantiteLigneAppro);
+            lig.push(element2.ligneDA.uniter.libUniter);
+            lig.push(this.salToolsService.salRound(element2.puligneAppro*element2.ligneDA.uniter.poids));
+            let ht = element2.quantiteLigneAppro*element2.puligneAppro*element2.ligneDA.uniter.poids;
+            lig.push(this.salToolsService.salRound(ht));
+            lignes.push(lig);
+    
+            totalTTC+= ht;
+          
+    
+        });
+    
+        autoTable(doc, {
+          theme: 'plain',
+          margin: { left:5, right:5 },
+          styles: {fontSize: 7},
+          columnStyles: {
+            0: { textColor: 0, fontStyle: 'bold', halign: 'left' },
+            1: { textColor: 0, halign: 'left' },
+          },
+          body: [
+            ['Réf Demande de Besoins :', ''+demAppr?.numDA],
+            ['Centre Demandeur :', demAppr?.service.codeService+' - '+demAppr?.service.libService],
+            ['Magasin :', element.magasin.codeMagasin+' - '+element.magasin.libMagasin]
+          ]
+          ,
+        });
+    
+        
+    
+        autoTable(doc, {
+          theme: 'grid',
+          margin: { left:5, right:5 },
+          styles: {fontSize: 6},
+          head: [['Article', 'Désignation', 'Quantité', 'Unité', 'PU', 'Montant']],
+          headStyles:{
+            fillColor: [41, 128, 185],
+            textColor: 255,
+            fontStyle: 'bold' ,
+        },
+        
+          body: lignes
+          ,
+        });
+    
+    
+        autoTable(doc, {
+          theme: 'grid',
+          margin: { top: 10, left:13 },
+          columnStyles: {
+            0: { fillColor: [41, 128, 185], textColor: 255, fontStyle: 'bold' },
+          },
+          body: [
+            ['Total TTC', this.salToolsService.salRound(totalTTC)]
+          ]
+          ,
+        });
+    
+        autoTable(doc, {
+          theme: 'plain',
+          margin: { left:5, right:5 },
+          styles: {fontSize: 8},
+          columnStyles: {
+            0: { textColor: 0, fontStyle: 'bold', halign: 'left' },
+          },
+          body: [
+            ["Arrêté le présent Ordre de Sortie à la Somme de : "+this.salToolsService.salNumberToLetter(this.salToolsService.salRound(totalTTC))+' Francs CFA']
+          ]
+          ,
+        });
+    
+        doc.output('dataurlnewwindow');
+    
+      }, 
+      (error: HttpErrorResponse) => {
+        console.log('Echec status ==>'+ error.status);
       }
+    );
 
-    });
-
-    autoTable(doc, {
-      theme: 'plain',
-      margin: { left:5, right:5 },
-      styles: {fontSize: 7},
-      columnStyles: {
-        0: { textColor: 0, fontStyle: 'bold', halign: 'left' },
-        1: { textColor: 0, halign: 'left' },
-      },
-      body: [
-        ['Réf Demande de Besoins :', ''+demAppr?.numDA],
-        ['Centre Demandeur :', demAppr?.service.codeService+' - '+demAppr?.service.libService],
-        ['Magasin :', element.magasin.codeMagasin+' - '+element.magasin.libMagasin]
-      ]
-      ,
-    });
-
-    
-
-    autoTable(doc, {
-      theme: 'grid',
-      margin: { left:5, right:5 },
-      styles: {fontSize: 6},
-      head: [['Article', 'Désignation', 'Quantité', 'Unité', 'PU', 'Montant']],
-      headStyles:{
-        fillColor: [41, 128, 185],
-        textColor: 255,
-        fontStyle: 'bold' ,
-    },
-    
-      body: lignes
-      ,
-    });
-
-
-    autoTable(doc, {
-      theme: 'grid',
-      margin: { top: 10, left:13 },
-      columnStyles: {
-        0: { fillColor: [41, 128, 185], textColor: 255, fontStyle: 'bold' },
-      },
-      body: [
-        ['Total TTC', this.salToolsService.salRound(totalTTC)]
-      ]
-      ,
-    });
-
-    autoTable(doc, {
-      theme: 'plain',
-      margin: { left:5, right:5 },
-      styles: {fontSize: 8},
-      columnStyles: {
-        0: { textColor: 0, fontStyle: 'bold', halign: 'left' },
-      },
-      body: [
-        ["Arrêté le présent Ordre de Sortie à la Somme de : "+this.salToolsService.salNumberToLetter(this.salToolsService.salRound(totalTTC))+' Francs CFA']
-      ]
-      ,
-    });
-
-    doc.output('dataurlnewwindow');
 
   }
 

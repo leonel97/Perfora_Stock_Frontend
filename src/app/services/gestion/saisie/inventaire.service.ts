@@ -18,6 +18,10 @@ export class InventaireService {
       return this.httpCli.get<Inventaire[]>(this.host+'/stock/inventaire/list');
     }
 
+    getInventaireByCodeExo(code:String){
+      return this.httpCli.get<Inventaire[]>(this.host+'/stock/inventaire/byCodExo/'+code);
+    }
+
     getInventaireById(code:String){
       return this.httpCli.get<Inventaire>(this.host+'/stock/inventaire/byCodSto/'+code);
     }

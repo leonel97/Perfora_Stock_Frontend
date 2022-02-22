@@ -22,6 +22,10 @@ export class LigneReceptionService {
     return this.httpCli.get<LigneReception>(this.host+'/stock/ligneReception/byCodLigRec/'+code);
   }
 
+  getLignesReceptionByCodeReception(code:String){
+    return this.httpCli.get<LigneReception[]>(this.host+'/stock/ligneReception/list/byCodeRec/'+code);
+  }
+
   addALigneReception(corps:LigneReception){
     return this.httpCli.post<LigneReception>(this.host+'/stock/ligneReception/list', corps);
   }

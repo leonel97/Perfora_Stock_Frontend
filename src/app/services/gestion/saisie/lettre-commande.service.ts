@@ -17,6 +17,10 @@ export class LettreCommandeService {
       return this.httpCli.get<LettreCommande[]>(this.host+'/stock/lettreCommande/list');
     }
 
+    getLettreCommandeByCodeExo(code:String){
+      return this.httpCli.get<LettreCommande[]>(this.host+'/stock/lettreCommande/byCodExo/'+code);
+    }
+
     getALettreCommandeById(code:String){
       return this.httpCli.get<LettreCommande>(this.host+'/stock/lettreCommande/byCodLetCom/'+code);
     }

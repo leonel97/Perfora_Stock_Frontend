@@ -63,6 +63,7 @@ export class CommandeAchatComponent implements OnInit {
 
   validateForm: FormGroup;
   commandeAchatList: CommandeAchat[] = [];
+  commandeAchatListByExo: CommandeAchat[] = [];
   ligneCommandeList: LigneCommande[] = [];
   selectedLigneCommandeList: LigneCommande[] = [];
   fournisseurList: Fournisseur[] = [];
@@ -103,11 +104,11 @@ export class CommandeAchatComponent implements OnInit {
 
   ngOnInit(): void {
 
-    this.commandeAchatService.getAllCommandeAchat().subscribe(
+    this.commandeAchatService.getCommandeAchatByCodeExo(this.exerciceService.selectedExo.codeExercice).subscribe(
       (data) => {
-        this.commandeAchatList = [...data];
-        this.commandeAchatFiltered = this.commandeAchatList.sort((a, b) => a.numComAchat.localeCompare(b.numComAchat.valueOf()));
-        console.log(this.commandeAchatList);
+        this.commandeAchatListByExo = [...data];
+        this.commandeAchatFiltered = this.commandeAchatListByExo.sort((a, b) => a.numComAchat.localeCompare(b.numComAchat.valueOf()));
+        console.log(this.commandeAchatListByExo);
       },
       (error: HttpErrorResponse) => {
         console.log('Echec status ==> ' + error.status);
@@ -156,6 +157,18 @@ export class CommandeAchatComponent implements OnInit {
         this.commandeAchatList = [...data];
         this.commandeAchatFiltered = this.commandeAchatList.sort((a, b) => a.numComAchat.localeCompare(b.numComAchat.valueOf()));
         console.log(this.commandeAchatList);
+      },
+      (error: HttpErrorResponse) => {
+        console.log('Echec status ==> ' + error.status);
+      });
+  }
+
+  getAllCommandeAchatByCodeExoSelected(){
+    this.commandeAchatService.getCommandeAchatByCodeExo(this.exerciceService.selectedExo.codeExercice).subscribe(
+      (data) => {
+        this.commandeAchatListByExo = [...data];
+        this.commandeAchatFiltered = this.commandeAchatListByExo.sort((a, b) => a.numComAchat.localeCompare(b.numComAchat.valueOf()));
+        console.log(this.commandeAchatListByExo);
       },
       (error: HttpErrorResponse) => {
         console.log('Echec status ==> ' + error.status);
@@ -225,7 +238,7 @@ export class CommandeAchatComponent implements OnInit {
     if (val) {
       val = val.toLowerCase();
     } else {
-      return this.commandeAchatFiltered = [...this.commandeAchatList.sort((a, b) => a.numComAchat.localeCompare(b.numComAchat.valueOf()))];
+      return this.commandeAchatFiltered = [...this.commandeAchatListByExo.sort((a, b) => a.numComAchat.localeCompare(b.numComAchat.valueOf()))];
     }
 
     const columns = Object.keys(this.commandeAchatList[0]);
@@ -233,7 +246,7 @@ export class CommandeAchatComponent implements OnInit {
       return;
     }
 
-    const rows = this.commandeAchatList.filter(function (d) {
+    const rows = this.commandeAchatListByExo.filter(function (d) {
       for (let i = 0; i <= columns.length; i++) {
         const column = columns[i];
         // console.log(d[column]);
@@ -300,26 +313,36 @@ export class CommandeAchatComponent implements OnInit {
 
     //cette condition permet de basculer vers la tab contenant le formulaire lors d'une modification
     if (commandeAchat?.numComAchat !=null){
-      this.ligneShow = [];
 
-      for(const ligCo of this.ligneCommandeList){
-        if(ligCo.numCommande.numCommande == commandeAchat.commande.numCommande){
-          this.ligneShow.push({
-            lignesCommande: ligCo,
-            listArticle: this.getNotUsedArticle(),
-            listUniter: this.getUniterOfAArticle(ligCo.article.numArticle),
-            selectedArticl: ligCo.article.numArticle,
-            selectedUniter: ligCo.uniter ? ligCo.uniter.numUniter : null,
-            artii: ligCo.article,
-            ttc: ligCo.prixUnitTtc
+      this.ligneCommandeService.getLignesCommandeByCodeCommmande(commandeAchat.commande.numCommande.toString()).subscribe(
+        (ligneCommandeList) => {
+          this.ligneShow = [];
 
-          });
+          for(const ligCo of ligneCommandeList){
+            
+              this.ligneShow.push({
+                lignesCommande: ligCo,
+                listArticle: this.getNotUsedArticle(),
+                listUniter: this.getUniterOfAArticle(ligCo.article.numArticle),
+                selectedArticl: ligCo.article.numArticle,
+                selectedUniter: ligCo.uniter ? ligCo.uniter.numUniter : null,
+                artii: ligCo.article,
+                ttc: ligCo.prixUnitTtc
+    
+              });
+            
+          }
+    
+          this.calculTotaux();
+    
+          this.activeTabsNav = 2;
+        }, 
+        (error: HttpErrorResponse) => {
+          console.log('Echec status ==> '+ error.status);
         }
-      }
+      );
 
-      this.calculTotaux();
 
-      this.activeTabsNav = 2;
 
     }
   }
@@ -397,13 +420,13 @@ export class CommandeAchatComponent implements OnInit {
         const j = element.listArticle.findIndex(l => l.numArticle == element.selectedArticl);
         const k = element.listUniter.findIndex(l => l.numUniter == element.selectedUniter);
 
-        element.lignesCommande.article = null;
+        element.lignesCommande.article = element.artii;
         element.lignesCommande.uniter = null;
         element.lignesCommande.prixUnitTtc = element.ttc;
 
-        if (j > -1) {
+        /*if (j > -1) {
           element.lignesCommande.article = element.listArticle[j];
-        }
+        }*/
 
         if (k > -1) {
           element.lignesCommande.uniter = element.listUniter[k];
@@ -440,8 +463,8 @@ export class CommandeAchatComponent implements OnInit {
           (data) => {
             console.log(data);
 
-            this.commandeAchatList.unshift(data);
-            this.commandeAchatFiltered = [...this.commandeAchatList.sort((a, b) => a.numComAchat.localeCompare(b.numComAchat.valueOf()))];
+            this.commandeAchatListByExo.unshift(data);
+            this.commandeAchatFiltered = [...this.commandeAchatListByExo.sort((a, b) => a.numComAchat.localeCompare(b.numComAchat.valueOf()))];
             this.resetForm();
             this.toastr.success('Enregistrement effectué avec succès.', 'Success', { timeOut: 5000 });
             this.loading = false;
@@ -475,10 +498,10 @@ export class CommandeAchatComponent implements OnInit {
           (data) => {
             console.log(data);
 
-            const i = this.commandeAchatList.findIndex(l => l.numComAchat == data.numComAchat);
+            const i = this.commandeAchatListByExo.findIndex(l => l.numComAchat == data.numComAchat);
             if (i > -1) {
-              this.commandeAchatList[i] = data;
-              this.commandeAchatFiltered = [...this.commandeAchatList.sort((a, b) => a.numComAchat.localeCompare(b.numComAchat.valueOf()))];
+              this.commandeAchatListByExo[i] = data;
+              this.commandeAchatFiltered = [...this.commandeAchatListByExo.sort((a, b) => a.numComAchat.localeCompare(b.numComAchat.valueOf()))];
             }
 
             this.resetForm();
@@ -528,10 +551,10 @@ export class CommandeAchatComponent implements OnInit {
           );
 
           console.log(data);
-          const i = this.commandeAchatList.findIndex(l => l.numComAchat == commandeAchat.numComAchat);
+          const i = this.commandeAchatListByExo.findIndex(l => l.numComAchat == commandeAchat.numComAchat);
           if (i > -1) {
-            this.commandeAchatList.splice(i, 1);
-            this.commandeAchatFiltered = [...this.commandeAchatList.sort((a, b) => a.numComAchat.localeCompare(b.numComAchat.valueOf()))];
+            this.commandeAchatListByExo.splice(i, 1);
+            this.commandeAchatFiltered = [...this.commandeAchatListByExo.sort((a, b) => a.numComAchat.localeCompare(b.numComAchat.valueOf()))];
           }
           /*setTimeout(() => {
             this.toastr.success('Suppression effectuée avec succès.', 'Success!', {progressBar: true});
@@ -720,10 +743,10 @@ export class CommandeAchatComponent implements OnInit {
 
                         commandeAchat.commande = data;
 
-                        const i = this.commandeAchatList.findIndex(l => l.numComAchat == commandeAchat.numComAchat);
+                        const i = this.commandeAchatListByExo.findIndex(l => l.numComAchat == commandeAchat.numComAchat);
                             if (i > -1) {
-                              this.commandeAchatList[i] = commandeAchat;
-                              this.commandeAchatFiltered = [...this.commandeAchatList.sort((a, b) => a.numComAchat.localeCompare(b.numComAchat.valueOf()))];
+                              this.commandeAchatListByExo[i] = commandeAchat;
+                              this.commandeAchatFiltered = [...this.commandeAchatListByExo.sort((a, b) => a.numComAchat.localeCompare(b.numComAchat.valueOf()))];
                             }
 
                             let msg: String = 'Annulation';
@@ -763,10 +786,10 @@ export class CommandeAchatComponent implements OnInit {
 
                   commandeAchat.commande = data;
 
-                  const i = this.commandeAchatList.findIndex(l => l.numComAchat == commandeAchat.numComAchat);
+                  const i = this.commandeAchatListByExo.findIndex(l => l.numComAchat == commandeAchat.numComAchat);
                       if (i > -1) {
-                        this.commandeAchatList[i] = commandeAchat;
-                        this.commandeAchatFiltered = [...this.commandeAchatList.sort((a, b) => a.numComAchat.localeCompare(b.numComAchat.valueOf()))];
+                        this.commandeAchatListByExo[i] = commandeAchat;
+                        this.commandeAchatFiltered = [...this.commandeAchatListByExo.sort((a, b) => a.numComAchat.localeCompare(b.numComAchat.valueOf()))];
                       }
 
                       let msg: String = 'Validation'
@@ -872,128 +895,136 @@ export class CommandeAchatComponent implements OnInit {
       ,
     });
 
-
-    let lignes = [];
-    this.ligneCommandeList.forEach(element2 => {
-      if(element2.numCommande.numCommande == element.commande.numCommande){
-        let lig = [];
-        lig.push(element2.article.codeArticle);
-        lig.push(element2.article.libArticle);
-        lig.push(element2.qteLigneCommande);
-        lig.push(element2.uniter.libUniter);
-        lig.push(element2.puLigneCommande+(element2.prixUnitTtc?' (TTC)':''));
-        lig.push(element2.tva);
-        let ht = !element2.prixUnitTtc? element2.puLigneCommande * element2.qteLigneCommande : (element2.puLigneCommande * element2.qteLigneCommande)/((element2.tva/100)+1);
-        lig.push(this.salToolsService.salRound(ht));
-        lignes.push(lig);
-
-        totalHT+= ht;
-        //totalTVA+= ht*(element2.tva/100);
-        totalTTC+= !element2.prixUnitTtc?element2.puLigneCommande * element2.qteLigneCommande*(1+(element2.tva/100)) : element2.puLigneCommande * element2.qteLigneCommande;
-        totalTVA = totalTTC - totalHT;
-      }
-
-    });
+    this.ligneCommandeService.getLignesCommandeByCodeCommmande(element.commande.numCommande.toString()).subscribe(
+      (ligneCommandeList) => {
+        let lignes = [];
+        ligneCommandeList.forEach(element2 => {
+         
+            let lig = [];
+            lig.push(element2.article.codeArticle);
+            lig.push(element2.article.libArticle);
+            lig.push(element2.qteLigneCommande);
+            lig.push(element2.uniter.libUniter);
+            lig.push(element2.puLigneCommande+(element2.prixUnitTtc?' (TTC)':''));
+            lig.push(element2.tva);
+            let ht = !element2.prixUnitTtc? element2.puLigneCommande * element2.qteLigneCommande : (element2.puLigneCommande * element2.qteLigneCommande)/((element2.tva/100)+1);
+            lig.push(this.salToolsService.salRound(ht));
+            lignes.push(lig);
     
-    autoTable(doc, {
-      theme: 'grid',
-      head: [['Article', 'Désignation', 'Quantité', 'Unité', 'PU', 'TVA(%)', 'Montant HT']],
-      headStyles:{
-        fillColor: [41, 128, 185],
-        textColor: 255,
-        fontStyle: 'bold' ,
-    },
-      margin: { top: 10 },
-      body: lignes
-      ,
-    });
-
-
-    autoTable(doc, {
-      theme: 'grid',
-      margin: { top: 100, left:130 },
-      columnStyles: {
-        0: { fillColor: [41, 128, 185], textColor: 255, fontStyle: 'bold' },
-      },
-      body: [
-        ['Total HT', this.salToolsService.salRound(totalHT)],
-        ['Total Montant TVA', this.salToolsService.salRound(totalTVA)],
-        ['Total TTC', this.salToolsService.salRound(totalTTC)]
-      ]
-      ,
-    });
-
-    autoTable(doc, {
-      theme: 'grid',
-      margin: { top: 10, bottom:10 },
-      columnStyles: {
-        0: { textColor: 0, fontStyle: 'bold', halign: 'left', minCellWidth:11 },
-        1: { textColor: 0,font: 'Times New Roman', fontStyle: 'italic', halign: 'justify' },
-      },
-      body: [
-        ['NB : ', 'Le fournisseur devra prendre toutes les dispositions pour éviter que le dépotage du produit ne pollue l\'environnement, ni ne porte atteinte à la santé-sécurité des personnes.' ]
-      ]
-      ,
-    });
-
-    autoTable(doc, {
-      theme: 'plain',
-      margin: { top: 50, bottom:0 },
-      columnStyles: {
-        0: { textColor: 0, fontStyle: 'bold', halign: 'left' },
-      },
-      body: [
-        ['Arrêté le présent Bon de Commande à la somme de : '+this.salToolsService.salNumberToLetter(this.salToolsService.salRound(totalTTC))+' Francs CFA']
-      ]
-      ,
-    });
-
-    autoTable(doc, {
-      theme: 'plain',
-      margin: { top: 0 },
-      columnStyles: {
-        0: { textColor: 0, fontStyle: 'bold', halign: 'left' },
-        1: { textColor: 0, fontStyle: 'bold', halign: 'right' },
-      },
-      body: [
-        ['Délais de Livraison '+element.commande.delaiLivraison+'  Jour(s)',
-        'Lomé, le '+moment(Date.now()).format('DD/MM/YYYY')],
-      ]
-      ,
-    });
-
-    autoTable(doc, {
-      theme: 'plain',
-      margin: { top: 100 },
-      columnStyles: {
-        0: { textColor: 0, fontStyle: 'bold', halign: 'center', cellWidth: 80 },
+            totalHT+= ht;
+            //totalTVA+= ht*(element2.tva/100);
+            totalTTC+= !element2.prixUnitTtc?element2.puLigneCommande * element2.qteLigneCommande*(1+(element2.tva/100)) : element2.puLigneCommande * element2.qteLigneCommande;
+            totalTVA = totalTTC - totalHT;
+          
+    
+        });
         
-        2: { textColor: 0, fontStyle: 'bold', halign: 'center', cellWidth: 80 },
-      },
-      body: [
-        ['La Personne Responsable des Marchés Publics\n\n\n\n\n\n\n\nPassamani ATCHO',
-        '',
-        'Le Directeur Général\n\n\n\n\n\n\n\n\nContre-Amiral Fogan Kodjo ADEGNON']
-      ]
-      ,
-    });
-
-    for (let index = 0; index < doc.getNumberOfPages(); index++) {
-      doc.setPage(index+1);
-
-      doc.setFontSize(10);
-      doc.setFont('Times New Roman', 'italic', 'bold');
-
-      doc.text('Powered by PerfOra-Stock Web\nLe '+moment(Date.now()).format('DD/MM/YYYY à HH:mm:ss'), 5, 290);
-      
-      doc.text('Page '+(index+1)+' sur '+doc.getNumberOfPages(), 185, 290);
-
-      
-    }
-
-    console.log('sal',doc );
-
-    doc.output('dataurlnewwindow');
+        autoTable(doc, {
+          theme: 'grid',
+          head: [['Article', 'Désignation', 'Quantité', 'Unité', 'PU', 'TVA(%)', 'Montant HT']],
+          headStyles:{
+            fillColor: [41, 128, 185],
+            textColor: 255,
+            fontStyle: 'bold' ,
+        },
+          margin: { top: 10 },
+          body: lignes
+          ,
+        });
+    
+    
+        autoTable(doc, {
+          theme: 'grid',
+          margin: { top: 100, left:130 },
+          columnStyles: {
+            0: { fillColor: [41, 128, 185], textColor: 255, fontStyle: 'bold' },
+          },
+          body: [
+            ['Total HT', this.salToolsService.salRound(totalHT)],
+            ['Total Montant TVA', this.salToolsService.salRound(totalTVA)],
+            ['Total TTC', this.salToolsService.salRound(totalTTC)]
+          ]
+          ,
+        });
+    
+        autoTable(doc, {
+          theme: 'grid',
+          margin: { top: 10, bottom:10 },
+          columnStyles: {
+            0: { textColor: 0, fontStyle: 'bold', halign: 'left', minCellWidth:11 },
+            1: { textColor: 0,font: 'Times New Roman', fontStyle: 'italic', halign: 'justify' },
+          },
+          body: [
+            ['NB : ', 'Le fournisseur devra prendre toutes les dispositions pour éviter que le dépotage du produit ne pollue l\'environnement, ni ne porte atteinte à la santé-sécurité des personnes.' ]
+          ]
+          ,
+        });
+    
+        autoTable(doc, {
+          theme: 'plain',
+          margin: { top: 50, bottom:0 },
+          columnStyles: {
+            0: { textColor: 0, fontStyle: 'bold', halign: 'left' },
+          },
+          body: [
+            ['Arrêté le présent Bon de Commande à la somme de : '+this.salToolsService.salNumberToLetter(this.salToolsService.salRound(totalTTC))+' Francs CFA']
+          ]
+          ,
+        });
+    
+        autoTable(doc, {
+          theme: 'plain',
+          margin: { top: 0 },
+          columnStyles: {
+            0: { textColor: 0, fontStyle: 'bold', halign: 'left' },
+            1: { textColor: 0, fontStyle: 'bold', halign: 'right' },
+          },
+          body: [
+            ['Délais de Livraison '+element.commande.delaiLivraison+'  Jour(s)',
+            'Lomé, le '+moment(Date.now()).format('DD/MM/YYYY')],
+          ]
+          ,
+        });
+    
+        autoTable(doc, {
+          theme: 'plain',
+          margin: { top: 100 },
+          columnStyles: {
+            0: { textColor: 0, fontStyle: 'bold', halign: 'center', cellWidth: 80 },
+            
+            2: { textColor: 0, fontStyle: 'bold', halign: 'center', cellWidth: 80 },
+          },
+          body: [
+            ['La Personne Responsable des Marchés Publics\n\n\n\n\n\n\n\nPassamani ATCHO',
+            '',
+            'Le Directeur Général\n\n\n\n\n\n\n\n\nContre-Amiral Fogan Kodjo ADEGNON']
+          ]
+          ,
+        });
+    
+        for (let index = 0; index < doc.getNumberOfPages(); index++) {
+          doc.setPage(index+1);
+    
+          doc.setFontSize(10);
+          doc.setFont('Times New Roman', 'italic', 'bold');
+    
+          doc.text('Powered by PerfOra-Stock Web\nLe '+moment(Date.now()).format('DD/MM/YYYY à HH:mm:ss'), 5, 290);
+          
+          doc.text('Page '+(index+1)+' sur '+doc.getNumberOfPages(), 185, 290);
+    
+          
+        }
+    
+        console.log('sal',doc );
+    
+        doc.output('dataurlnewwindow');
+    
+    
+      }, 
+      (error: HttpErrorResponse) => {
+        console.log('Echec status ==> ' + error.status);
+      }
+    );
 
 
   }

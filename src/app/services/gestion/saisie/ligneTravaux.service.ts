@@ -23,6 +23,10 @@ export class LigneTravauxService {
     return this.httpCli.get<LigneTravaux>(this.host+'/stock/ligneTravaux/byCodLigTrav/'+code);
   }
 
+  getLignesTravauxByCodeTravaux(code:String){
+    return this.httpCli.get<LigneTravaux[]>(this.host+'/stock/ligneTravaux/list/byCodeTrav/'+code);
+  }
+
   addALigneTravaux(corps:LigneTravaux){
     return this.httpCli.post<LigneTravaux>(this.host+'/stock/ligneTravaux/list', corps);
   }

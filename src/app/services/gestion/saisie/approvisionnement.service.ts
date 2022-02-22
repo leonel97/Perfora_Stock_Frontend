@@ -20,6 +20,10 @@ export class ApprovisionnementService {
       return this.httpCli.get<Approvisionnement[]>(this.host+'/stock/approvisionnement/list');
     }
 
+    getApprovisionnementByCodeExo(code:String){
+      return this.httpCli.get<Approvisionnement[]>(this.host+'/stock/approvisionnement/byCodExo/'+code);
+    }
+
     getAApproById(code:String){
       return this.httpCli.get<Approvisionnement>(this.host+'/stock/approvisionnement/byCodApp/'+code);
     }
