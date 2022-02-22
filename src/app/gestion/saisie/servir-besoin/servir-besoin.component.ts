@@ -333,7 +333,7 @@ export class ServirBesoinComponent  implements OnInit {
       return;
     }
 
-    const columns = Object.keys(this.approList[0]);
+    const columns = Object.keys(this.approListByExo[0]);
     if (!columns.length) {
       return;
     }
@@ -866,9 +866,9 @@ export class ServirBesoinComponent  implements OnInit {
                   this.approService.editAAppro4(appro.numAppro, appro).subscribe(
                     (data) => {
             
-                      const i = this.approList.findIndex(l => l.numAppro == data.numAppro);
+                      const i = this.approListByExo.findIndex(l => l.numAppro == data.numAppro);
                           if (i > -1) {
-                            this.approList[i] = data;
+                            this.approListByExo[i] = data;
                             //this.approFiltered = [...this.approList.sort((a, b) => a.numAppro.localeCompare(b.numAppro.valueOf()))];
                             this.filerData(this.searchControl.value);
                           }

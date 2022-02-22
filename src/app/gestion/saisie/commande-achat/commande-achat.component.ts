@@ -76,6 +76,7 @@ export class CommandeAchatComponent implements OnInit {
   ligneCom: LigneCommande = null;
 
   etatVali: boolean = false;
+  affichNb: boolean = false;
 
   totaux: number[] = [0, 0, 0];
 
@@ -687,6 +688,17 @@ export class CommandeAchatComponent implements OnInit {
 
   }
 
+  modalImpressio(commandeAcha: CommandeAchat, content){
+    this.modalService.open(content, {ariaLabelledBy: 'modal-basic-title', centered: true})
+            .result.then((result) => {
+            
+              this.openPdfToPrint(commandeAcha);
+
+          }, (reason) => {
+            console.log(`Dismissed with: ${reason}`);
+          });
+  }
+
   calculTotaux(){
 
     let tot0: number = 0;
@@ -947,6 +959,7 @@ export class CommandeAchatComponent implements OnInit {
           ,
         });
     
+        if(this.affichNb)
         autoTable(doc, {
           theme: 'grid',
           margin: { top: 10, bottom:10 },

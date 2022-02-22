@@ -534,6 +534,7 @@ export class InventaireComponent implements OnInit {
 
     this.ligneInventaireService.getLignesInventaireByCodeInventaire(element.numInv).subscribe(
       (ligneInventaireList) => {
+        ligneInventaireList.sort((a, b) => a.article.codeArticle.localeCompare(b.article.codeArticle.toString()));
         let lignes = [];
 
         ligneInventaireList.forEach(element2 => {

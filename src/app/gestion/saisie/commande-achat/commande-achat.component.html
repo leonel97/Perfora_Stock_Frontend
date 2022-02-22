@@ -125,7 +125,7 @@
                                   type="button" *ngIf="row.commande.valide == false && authService.hasAccess('saisie_ca_valid')" ngbTooltip="Valider" placement="bottom">
                             <i class="i-Yes"> </i>
                           </button>
-                          <button (click)="openPdfToPrint(row)" class="btn btn-outline-warning m-1 btn-sm"
+                          <button (click)="modalImpressio(row, modalImpression)" class="btn btn-outline-warning m-1 btn-sm"
                                   type="button" ngbTooltip="Imprimer" placement="bottom" *ngIf="authService.hasAccess('saisie_ca_print')">
                             <i class="i-File-Download"> </i>
                           </button>
@@ -534,6 +534,37 @@
     </button>
     <button (click)="modal.close('Ok')" class="btn btn-danger btn-rounded" ngbAutofocus
             type="button">Confirmer
+    </button>
+  </div>
+</ng-template>
+
+<ng-template #modalImpression let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-title">Impression</h4>
+    <button (click)="modal.dismiss('Cross click')" aria-describedby="modal-title" aria-label="Close button"
+            class="close"
+            type="button">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+      <div class="row">
+          <div class="col-md form-group mb-3" style="display: flex; flex-direction: column; align-items: center;">
+              <label class="checkbox checkbox-success" style="margin: auto;">
+                  <strong>Afficher la ligne 
+                      <span class="text-primary">NB</span> ?</strong>
+                <input type="checkbox" [(ngModel)]="affichNb" [checked]="null" (click)="null">
+                <span class="checkmark"></span>
+              </label>
+          </div>
+      </div>
+    
+  </div>
+  <div class="modal-footer">
+    <button (click)="modal.dismiss('cancel')" class="btn btn-outline-secondary btn-rounded" type="button">Annuler
+    </button>
+    <button (click)="modal.close('Ok')" class="btn btn-danger btn-rounded" ngbAutofocus
+            type="button">Continuer
     </button>
   </div>
 </ng-template>
