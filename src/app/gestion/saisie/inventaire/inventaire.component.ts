@@ -353,8 +353,8 @@ export class InventaireComponent implements OnInit {
 
             const i = this.inventaireListByExo.findIndex(l => l.numInv == data2.inventaire.numInv);
             if (i > -1) {
-              this.inventaireList[i] = data2.inventaire;
-              this.inventaireFiltered = [...this.inventaireList.sort((a, b) => a.numInv.localeCompare(b.numInv.valueOf()))];
+              this.inventaireListByExo[i] = data2.inventaire;
+              this.inventaireFiltered = [...this.inventaireListByExo.sort((a, b) => a.numInv.localeCompare(b.numInv.valueOf()))];
             }
             
             setTimeout(() => {
