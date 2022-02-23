@@ -242,7 +242,7 @@ export class CommandeAchatComponent implements OnInit {
       return this.commandeAchatFiltered = [...this.commandeAchatListByExo.sort((a, b) => a.numComAchat.localeCompare(b.numComAchat.valueOf()))];
     }
 
-    const columns = Object.keys(this.commandeAchatList[0]);
+    const columns = Object.keys(this.commandeAchatListByExo[0]);
     if (!columns.length) {
       return;
     }
