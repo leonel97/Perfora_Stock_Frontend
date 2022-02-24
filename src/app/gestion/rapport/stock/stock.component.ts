@@ -374,11 +374,11 @@ export class StockComponent implements OnInit {
             this.ligneReceptionService.getAllLigneReception().subscribe(
               (data5) => {
     
-                let validLigneReception: LigneReception[] = data5.filter((l) => l.reception.valideRecep && Date.parse(l.reception.dateReception.toString()) >= Date.parse(formData.dateDebut) && Date.parse(l.reception.dateReception.toString()) <= Date.parse(formData.dateFin));
+                let validLigneReception: LigneReception[] = data5.filter((l) => l.reception.valideRecep && Date.parse(l.reception.dateValidation.toString()) >= Date.parse(formData.dateDebut) && Date.parse(l.reception.dateValidation.toString()) <= Date.parse(formData.dateFin));
                 
-                let validLigneAppro: LigneAppro[] = data4.filter((l) => l.appro.valideAppro && Date.parse(l.appro.dateAppro.toString()) >= Date.parse(formData.dateDebut) && Date.parse(l.appro.dateAppro.toString()) <= Date.parse(formData.dateFin));
+                let validLigneAppro: LigneAppro[] = data4.filter((l) => l.appro.valideAppro && Date.parse(l.appro.dateValidation.toString()) >= Date.parse(formData.dateDebut) && Date.parse(l.appro.dateValidation.toString()) <= Date.parse(formData.dateFin));
                 
-                let validLigneInventaire: LigneInventaire[] = data3.filter((l) => l.inventaire.valideInve && Date.parse(l.inventaire.dateInv.toString()) >= Date.parse(formData.dateDebut) && Date.parse(l.inventaire.dateInv.toString()) <= Date.parse(formData.dateFin))
+                let validLigneInventaire: LigneInventaire[] = data3.filter((l) => l.inventaire.valideInve && Date.parse(l.inventaire.dateValidation.toString()) >= Date.parse(formData.dateDebut) && Date.parse(l.inventaire.dateValidation.toString()) <= Date.parse(formData.dateFin))
     
                 articles.forEach(elemente => {
     
