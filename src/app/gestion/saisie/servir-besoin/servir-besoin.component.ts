@@ -1049,8 +1049,8 @@ export class ServirBesoinComponent  implements OnInit {
       let finded: boolean = false;
 
       
-      for(const lig of this.ligneDemandeApproList.filter( a => a.appro.numDA == da.numDA)){
-        if(lig.satisfaite == false){
+      for(const lig of this.ligneDemandeApproList){
+        if(lig.appro.numDA == da.numDA && lig.satisfaite == false){
           finded = false;
           break;
         }
@@ -1058,7 +1058,7 @@ export class ServirBesoinComponent  implements OnInit {
           finded = true;
         }
 
-        if(concerned == false && SalTools.getConnectedUser().magasins.find(l => l.numMagasin == lig.article.famille.magasin.numMagasin)){
+        if(lig.appro.numDA == da.numDA && concerned == false && SalTools.getConnectedUser().magasins.find(l => l.numMagasin == lig.article.famille.magasin.numMagasin)){
           
           concerned = true;
 
