@@ -1026,9 +1026,9 @@ export class StockComponent implements OnInit {
 
     let lig = [];
 
-    let concernedLignInv = lignesIventaire.filter((l) => l.inventaire.valideInve && l.article.numArticle == article.numArticle && Date.parse(l.inventaire.dateInv.toString()) <= dateSt.valueOf()).sort((a, b) => Date.parse(a.inventaire.dateInv.toString()) > Date.parse(b.inventaire.dateInv.toString()) ? -1 : 1 )[0];
-    let concernedLignRecep = lignesReception.filter((l) => l.reception.valideRecep && l.ligneCommande.article.numArticle == article.numArticle && Date.parse(l.reception.dateReception.toString()) <= dateSt.valueOf()).sort((a, b) => Date.parse(a.reception.dateReception.toString()) > Date.parse(b.reception.dateReception.toString())? -1 : 1 )[0];
-    let concernedLignAppro = lignesAppro.filter((l) => l.appro.valideAppro && l.ligneDA.article.numArticle == article.numArticle && Date.parse(l.appro.dateAppro.toString()) <= dateSt.valueOf()).sort((a, b) => Date.parse(a.appro.dateAppro.toString()) > Date.parse(b.appro.dateAppro.toString())? -1 : 1 )[0];
+    let concernedLignInv = lignesIventaire.filter((l) => l.inventaire.valideInve && l.article.numArticle == article.numArticle && Date.parse(l.inventaire.dateInv.toString()) <= dateSt.valueOf()).sort((a, b) => Date.parse(a.inventaire.dateValidation.toString()) > Date.parse(b.inventaire.dateValidation.toString()) ? -1 : 1 )[0];
+    let concernedLignRecep = lignesReception.filter((l) => l.reception.valideRecep && l.ligneCommande.article.numArticle == article.numArticle && Date.parse(l.reception.dateReception.toString()) <= dateSt.valueOf()).sort((a, b) => Date.parse(a.reception.dateValidation.toString()) > Date.parse(b.reception.dateValidation.toString())? -1 : 1 )[0];
+    let concernedLignAppro = lignesAppro.filter((l) => l.appro.valideAppro && l.ligneDA.article.numArticle == article.numArticle && Date.parse(l.appro.dateAppro.toString()) <= dateSt.valueOf()).sort((a, b) => Date.parse(a.appro.dateValidation.toString()) > Date.parse(b.appro.dateValidation.toString())? -1 : 1 )[0];
 
     if(article.exo && Date.parse(article.datStInitArtTres.toString()) <= dateSt.valueOf()) {
       let li = [];
@@ -1041,7 +1041,7 @@ export class StockComponent implements OnInit {
     
     if(concernedLignInv) {
       let li = [];
-      li.push(Date.parse(concernedLignInv.inventaire.dateInv.toString()));
+      li.push(Date.parse(concernedLignInv.inventaire.dateValidation.toString()));
       li.push(concernedLignInv.stockreel);
       li.push(concernedLignInv.pu);
 
@@ -1050,7 +1050,7 @@ export class StockComponent implements OnInit {
 
     if(concernedLignRecep) {
       let li = [];
-      li.push(Date.parse(concernedLignRecep.reception.dateReception.toString()));
+      li.push(Date.parse(concernedLignRecep.reception.dateValidation.toString()));
       li.push(concernedLignRecep.lastStockQte+(concernedLignRecep.quantiteLigneReception*concernedLignRecep.ligneCommande.uniter.poids));
       concernedLignRecep.lastCump = ((concernedLignRecep.lastStockQte*concernedLignRecep.lastCump)+((concernedLignRecep.quantiteLigneReception*concernedLignRecep.ligneCommande.uniter.poids)*(concernedLignRecep.ligneCommande.puLigneCommande/concernedLignRecep.ligneCommande.uniter.poids)))/(concernedLignRecep.lastStockQte+(concernedLignRecep.quantiteLigneReception*concernedLignRecep.ligneCommande.uniter.poids));
       li.push(concernedLignRecep.lastCump);
@@ -1060,7 +1060,7 @@ export class StockComponent implements OnInit {
 
     if(concernedLignAppro) {
       let li = [];
-      li.push(Date.parse(concernedLignAppro.appro.dateAppro.toString()));
+      li.push(Date.parse(concernedLignAppro.appro.dateValidation.toString()));
       li.push(concernedLignAppro.lastStockQte-(concernedLignAppro.quantiteLigneAppro*concernedLignAppro.ligneDA.uniter.poids));
       li.push(concernedLignAppro.puligneAppro);
 
@@ -1068,7 +1068,7 @@ export class StockComponent implements OnInit {
     }
 
     lig.sort((a, b) => a[0] < b[0] ? 1: -1 );
-    console.log('liii', lig);
+    console.log('liii',article, lig);
     if(lig.length > 0){
       tab[0] = lig[0][1];
       tab[1] = lig[0][2];
