@@ -86,6 +86,8 @@ export class ServirBesoinComponent  implements OnInit {
 
   totaux: number[] = [0, 0, 0];
 
+  userMag: Magasin[] = [];
+
   //pour les tabs navs
   activeTabsNav;
   //end
@@ -124,6 +126,8 @@ export class ServirBesoinComponent  implements OnInit {
       (error: HttpErrorResponse) => {
         console.log('Echec status ==> ' + error.status);
       });*/
+
+    this.userMag = SalTools.getConnectedUser().magasins;
 
     this.getAllApproByCodeExoSelected();
 
@@ -1058,7 +1062,7 @@ export class ServirBesoinComponent  implements OnInit {
           finded = true;
         }
 
-        if(lig.appro.numDA == da.numDA && concerned == false && SalTools.getConnectedUser().magasins.find(l => l.numMagasin == lig.article.famille.magasin.numMagasin)){
+        if(lig.appro.numDA == da.numDA && concerned == false && this.userMag.find(l => l.numMagasin == lig.article.famille.magasin.numMagasin)){
           
           concerned = true;
 
