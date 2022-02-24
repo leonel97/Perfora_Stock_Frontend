@@ -1047,22 +1047,36 @@ export class ServirBesoinComponent  implements OnInit {
     if(da){
       //let traitable: boolean = false;
       let finded: boolean = false;
-      for(const lig of this.ligneDemandeApproList){
-        if(lig.appro.numDA == da.numDA 
-          && lig.satisfaite == false){
-          return false;
+
+      
+      for(const lig of this.ligneDemandeApproList.filter( a => a.appro.numDA == da.numDA)){
+        if(lig.satisfaite == false){
+          finded = false;
+          break;
         }
         else if(lig.appro.numDA == da.numDA){
           finded = true;
         }
 
-        /*if(lig.appro.numDA == da.numDA &&
+      }
+
+      if(!finded){
+
+        for(const lig of this.ligneDemandeApproList.filter( a => a.appro.numDA == da.numDA)){
+          if(!SalTools.getConnectedUser().magasins.find(l => l.numMagasin == lig.article.famille.magasin.numMagasin)){
+            finded = true;
+            break;
+          }
+  
+        }
+
+      }
+
+      /*if(lig.appro.numDA == da.numDA &&
           SalTools.getConnectedUser().magasins.find(l => l.numMagasin == lig.article.famille.magasin.numMagasin)
           && !this.ligneApproList.some( l => l.ligneDA.appro.numDA == da.numDA)){
             traitable = true;
         }*/
-
-      }
 
       //return traitable;
       return finded;
