@@ -1045,7 +1045,7 @@ export class ServirBesoinComponent  implements OnInit {
     //if(this.ligneApproList.some( l => l.ligneDA.appro.numDA == da.numDA)) return true; par le dg
 
     if(da){
-      //let traitable: boolean = false;
+      let concerned: boolean = false;
       let finded: boolean = false;
 
       
@@ -1058,18 +1058,16 @@ export class ServirBesoinComponent  implements OnInit {
           finded = true;
         }
 
-      }
+        if(concerned == false && SalTools.getConnectedUser().magasins.find(l => l.numMagasin == lig.article.famille.magasin.numMagasin)){
+          
+          concerned = true;
 
-      if(!finded){
-
-        for(const lig of this.ligneDemandeApproList.filter( a => a.appro.numDA == da.numDA)){
-          if(!SalTools.getConnectedUser().magasins.find(l => l.numMagasin == lig.article.famille.magasin.numMagasin)){
-            finded = true;
-            break;
-          }
-  
         }
 
+      }
+
+      if(concerned == false){
+        return true;
       }
 
       /*if(lig.appro.numDA == da.numDA &&
