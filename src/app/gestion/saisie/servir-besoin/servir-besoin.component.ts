@@ -1089,7 +1089,9 @@ export class ServirBesoinComponent  implements OnInit {
           finded = true;
         }
 
-        if(lig.appro.numDA == da.numDA && concerned == false && this.userMag.find(l => l.numMagasin == lig.article.famille.magasin.numMagasin)){
+        console.log('magasin ==> ', this.userMag.find(l => l.numMagasin == lig.article?.famille?.magasin.numMagasin));
+
+        if(lig.appro.numDA == da.numDA && concerned == false && this.userMag.find(l => l.numMagasin == lig.article?.famille?.magasin.numMagasin)){
           
           concerned = true;
 
