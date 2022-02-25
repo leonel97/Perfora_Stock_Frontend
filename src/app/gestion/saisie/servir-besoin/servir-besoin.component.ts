@@ -338,11 +338,12 @@ export class ServirBesoinComponent  implements OnInit {
     }
 
     const columns = Object.keys(this.approListByExo[0]);
+    
     if (!columns.length) {
       return;
     }
 
-    const rows = this.approListByExo.filter(function (d) {
+    let rows = this.approListByExo.filter(function (d) {
       for (let i = 0; i <= columns.length; i++) {
         const column = columns[i];
         // console.log(d[column]);
@@ -350,9 +351,35 @@ export class ServirBesoinComponent  implements OnInit {
           return true;
         }
       }
+
+
+
     });
+
+
+    if(rows.length == 0){
+      rows = this.approListByExo.filter((l) => this.subSearch(l));
+    }
+
     this.approFiltered = rows;
     this.searchAffElmtChanged();
+  }
+
+  subSearch(appro: Approvisionnement){
+    let textee: String = this.searchControl.value;
+    const columns2 = Object.keys(this.ligneApproList[0].ligneDA.appro);
+
+    let da = this.getDemandeApproOfAAppro(appro);
+
+    for (let i = 0; i <= columns2.length; i++) {
+      const column = columns2[i];
+      if (da[column] && da[column].toString().toLowerCase().indexOf(textee.toLowerCase()) > -1) {
+        return true;
+      }
+    }
+
+    return false;
+
   }
 
   makeForm(appro: Approvisionnement): void {
@@ -1071,6 +1098,7 @@ export class ServirBesoinComponent  implements OnInit {
       }
 
       if(concerned == false){
+        console.log('non concerner',da);
         return true;
       }
 

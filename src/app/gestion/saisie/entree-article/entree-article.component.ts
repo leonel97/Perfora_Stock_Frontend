@@ -390,7 +390,7 @@ export class EntreeArticleComponent  implements OnInit {
       return;
     }
 
-    const rows = this.receptionListByExo.filter(function (d) {
+    let rows = this.receptionListByExo.filter(function (d) {
       for (let i = 0; i <= columns.length; i++) {
         const column = columns[i];
         // console.log(d[column]);
@@ -399,7 +399,45 @@ export class EntreeArticleComponent  implements OnInit {
         }
       }
     });
+
+    if(rows.length == 0){
+      rows = this.receptionListByExo.filter((l) => this.subSearch(l));
+    }
+
     this.receptionFiltered = rows;
+  }
+
+  subSearch(recep: Reception){
+    let textee: String = this.searchControl.value;
+    const columns2 = Object.keys(this.ligneReceptList[0].ligneCommande.numCommande);
+    
+
+    let cmd = this.getCommandeOfAReception(recep);
+    /*console.log('cmd ==> ',cmd);
+    console.log('col ==> ',columns2);*/
+
+    for (let i = 0; i <= columns2.length; i++) {
+      const column = columns2[i];
+      if (cmd[column] && cmd[column].toString().toLowerCase().indexOf(textee.toLowerCase()) > -1) {
+        return true;
+      }
+    }
+
+    const columns3 = Object.keys(this.getFilleCommandeOfARecept(recep));
+
+    let cmd2 = this.getFilleCommandeOfARecept(recep);
+    /*console.log('cmd2 ==> ',cmd2);
+    console.log('col2 ==> ',columns3);*/
+
+    for (let i = 0; i <= columns3.length; i++) {
+      const column = columns3[i];
+      if (cmd2[column] && cmd2[column].toString().toLowerCase().indexOf(textee.toLowerCase()) > -1) {
+        return true;
+      }
+    }
+
+    return false;
+
   }
 
   makeForm(reception: Reception): void {
@@ -568,6 +606,43 @@ export class EntreeArticleComponent  implements OnInit {
     for(const fpfa of this.fpfaList){
       if(fpfa.commande?.numCommande == concernedComm?.numCommande){
         return fpfa.demandePrix.idDemandePrix;
+      }
+    }
+
+    return null;
+
+  }
+
+  getFilleCommandeOfARecept(reception: Reception): any{
+    let concernedComm: Commande = this.getCommandeOfAReception(reception);
+
+    for(const comAch of this.commandeAchaList){
+      if(comAch.commande.numCommande == concernedComm?.numCommande){
+        return comAch;
+      }
+    }
+
+    for(const appOffr of this.appelOffreList){
+      if(appOffr.commande.numCommande == concernedComm?.numCommande){
+        return appOffr;
+      }
+    }
+
+    for(const bt of this.bondTravailList){
+      if(bt.commande.numCommande == concernedComm?.numCommande){
+        return bt;
+      }
+    }
+
+    for(const lc of this.lettreCommandeList){
+      if(lc.commande.numCommande == concernedComm?.numCommande){
+        return lc;
+      }
+    }
+
+    for(const fpfa of this.fpfaList){
+      if(fpfa.commande?.numCommande == concernedComm?.numCommande){
+        return fpfa.demandePrix;
       }
     }
 
