@@ -1081,6 +1081,18 @@ export class ServirBesoinComponent  implements OnInit {
 
       
       for(const lig of this.ligneDemandeApproList){
+ 
+        if(lig.appro.numDA == da.numDA && this.userMag.find(l => l.numMagasin == lig.article?.famille?.magasin.numMagasin)){
+          
+          concerned = true;
+
+        }
+
+      }
+
+      if(!concerned) return true;
+
+      for(const lig of this.ligneDemandeApproList){
         if(lig.appro.numDA == da.numDA && lig.satisfaite == false){
           finded = false;
           break;
@@ -1089,28 +1101,9 @@ export class ServirBesoinComponent  implements OnInit {
           finded = true;
         }
 
-        console.log('magasin ==> ', this.userMag.find(l => l.numMagasin == lig.article?.famille?.magasin.numMagasin));
-
-        if(lig.appro.numDA == da.numDA && concerned == false && this.userMag.find(l => l.numMagasin == lig.article?.famille?.magasin.numMagasin)){
-          
-          concerned = true;
-
-        }
-
       }
 
-      if(concerned == false){
-        console.log('non concerner',da);
-        return true;
-      }
 
-      /*if(lig.appro.numDA == da.numDA &&
-          SalTools.getConnectedUser().magasins.find(l => l.numMagasin == lig.article.famille.magasin.numMagasin)
-          && !this.ligneApproList.some( l => l.ligneDA.appro.numDA == da.numDA)){
-            traitable = true;
-        }*/
-
-      //return traitable;
       return finded;
 
     }
