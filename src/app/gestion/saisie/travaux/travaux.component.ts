@@ -761,7 +761,6 @@ export class TravauxComponent   implements OnInit {
           
         }
     
-        console.log('sal',doc );
     
         doc.output('dataurlnewwindow');
     

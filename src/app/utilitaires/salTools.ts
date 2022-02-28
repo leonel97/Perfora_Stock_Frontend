@@ -13,6 +13,13 @@ export class SalTools {
         
     }
 
+    public formtNum (nbr : number): String{
+        let nbrForm = new Intl.NumberFormat('fr-FR', {maximumFractionDigits: 4});
+
+        return  nbrForm.format(nbr);
+        
+    }
+
     public salRound(valeur: number, nbrChiffr: number = 4): number {
         return SalTools.salRound(valeur, nbrChiffr);
     }

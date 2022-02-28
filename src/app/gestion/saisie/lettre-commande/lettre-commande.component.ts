@@ -867,7 +867,7 @@ export class LettreCommandeComponent implements OnInit {
       },
       body: [
         [{content:'Messieurs, ', }],
-        ['Nous passons commande des articles suivants conformément au marché N° '+element.commandeAchat?.commande?.description+' suivant les prix unitaires figurant sur votre bordereau de prix.'],
+        ['\nNous passons commande des articles suivants conformément au marché N° '+element.commandeAchat?.commande?.description+' suivant les prix unitaires figurant sur votre bordereau de prix.'],
         
       ]
       ,
@@ -938,6 +938,7 @@ export class LettreCommandeComponent implements OnInit {
           ]
           ,
         });
+
     
         autoTable(doc, {
           theme: 'plain',
@@ -947,7 +948,7 @@ export class LettreCommandeComponent implements OnInit {
     
           },
           body: [
-            ['Veuillez agréer, Monsieur le Directeur, l\'expression de nos salutations distinguées.']
+            ['Veuillez agréer, Messieurs, l\'expression de nos salutations distinguées.']
           ]
           ,
         });
