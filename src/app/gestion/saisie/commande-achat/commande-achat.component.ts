@@ -853,7 +853,7 @@ export class CommandeAchatComponent implements OnInit {
       styles: {
         lineColor: 'black'
       },
-      margin: { top: 5, left:5, right:5, bottom:100 },
+      margin: { top: 5, left:5, right:5, bottom:0 },
       columnStyles: {
         0: { textColor: 'black', fontStyle: 'bold', fontSize:7, font: 'Times New Roman', halign: 'center', cellWidth: 60 },
         1: { textColor: 'black', fontStyle: 'bold', font: 'Times New Roman', halign: 'left', cellWidth: 50 },
@@ -878,8 +878,7 @@ export class CommandeAchatComponent implements OnInit {
 
     autoTable(doc, {
       theme: 'plain',
-      startY:50,
-      margin: { },
+      margin: { top: 0, bottom: 0 },
       columnStyles: {
         0: { textColor: 0, fontStyle: 'bold', halign: 'left', cellWidth: 60 },
         1: { textColor: 0, fontStyle: 'bold', halign: 'left' },
@@ -917,7 +916,7 @@ export class CommandeAchatComponent implements OnInit {
             lig.push(element2.article.libArticle);
             lig.push(element2.qteLigneCommande);
             lig.push(element2.uniter.libUniter);
-            lig.push(element2.puLigneCommande+(element2.prixUnitTtc?' (TTC)':''));
+            lig.push((element2.puLigneCommande)+(element2.prixUnitTtc?' (TTC)':''));
             lig.push(element2.tva);
             let ht = !element2.prixUnitTtc? element2.puLigneCommande * element2.qteLigneCommande : (element2.puLigneCommande * element2.qteLigneCommande)/((element2.tva/100)+1);
             lig.push(this.salToolsService.salRound(ht));
@@ -939,7 +938,7 @@ export class CommandeAchatComponent implements OnInit {
             textColor: 255,
             fontStyle: 'bold' ,
         },
-          margin: { top: 10 },
+          margin: { top: 0, bottom: 0 },
           body: lignes
           ,
         });
@@ -947,7 +946,7 @@ export class CommandeAchatComponent implements OnInit {
     
         autoTable(doc, {
           theme: 'grid',
-          margin: { top: 100, left:130 },
+          margin: { top: 0, left:130, bottom: 0},
           columnStyles: {
             0: { fillColor: [41, 128, 185], textColor: 255, fontStyle: 'bold' },
           },
@@ -962,7 +961,7 @@ export class CommandeAchatComponent implements OnInit {
         if(this.affichNb)
         autoTable(doc, {
           theme: 'grid',
-          margin: { top: 10, bottom:10 },
+          margin: { top: 0, bottom:0 },
           columnStyles: {
             0: { textColor: 0, fontStyle: 'bold', halign: 'left', minCellWidth:11 },
             1: { textColor: 0,font: 'Times New Roman', fontStyle: 'italic', halign: 'justify' },
@@ -975,7 +974,7 @@ export class CommandeAchatComponent implements OnInit {
     
         autoTable(doc, {
           theme: 'plain',
-          margin: { top: 50, bottom:0 },
+          margin: { top: 0, bottom:0 },
           columnStyles: {
             0: { textColor: 0, fontStyle: 'bold', halign: 'left' },
           },
@@ -987,7 +986,7 @@ export class CommandeAchatComponent implements OnInit {
     
         autoTable(doc, {
           theme: 'plain',
-          margin: { top: 0 },
+          margin: { top: 0, bottom: 0 },
           columnStyles: {
             0: { textColor: 0, fontStyle: 'bold', halign: 'left' },
             1: { textColor: 0, fontStyle: 'bold', halign: 'right' },
@@ -1001,16 +1000,17 @@ export class CommandeAchatComponent implements OnInit {
     
         autoTable(doc, {
           theme: 'plain',
-          margin: { top: 100 },
+          margin: { top: 0, bottom: 0},
+          pageBreak: "avoid",
           columnStyles: {
             0: { textColor: 0, fontStyle: 'bold', halign: 'center', cellWidth: 80 },
             
             2: { textColor: 0, fontStyle: 'bold', halign: 'center', cellWidth: 80 },
           },
           body: [
-            ['La Personne Responsable des Marchés Publics\n\n\n\n\n\n\n\nPassamani ATCHO',
+            ['La Personne Responsable des Marchés Publics\n\n\n\n\n\n\nPassamani ATCHO',
             '',
-            'Le Directeur Général\n\n\n\n\n\n\n\n\nContre-Amiral Fogan Kodjo ADEGNON']
+            'Le Directeur Général\n\n\n\n\n\n\nContre-Amiral Fogan Kodjo ADEGNON']
           ]
           ,
         });
@@ -1028,7 +1028,7 @@ export class CommandeAchatComponent implements OnInit {
           
         }
     
-        console.log('sal',doc );
+        console.log('sal', lignes);
     
         doc.output('dataurlnewwindow');
     

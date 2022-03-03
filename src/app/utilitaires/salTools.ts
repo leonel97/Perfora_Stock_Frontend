@@ -13,10 +13,10 @@ export class SalTools {
         
     }
 
-    public formtNum (nbr : number): String{
+    public formtNum (nbr : number): string{
         let nbrForm = new Intl.NumberFormat('fr-FR', {maximumFractionDigits: 4});
-
-        return  nbrForm.format(nbr);
+        //console.log(nbrForm.format(nbr), nbrForm.format(nbr).valueOf(), nbrForm.format(nbr).toString());
+        return  nbrForm.format(nbr).toString();
         
     }
 

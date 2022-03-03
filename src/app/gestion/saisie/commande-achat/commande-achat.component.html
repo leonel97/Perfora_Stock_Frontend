@@ -106,7 +106,7 @@
                           Total TTC
                         </ng-template>
                         <ng-template let-row="row" let-rowIndex="rowIndex" ngx-datatable-cell-template>
-                          {{ salToolsService.salRound(getTotalTtcOfACom(row)) }}
+                          {{ salToolsService.formtNum(salToolsService.salRound(getTotalTtcOfACom(row))) }}
                         </ng-template>
                       </ngx-datatable-column>
 
@@ -315,7 +315,7 @@
                                         </ng-select>
                                       </td>
                                       <td>
-                                        {{ salToolsService.salRound(!lig.ttc? lig.lignesCommande.puLigneCommande * lig.lignesCommande.qteLigneCommande : (lig.lignesCommande.puLigneCommande * lig.lignesCommande.qteLigneCommande)/((lig.lignesCommande.tva/100)+1)) }}
+                                        {{ salToolsService.formtNum(salToolsService.salRound(!lig.ttc? lig.lignesCommande.puLigneCommande * lig.lignesCommande.qteLigneCommande : (lig.lignesCommande.puLigneCommande * lig.lignesCommande.qteLigneCommande)/((lig.lignesCommande.tva/100)+1))) }}
                                       </td>
                                       <td>
                                           <input type="number" class="form-control" [(ngModel)] = "lig.lignesCommande.tva"
@@ -324,7 +324,7 @@
                                               >
                                       </td>
                                       <td>
-                                        {{ salToolsService.salRound(!lig.ttc?lig.lignesCommande.puLigneCommande * lig.lignesCommande.qteLigneCommande*(1+(lig.lignesCommande.tva/100)): lig.lignesCommande.puLigneCommande * lig.lignesCommande.qteLigneCommande) }}
+                                        {{ salToolsService.formtNum(salToolsService.salRound(!lig.ttc?lig.lignesCommande.puLigneCommande * lig.lignesCommande.qteLigneCommande*(1+(lig.lignesCommande.tva/100)): lig.lignesCommande.puLigneCommande * lig.lignesCommande.qteLigneCommande)) }}
                                       </td>
                                       <td>
                                           <button class="btn btn-outline-secondary float-right" (click)="modalPopALigneComAcha(i, modalConfirmDelLig)">Retirer</button>
@@ -338,9 +338,9 @@
                       <div class="col-md-12">
 
                           <div class="float-right">
-                              <p>Total Montant HT : <span> {{ salToolsService.salRound(totaux[0]) }} </span>  F CFA</p>
-                              <p class="d-flex align-items-center">Total Montant TVA : <span> {{ salToolsService.salRound(totaux[1]) }} </span>  F CFA</p>
-                              <h5 class="font-weight-bold d-flex align-items-center">Total Montant TTC : <span> {{ salToolsService.salRound(totaux[2]) }} </span>  F CFA</h5>
+                              <p>Total Montant HT : <span> {{ salToolsService.formtNum(salToolsService.salRound(totaux[0])) }} </span>  F CFA</p>
+                              <p class="d-flex align-items-center">Total Montant TVA : <span> {{ salToolsService.formtNum(salToolsService.salRound(totaux[1])) }} </span>  F CFA</p>
+                              <h5 class="font-weight-bold d-flex align-items-center">Total Montant TTC : <span> {{ salToolsService.formtNum(salToolsService.salRound(totaux[2])) }} </span>  F CFA</h5>
                           </div>
                       </div>
 
