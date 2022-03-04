@@ -878,7 +878,7 @@ export class CommandeAchatComponent implements OnInit {
 
     autoTable(doc, {
       theme: 'plain',
-      margin: { top: 0, bottom: 0 },
+      margin: { top: -100000000, bottom: -1 },
       columnStyles: {
         0: { textColor: 0, fontStyle: 'bold', halign: 'left', cellWidth: 60 },
         1: { textColor: 0, fontStyle: 'bold', halign: 'left' },
@@ -896,7 +896,7 @@ export class CommandeAchatComponent implements OnInit {
 
     autoTable(doc, {
       theme: 'plain',
-      margin: { top: 0, bottom: 0 },
+      margin: { top: -1000, bottom: -10 },
       columnStyles: {
         0: { textColor: 0, halign: 'left' },
       },
@@ -1003,14 +1003,14 @@ export class CommandeAchatComponent implements OnInit {
           margin: { top: 0, bottom: 0},
           pageBreak: "avoid",
           columnStyles: {
-            0: { textColor: 0, fontStyle: 'bold', halign: 'center', cellWidth: 80 },
+            0: { textColor: 0, fontStyle: 'bold', halign: 'center', cellWidth: 90 },
             
-            2: { textColor: 0, fontStyle: 'bold', halign: 'center', cellWidth: 80 },
+            2: { textColor: 0, fontStyle: 'bold', halign: 'center', cellWidth: 70 },
           },
           body: [
-            ['La Personne Responsable des Marchés Publics\n\n\n\n\n\n\nPassamani ATCHO',
+            ['La Personne Responsable des Marchés Publics\n\n\n\n\nPassamani ATCHO',
             '',
-            'Le Directeur Général\n\n\n\n\n\n\nContre-Amiral Fogan Kodjo ADEGNON']
+            'Le Directeur Général\n\n\n\n\nContre-Amiral Fogan Kodjo ADEGNON']
           ]
           ,
         });
