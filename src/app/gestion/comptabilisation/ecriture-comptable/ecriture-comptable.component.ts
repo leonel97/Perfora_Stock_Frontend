@@ -176,8 +176,8 @@ export class EcritureComptableComponent implements OnInit {
   
       
         //console.log("ecr", lignes);
-        doc.output('dataurlnewwindow');
-        //doc.save('leo.pdf');
+        //doc.output('dataurlnewwindow');
+        doc.save('leo.pdf');
         
 
       },
