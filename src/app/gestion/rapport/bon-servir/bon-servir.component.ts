@@ -384,7 +384,8 @@ export class BonServirComponent implements OnInit {
           }
 
           this.loading = false;
-          doc.output('dataurlnewwindow');
+          //doc.output('dataurlnewwindow');
+          doc.save('journalSortir.pdf');
 
 
          },
@@ -643,7 +644,8 @@ export class BonServirComponent implements OnInit {
           }
 
           this.loading2 = false;
-          doc.output('dataurlnewwindow');
+         // doc.output('dataurlnewwindow');
+         doc.save('journalSortirParCentre.pdf');
 
 
 
@@ -884,7 +886,8 @@ export class BonServirComponent implements OnInit {
           }
 
           this.loading3 = false;
-          doc.output('dataurlnewwindow');
+         // doc.output('dataurlnewwindow');
+          doc.save('journalSortirParCentreParArticle.pdf');
 
 
 
