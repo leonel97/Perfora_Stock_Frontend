@@ -503,7 +503,8 @@ export class StockComponent implements OnInit {
                     else{
                       if(lignes[inde-1][10] == 0){
                         element2[2] = lignes[inde-1][2]+lignes[inde-1][4];
-                        element2[3] = ((lignes[inde-1][2]*lignes[inde-1][3])+(lignes[inde-1][4]*lignes[inde-1][6]*lignes[inde-1][12]))/(lignes[inde-1][2]+lignes[inde-1][4]);
+                       // element2[3] = ((lignes[inde-1][2]*lignes[inde-1][3])+(lignes[inde-1][4]*lignes[inde-1][6]*lignes[inde-1][12]))/(lignes[inde-1][2]+lignes[inde-1][4]);
+                        element2[3] = ((lignes[inde-1][2]*lignes[inde-1][3])+(lignes[inde-1][4]*lignes[inde-1][6]))/(lignes[inde-1][2]+lignes[inde-1][4]);
                         lignes[inde-1][8] = element2[2];
                         lignes[inde-1][9] = element2[3];
 
