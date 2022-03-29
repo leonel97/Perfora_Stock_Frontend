@@ -9,12 +9,12 @@ export const environment = {
   /*pour production*/
   /*backend2: 'http://192.168.20.5:8090/sigsl/perfora-stock/v1',
   backend3: 'http://192.168.20.5:8090/sigsl'*/
-  backend2: 'http://169.254.97.184:7001/sigsl/perfora-stock/v1',
-  backend3: 'http://169.254.97.184:7001/sigsl'
+  //backend2: 'http://169.254.97.184:7001/sigsl/perfora-stock/v1',
+  //backend3: 'http://169.254.97.184:7001/sigsl'
 
   //backend2: 'http://192.168.1.158:8080/perfora-stock/v1'
 
-  /*pour applimet
+  //pour applimet
   backend2: 'http://192.168.25.5:8090/sigsl/perfora-stock/v1',
-  backend3: 'http://192.168.25.5:8090/sigsl'*/
+  backend3: 'http://192.168.25.5:8090/sigsl'
 };

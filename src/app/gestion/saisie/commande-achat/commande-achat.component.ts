@@ -31,6 +31,7 @@ import { NumberToLetter } from 'convertir-nombre-lettre';
 import { AuthService } from 'src/app/services/common/auth.service';
 import { SalTools } from 'src/app/utilitaires/salTools';
 import { CloturePeriodiqService } from 'src/app/services/gestion/saisie/cloture-periodiq.service';
+import { formatNumber } from '@angular/common';
 
 
 
@@ -838,6 +839,8 @@ export class CommandeAchatComponent implements OnInit {
     
   }
 
+
+
   openPdfToPrint(element: CommandeAchat){
 
     let totalHT : number = 0;
@@ -919,7 +922,13 @@ export class CommandeAchatComponent implements OnInit {
             lig.push((element2.puLigneCommande)+(element2.prixUnitTtc?' (TTC)':''));
             lig.push(element2.tva);
             let ht = !element2.prixUnitTtc? element2.puLigneCommande * element2.qteLigneCommande : (element2.puLigneCommande * element2.qteLigneCommande)/((element2.tva/100)+1);
-            lig.push(this.salToolsService.salRound(ht));
+            
+            console.log('Formatage',ht.toLocaleString('fr'));
+            console.log('Formatage 2', new Intl.NumberFormat('fr-FR').format(ht));
+            
+            //lig.push(this.salToolsService.salRound(ht));
+            let vale = ht.toLocaleString('fr-FR').toString();
+            lig.push(new Intl.NumberFormat('fr-FR').format(ht));
             lignes.push(lig);
     
             totalHT+= ht;
@@ -951,7 +960,7 @@ export class CommandeAchatComponent implements OnInit {
             0: { fillColor: [41, 128, 185], textColor: 255, fontStyle: 'bold' },
           },
           body: [
-            ['Total HT', this.salToolsService.salRound(totalHT)],
+            ['Total HT', this.salToolsService.salRound(totalHT).toLocaleString('fr-FR')],
             ['Total Montant TVA', this.salToolsService.salRound(totalTVA)],
             ['Total TTC', this.salToolsService.salRound(totalTTC)]
           ]
