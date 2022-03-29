@@ -960,7 +960,7 @@ export class CommandeAchatComponent implements OnInit {
             0: { fillColor: [41, 128, 185], textColor: 255, fontStyle: 'bold' },
           },
           body: [
-            ['Total HT', this.salToolsService.salRound(totalHT).toLocaleString('fr-FR')],
+            ['Total HT', this.salToolsService.salRound(totalHT)],
             ['Total Montant TVA', this.salToolsService.salRound(totalTVA)],
             ['Total TTC', this.salToolsService.salRound(totalTTC)]
           ]
