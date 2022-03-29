@@ -607,7 +607,7 @@ export class StockComponent implements OnInit {
                         
                 this.loading6 = false;
                 //doc.output('dataurlnewwindow');
-                doc.save('sal.pdf');
+                doc.save('mouvemmentArticle.pdf');
     
               },
               (error: HttpErrorResponse) => {

@@ -923,12 +923,12 @@ export class CommandeAchatComponent implements OnInit {
             lig.push(element2.tva);
             let ht = !element2.prixUnitTtc? element2.puLigneCommande * element2.qteLigneCommande : (element2.puLigneCommande * element2.qteLigneCommande)/((element2.tva/100)+1);
             
-            console.log('Formatage',ht.toLocaleString('fr'));
-            console.log('Formatage 2', new Intl.NumberFormat('fr-FR').format(ht));
+            //console.log('Formatage',ht.toLocaleString('fr'));
+            //console.log('Formatage 2', new Intl.NumberFormat('fr-FR').format(ht));
             
-            //lig.push(this.salToolsService.salRound(ht));
-            let vale = ht.toLocaleString('fr-FR').toString();
-            lig.push(new Intl.NumberFormat('fr-FR').format(ht));
+            lig.push(this.salToolsService.salRound(ht));
+            //let vale = ht.toLocaleString('fr-FR').toString();
+            //lig.push(new Intl.NumberFormat('fr-FR').format(ht));
             lignes.push(lig);
     
             totalHT+= ht;

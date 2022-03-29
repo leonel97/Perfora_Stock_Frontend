@@ -85,6 +85,8 @@ export class EcritureComptableComponent implements OnInit {
   // printJournalComptable Between two periode
   printJournalComptableBetweenTwoPeriode(){
 
+    this.loading = true;
+
     const formData = this.validateForm.value;
     const doc = new jsPDF({orientation: "landscape"});
     let lignes = [];
@@ -93,7 +95,7 @@ export class EcritureComptableComponent implements OnInit {
     this.ecritureComptableService.list().subscribe(
       (data) => {
         //debut select between Date 
-        
+        this.loading = false;
         let totalDebit:number = 0;
         let totalCredit:number = 0;
         data.forEach(element => {
@@ -177,7 +179,7 @@ export class EcritureComptableComponent implements OnInit {
       
         //console.log("ecr", lignes);
         //doc.output('dataurlnewwindow');
-        doc.save('leo.pdf');
+        doc.save('journalComptable.pdf');
         
 
       },
