@@ -1386,9 +1386,9 @@ export class EntreeArticleComponent  implements OnInit {
             lig.push(element2.quantiteLigneReception);
             lig.push(element2.ligneCommande.uniter.libUniter);
             lig.push(element2.ligneCommande.puLigneCommande);
-            lig.push(element2.ligneCommande.tva);
+            //lig.push(element2.ligneCommande.tva);
             let ht = element2.quantiteLigneReception*element2.ligneCommande.puLigneCommande;
-            lig.push(this.salToolsService.salRound(ht*(1+(element2.ligneCommande.tva/100))));
+            lig.push(this.salToolsService.salRound(ht));
             lignes.push(lig);
     
             totalHT+= ht;
@@ -1400,7 +1400,8 @@ export class EntreeArticleComponent  implements OnInit {
     
         autoTable(doc, {
           theme: 'grid',
-          head: [['Article', 'Désignation', 'Quantité', 'Unité', 'PU', 'TVA(%)', 'Montant']],
+          //head: [['Article', 'Désignation', 'Quantité', 'Unité', 'PU', 'TVA(%)', 'Montant']],
+          head: [['Article', 'Désignation', 'Quantité', 'Unité', 'PU', 'Montant HT']],
           headStyles:{
             fillColor: [41, 128, 185],
             textColor: 255,
@@ -1419,9 +1420,9 @@ export class EntreeArticleComponent  implements OnInit {
             0: { fillColor: [41, 128, 185], textColor: 255, fontStyle: 'bold' },
           },
           body: [
-            ['Total HT', this.salToolsService.salRound(totalHT)],
-            ['Total Montant TVA', this.salToolsService.salRound(totalTVA)],
-            ['Total TTC', this.salToolsService.salRound(totalTTC)]
+            ['Total Montant HT', this.salToolsService.salRound(totalHT)],
+           // ['Total Montant TVA', this.salToolsService.salRound(totalTVA)],
+           // ['Total TTC', this.salToolsService.salRound(totalTTC)]
           ]
           ,
         });
@@ -1433,7 +1434,7 @@ export class EntreeArticleComponent  implements OnInit {
             0: { textColor: 0, fontStyle: 'bold', halign: 'left' },
           },
           body: [
-            ["Arrêté le présent Ordre d'Entrée à la Somme de : "+this.salToolsService.salNumberToLetter(this.salToolsService.salRound(totalTTC))+' Francs CFA']
+            ["Arrêté le présent Ordre d'Entrée à la Somme de : "+this.salToolsService.salNumberToLetter(this.salToolsService.salRound(totalHT))+' Francs CFA']
           ]
           ,
         });

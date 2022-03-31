@@ -1198,7 +1198,7 @@ export class ServirBesoinComponent  implements OnInit {
     
         autoTable(doc, {
           theme: 'grid',
-          head: [['Article', 'Désignation', 'Quantité', 'Unité', 'PU', 'Montant']],
+          head: [['Article', 'Désignation', 'Quantité', 'Unité', 'PU HT', 'Montant HT']],
           headStyles:{
             fillColor: [41, 128, 185],
             textColor: 255,
@@ -1217,7 +1217,8 @@ export class ServirBesoinComponent  implements OnInit {
             0: { fillColor: [41, 128, 185], textColor: 255, fontStyle: 'bold' },
           },
           body: [
-            ['Total TTC', this.salToolsService.salRound(totalTTC)]
+            //['Total TTC', this.salToolsService.salRound(totalTTC)]
+            ['Total Montant HT', this.salToolsService.salRound(totalTTC)]
           ]
           ,
         });
@@ -1348,7 +1349,8 @@ export class ServirBesoinComponent  implements OnInit {
             0: { fillColor: [41, 128, 185], textColor: 255, fontStyle: 'bold' },
           },
           body: [
-            ['Total TTC', this.salToolsService.salRound(totalTTC)]
+            //['Total TTC', this.salToolsService.salRound(totalTTC)]
+            ['Total Montant HT', this.salToolsService.salRound(totalTTC)]
           ]
           ,
         });

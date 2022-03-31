@@ -189,7 +189,7 @@ export class BonServirComponent implements OnInit {
   printJournalConsIntPdf(){
 
     const formData = this.validateForm.value;
-    const doc = new jsPDF();
+    const doc = new jsPDF({orientation: "landscape"});
 
     let centres: CentreConsommation[] = [];
     let sousCen: boolean = formData.sousCentreCons;
@@ -249,11 +249,17 @@ export class BonServirComponent implements OnInit {
     doc.addImage(Utils.logoUrlData, 'jpeg', 10, 5, 25, 25);
 
 
-    doc.setDrawColor(0);
+    /*doc.setDrawColor(0);
     doc.setFillColor(233 , 242, 248);
     doc.roundedRect(45, 35, 123, 10, 3, 3, 'FD');
     doc.setFontSize(18);
-    doc.text('JOURNAL DES BONS DE SORTIE', 50, 43);
+    doc.text('JOURNAL DES BONS DE SORTIE', 50, 43);*/
+
+    doc.setDrawColor(0);
+        doc.setFillColor(233 , 242, 248);
+        doc.roundedRect(90, 35, 150, 10, 3, 3, 'FD');
+        doc.setFontSize(20);
+        doc.text('JOURNAL DES BONS DE SORTIE', 110, 43);
 
     autoTable(doc, {
       theme: 'plain',
@@ -318,10 +324,23 @@ export class BonServirComponent implements OnInit {
                     lig.push(element3.codeMagasin+' - '+element3.libMagasin);
 
                     let tota = 0;
+                    let qte = 0;
+                    let pu = 0
+                    let code = ' ';
+                    let article = ' ';
                     lign.forEach(element4 => {
                       tota += element4.puligneAppro * element4.quantiteLigneAppro * element4.ligneDA.uniter.poids;
+                      qte += element4.quantiteLigneAppro;
+                      pu += element4.puligneAppro;
+                      code = element4.ligneDA.article.codeArticle.toString();
+                      article = element4.ligneDA.article.libArticle.toString();
 
                     });
+                    lig.push(code);
+                    lig.push(article);
+
+                    lig.push(qte);
+                    lig.push(SalTools.salRound(pu));
 
                     lig.push(SalTools.salRound(tota));
 
@@ -354,12 +373,12 @@ export class BonServirComponent implements OnInit {
             
           })
 
-          lignes.push([{content: 'Total', styles: {fontStyle: 'bold', halign: 'center'}, colSpan: '6'}, SalTools.salRound(totaux) ])
+          lignes.push([{content: 'Total', styles: {fontStyle: 'bold', halign: 'center'}, colSpan: '10'}, SalTools.salRound(totaux) ])
 
           autoTable(doc, {
             theme: 'grid',
             margin: { right: 5, left: 5 },
-            head: [['Bon Servi', 'Date', 'Référence', 'Demande de Bes.', 'Centre', 'Magasin', 'Montant']],
+            head: [['Bon Servi', 'Date', 'Référence', 'Demande de Bes.', 'Centre', 'Magasin',  'Article','Désignation', 'Qte','PU HT', 'Montant HT']],
             headStyles:{
               fillColor: [41, 128, 185],
               textColor: 255,
