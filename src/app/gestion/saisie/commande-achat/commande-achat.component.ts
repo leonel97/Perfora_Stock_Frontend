@@ -960,9 +960,9 @@ export class CommandeAchatComponent implements OnInit {
             0: { fillColor: [41, 128, 185], textColor: 255, fontStyle: 'bold' },
           },
           body: [
-            ['Total HT', this.salToolsService.salRound(totalHT)],
-            ['Total Montant TVA', this.salToolsService.salRound(totalTVA)],
-            ['Total TTC', this.salToolsService.salRound(totalTTC)]
+            ['Total HT', this.salToolsService.format(Math.trunc(this.salToolsService.salRound(totalHT)))],
+            ['Total Montant TVA', this.salToolsService.format(Math.trunc(this.salToolsService.salRound(totalTVA))) ],
+            ['Total TTC', this.salToolsService.format(Math.trunc(this.salToolsService.salRound(totalTTC))) ]
           ]
           ,
         });
@@ -1050,6 +1050,27 @@ export class CommandeAchatComponent implements OnInit {
 
 
   }
+
+   format(nbre)
+{
+    var str_nbre = "";
+   
+    //    Découpage de le fin vers le début, par longueur de 3
+    for ( let  cpt = nbre.toString().length - 3; cpt >= 0; cpt = cpt - 3 )
+    {
+         str_nbre = nbre.toString().substr(cpt, 3) + "." + str_nbre;
+    }
+
+    //    S'il y a un reste on traite
+    if ( (nbre.toString().length % 3) != 0 )
+        str_nbre = nbre.toString().substr(0, nbre.toString().length % 3) + "." + str_nbre;
+   
+    //    Suppression du dernier .
+    str_nbre = str_nbre.substr(0, str_nbre.length - 1);
+   
+    //    Retour du résultat
+    return (str_nbre);
+}
 
 
 

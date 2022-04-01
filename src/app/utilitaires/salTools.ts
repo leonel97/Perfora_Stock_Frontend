@@ -138,4 +138,27 @@ export class SalTools {
         return tabRes;
     }
 
+    //Separateur de milliers 
+  public format(nbre)
+    {
+        var str_nbre = "";
+       
+        //    Découpage de le fin vers le début, par longueur de 3
+        for ( let  cpt = Math.trunc(nbre).toString().length - 3; cpt >= 0; cpt = cpt - 3 )
+        {
+             str_nbre = Math.trunc(nbre).toString().substr(cpt, 3) + " " + str_nbre;
+        }
+    
+        //    S'il y a un reste on traite
+        if ( (nbre.toString().length % 3) != 0 )
+            str_nbre = Math.trunc(nbre).toString().substr(0, nbre.toString().length % 3) + " " + str_nbre;
+       
+        //    Suppression du dernier .
+        str_nbre = str_nbre.substr(0, str_nbre.length - 1);
+       
+        //    Retour du résultat
+        return (str_nbre);
+    }
+    
+
 }

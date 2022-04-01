@@ -391,10 +391,10 @@ export class StockComponent implements OnInit {
                     let lig = [];
                     lig.push(moment(elemente.datStInitArtTres).format('DD/MM/YYYY'));
                     lig.push('Stock Init');
+                    lig.push('');
+                    lig.push('');
+                    lig.push('');
                     lig.push(elemente.qteStIniTres);
-                    lig.push('');
-                    lig.push('');
-                    lig.push('');
                     lig.push(elemente.puStIniTres);
                     lig.push(elemente.qteStIniTres*elemente.puStIniTres);
                     lig.push('');
