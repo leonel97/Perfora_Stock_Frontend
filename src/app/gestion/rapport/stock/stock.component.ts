@@ -391,10 +391,11 @@ export class StockComponent implements OnInit {
                     let lig = [];
                     lig.push(moment(elemente.datStInitArtTres).format('DD/MM/YYYY'));
                     lig.push('Stock Init');
+                    lig.push(elemente.qteStIniTres); //add
                     lig.push('');
                     lig.push('');
+                    //lig.push(elemente.qteStIniTres);
                     lig.push('');
-                    lig.push(elemente.qteStIniTres);
                     lig.push(elemente.puStIniTres);
                     lig.push(elemente.qteStIniTres*elemente.puStIniTres);
                     lig.push('');
@@ -490,19 +491,23 @@ export class StockComponent implements OnInit {
                     
                   });
 
-                  //console.log(lignes);
+                  console.log(lignes);
                   lignes.push(['', '', '', '', '', '', '', '', '', '', '', ''])
 
                   lignes.forEach((element2, inde) => {
                     if(inde == 0){
                       let tabSto = this.getStockOfArtiAtADate(elemente, data3, data5, data4, new Date(formData.dateDebut.toString()));
-                      element2[2] = tabSto[0];
-                      element2[3] = tabSto[1];
+                      //element2[2] = tabSto[0];
+                      //element2[3] = tabSto[1];
+                      //console.log('1', tabSto[0], tabSto[1]);
+                      
 
                     }
                     else{
                       if(lignes[inde-1][10] == 0){
-                        element2[2] = lignes[inde-1][2]+lignes[inde-1][4];
+                        console.log('2',lignes[inde-1][10]);
+                        
+                        element2[2] = lignes[inde-1][2]+lignes[inde-1][4];  // A revoir si on deplace qte initiale
                        // element2[3] = ((lignes[inde-1][2]*lignes[inde-1][3])+(lignes[inde-1][4]*lignes[inde-1][6]*lignes[inde-1][12]))/(lignes[inde-1][2]+lignes[inde-1][4]);
                         element2[3] = ((lignes[inde-1][2]*lignes[inde-1][3])+(lignes[inde-1][4]*lignes[inde-1][6]))/(lignes[inde-1][2]+lignes[inde-1][4]);
                         lignes[inde-1][8] = element2[2];
@@ -510,6 +515,8 @@ export class StockComponent implements OnInit {
 
                       }
                       else if(lignes[inde-1][10] == 1){
+                        console.log('3', lignes[inde-1][10] );
+                        
                         element2[2] = lignes[inde-1][2]-lignes[inde-1][5];
                         element2[3] = lignes[inde-1][6];
                         lignes[inde-1][8] = element2[2];
@@ -525,7 +532,8 @@ export class StockComponent implements OnInit {
                         lignes[inde-1][5] = lignes[inde-1][2] >= lignes[inde-1][12] ? lignes[inde-1][2]-lignes[inde-1][12] : '';
                       }
                       else if(lignes[inde-1][10] == -1){
-                        element2[2] = lignes[inde-1][4];//lignes[inde-1][2]+lignes[inde-1][4];
+                        //element2[2] = lignes[inde-1][4];//lignes[inde-1][2]+lignes[inde-1][4];
+                        element2[2] = lignes[inde-1][2];//lignes[inde-1][2]+lignes[inde-1][4];
                         element2[3] = lignes[inde-1][6];
                         lignes[inde-1][8] = element2[2];
                         lignes[inde-1][9] = element2[3];
@@ -591,6 +599,8 @@ export class StockComponent implements OnInit {
     
     
                 });
+
+                
     
                 for (let index = 0; index < doc.getNumberOfPages(); index++) {
                   doc.setPage(index+1);
